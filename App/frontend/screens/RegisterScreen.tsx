@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -7,13 +7,52 @@ import { AuthStackParamList } from '../navigation/AuthNavigator';
 const RegisterScreen = () => {
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList, 'Register'>>();
 
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = async () => {
+    if (!fullName || !email || !password) {
+      setError('Please fill in all fields');
+      return;
+    }
+  
+    try {
+      const response = await fetch('http://localhost:5001/api/user/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ fullName, email, password }),
+      });
+  
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.message || 'Registration failed');
+        return;
+      }
+  
+      const data = await response.json();
+      setError('');
+      console.log('User registered:', data);
+      // Navigate to another screen if needed
+    } catch (error) {
+      setError('Registration failed. Please try again.');
+    }
+  };
+
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Register to Vamos</Text>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Name</Text>
-        <TextInput style={styles.input} placeholder="Name" placeholderTextColor="#C9D3DB" />
+        <Text style={styles.inputLabel}>Full Name</Text>
+        <TextInput style={styles.input} placeholder="FullName" placeholderTextColor="#C9D3DB" 
+          value={fullName}
+          onChangeText={(text) => setFullName(text)}
+        />
       </View>
 
       <View style={styles.inputContainer}>
@@ -23,6 +62,8 @@ const RegisterScreen = () => {
           placeholder="Email"
           keyboardType="email-address"
           placeholderTextColor="#C9D3DB"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
         />
       </View>
 
@@ -33,6 +74,8 @@ const RegisterScreen = () => {
           placeholder="Password"
           secureTextEntry
           placeholderTextColor="#C9D3DB"
+          value={password}
+          onChangeText={(text) => setPassword(text)}
         />
       </View>
 
