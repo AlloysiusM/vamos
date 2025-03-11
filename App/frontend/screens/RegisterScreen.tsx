@@ -15,8 +15,12 @@ const RegisterScreen = () => {
   const handleSubmit = async () => {
     if (!fullName || !email || !password) {
       setError('Please fill in all fields');
+      console.log('[DEBUG] Missing fields:', { fullName, email, password });
       return;
     }
+  
+    const requestBody = JSON.stringify({ fullName, email, password });
+    console.log('[DEBUG] Sending request:', requestBody);
   
     try {
       const response = await fetch('http://localhost:5001/api/user/register', {
@@ -24,23 +28,30 @@ const RegisterScreen = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ fullName, email, password }),
+        body: requestBody,
       });
   
+      console.log('[DEBUG] Response Status:', response.status);
+  
+      const data = await response.json();
+      console.log('[DEBUG] Response Data:', data);
+  
       if (!response.ok) {
-        const data = await response.json();
         setError(data.message || 'Registration failed');
+        console.log('[DEBUG] Error Response:', data);
         return;
       }
   
-      const data = await response.json();
       setError('');
-      console.log('User registered:', data);
-      // Navigate to another screen if needed
+      console.log('[DEBUG] User registered successfully:', data);
+  
+      // Navigate after successful registration
+      navigation.replace('Login');
     } catch (error) {
+      console.log('[DEBUG] Fetch Error:', error);
       setError('Registration failed. Please try again.');
     }
-  };
+  };  
 
   
   return (
@@ -80,7 +91,7 @@ const RegisterScreen = () => {
       </View>
 
       {/* Sign Up Button */}
-      <TouchableOpacity style={styles.button} onPress={() => console.log('Register Pressed')}>
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
 
