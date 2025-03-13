@@ -12,16 +12,19 @@ const RegisterScreen = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+  // Check submission form
   const handleSubmit = async () => {
     if (!fullName || !email || !password) {
       setError('Please fill in all fields');
       console.log('[DEBUG] Missing fields:', { fullName, email, password });
       return;
     }
-  
+    
+    // Convert request to json
     const requestBody = JSON.stringify({ fullName, email, password });
     console.log('[DEBUG] Sending request:', requestBody);
-  
+    
+    // Post data to db
     try {
       const response = await fetch('http://localhost:5001/api/user/register', {
         method: 'POST',
@@ -32,7 +35,8 @@ const RegisterScreen = () => {
       });
   
       console.log('[DEBUG] Response Status:', response.status);
-  
+      
+      // await json response
       const data = await response.json();
       console.log('[DEBUG] Response Data:', data);
   
@@ -44,8 +48,7 @@ const RegisterScreen = () => {
   
       setError('');
       console.log('[DEBUG] User registered successfully:', data);
-  
-      // Navigate after successful registration
+      
       navigation.replace('Login');
     } catch (error) {
       console.log('[DEBUG] Fetch Error:', error);
