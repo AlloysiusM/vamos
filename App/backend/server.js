@@ -1,20 +1,28 @@
 const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config();
+const cors = require('cors');
+const userRoutes = require('./routes/user');
 
-// Middleman - parse json to database
 const app = express();
 
-// Debug stmt - check valid server
+// Control blocked host connections
+app.use(cors({ origin: 'http://localhost:8081' }));
+
+// Convert data to json
+app.use(express.json());
+
+// Mount routes
+app.use('/api/user', userRoutes);
+
 console.log("DB_URI:", process.env.DB_URI);
 
-// Connect to db
+// Check db coonnection
 mongoose.connect(process.env.DB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
 .then(() => {
-    // listen to port, ensure it connects
     app.listen(process.env.PORT, () => {
         console.log('Listening on port', process.env.PORT);
     });

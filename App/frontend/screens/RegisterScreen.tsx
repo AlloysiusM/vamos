@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -7,13 +7,66 @@ import { AuthStackParamList } from '../navigation/AuthNavigator';
 const RegisterScreen = () => {
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList, 'Register'>>();
 
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  // Check submission form
+  const handleSubmit = async () => {
+    if (!fullName || !email || !password) {
+      setError('Please fill in all fields');
+      console.log('[DEBUG] Missing fields:', { fullName, email, password });
+      return;
+    }
+    
+    // Convert request to json
+    const requestBody = JSON.stringify({ fullName, email, password });
+    console.log('[DEBUG] Sending request:', requestBody);
+    
+    // Post data to db
+    try {
+      const response = await fetch('http://localhost:5001/api/user/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: requestBody,
+      });
+  
+      console.log('[DEBUG] Response Status:', response.status);
+      
+      // await json response
+      const data = await response.json();
+      console.log('[DEBUG] Response Data:', data);
+  
+      if (!response.ok) {
+        setError(data.message || 'Registration failed');
+        console.log('[DEBUG] Error Response:', data);
+        return;
+      }
+  
+      setError('');
+      console.log('[DEBUG] User registered successfully:', data);
+      
+      navigation.replace('Login');
+    } catch (error) {
+      console.log('[DEBUG] Fetch Error:', error);
+      setError('Registration failed. Please try again.');
+    }
+  };  
+
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Register to Vamos</Text>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Name</Text>
-        <TextInput style={styles.input} placeholder="Name" placeholderTextColor="#C9D3DB" />
+        <Text style={styles.inputLabel}>Full Name</Text>
+        <TextInput style={styles.input} placeholder="FullName" placeholderTextColor="#C9D3DB" 
+          value={fullName}
+          onChangeText={(text) => setFullName(text)}
+        />
       </View>
 
       <View style={styles.inputContainer}>
@@ -23,6 +76,8 @@ const RegisterScreen = () => {
           placeholder="Email"
           keyboardType="email-address"
           placeholderTextColor="#C9D3DB"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
         />
       </View>
 
@@ -33,11 +88,13 @@ const RegisterScreen = () => {
           placeholder="Password"
           secureTextEntry
           placeholderTextColor="#C9D3DB"
+          value={password}
+          onChangeText={(text) => setPassword(text)}
         />
       </View>
 
       {/* Sign Up Button */}
-      <TouchableOpacity style={styles.button} onPress={() => console.log('Register Pressed')}>
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
 
