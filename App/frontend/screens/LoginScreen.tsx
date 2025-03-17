@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -7,6 +7,56 @@ import { AuthStackParamList } from '../navigation/AuthNavigator';
 const LoginScreen = () => {
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList, 'Login'>>();
 
+  
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+  
+    // Check submission form
+    const handleSubmit = async () => {
+      if (!email || !password) {
+        setError('Please fill in all fields');
+        console.log('[DEBUG] Missing fields:', {email, password });
+        return;
+      }
+      
+      // Convert request to json
+      const requestBody = JSON.stringify({email, password });
+      console.log('[DEBUG] Sending request:', requestBody);
+      
+      // Post data to db
+      try {
+        const response = await fetch('http://localhost:5001/api/user/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
+    
+        console.log('[DEBUG] Response Status:', response.status);
+        
+        // await json response
+        const data = await response.json();
+        console.log('[DEBUG] Response Data:', data);
+    
+        if (!response.ok) {
+          setError(data.message || 'Login failed');
+          console.log('[DEBUG] Error Response:', data);
+          return;
+        }
+    
+        setError('');
+        console.log('[DEBUG] User registered successfully:', data);
+        
+        //navigation.replace('Login');
+        console.log("login works");
+      } catch (error) {
+        console.log('[DEBUG] Fetch Error:', error);
+        setError('Registration failed. Please try again.');
+      }
+    };  
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign in to Vamos</Text>
@@ -18,6 +68,8 @@ const LoginScreen = () => {
           placeholder="Email"
           keyboardType="email-address"
           placeholderTextColor="#C9D3DB"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
         />
       </View>
 
@@ -28,11 +80,13 @@ const LoginScreen = () => {
           placeholder="Password"
           secureTextEntry
           placeholderTextColor="#C9D3DB"
+          value={password}
+          onChangeText={(text) => setPassword(text)}
         />
       </View>
 
       {/* Login Button */}
-      <TouchableOpacity style={styles.button} onPress={() => console.log('Login Pressed')}>
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
