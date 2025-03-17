@@ -12,7 +12,7 @@ const RegisterScreen = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  // Check submission form
+  //check submission form
   const handleSubmit = async () => {
     if (!fullName || !email || !password) {
       setError('Please fill in all fields');
