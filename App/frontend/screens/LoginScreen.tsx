@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
@@ -40,6 +40,7 @@ const LoginScreen = () => {
         const data = await response.json();
         console.log('[DEBUG] Response Data:', data);
     
+        
         if (!response.ok) {
           setError(data.message || 'Login failed');
           console.log('[DEBUG] Error Response:', data);

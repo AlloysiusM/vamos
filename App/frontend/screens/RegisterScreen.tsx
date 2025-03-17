@@ -40,6 +40,11 @@ const RegisterScreen = () => {
       const data = await response.json();
       console.log('[DEBUG] Response Data:', data);
   
+      if (response.status === 400) {
+        setError(data.message || 'Invalid request. Please check your details.');
+        return;
+      }
+
       if (!response.ok) {
         setError(data.message || 'Registration failed');
         console.log('[DEBUG] Error Response:', data);
@@ -56,14 +61,16 @@ const RegisterScreen = () => {
     }
   };  
 
-  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Register to Vamos</Text>
 
       <View style={styles.inputContainer}>
         <Text style={styles.inputLabel}>Full Name</Text>
-        <TextInput style={styles.input} placeholder="FullName" placeholderTextColor="#C9D3DB" 
+        <TextInput 
+          style={styles.input} 
+          placeholder="Full Name" 
+          placeholderTextColor="#C9D3DB"
           value={fullName}
           onChangeText={(text) => setFullName(text)}
         />
@@ -102,6 +109,11 @@ const RegisterScreen = () => {
       <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.replace('Login')}>
         <Text style={styles.secondaryButtonText}>Back to Login</Text>
       </TouchableOpacity>
+
+      {/* Error Message */}
+      {error ? (
+        <Text style={styles.errorText}>{error}</Text>
+      ) : null}
     </View>
   );
 };
@@ -182,6 +194,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     color: '#B88A4E', 
+  },
+
+  errorText: {
+    color: 'red',
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 
