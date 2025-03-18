@@ -4,11 +4,13 @@ import { NavigationContainer } from "@react-navigation/native";
 import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
 import LandingPage from "../screens/LandingPage";
+import ResetPasswordScreen from "../screens/ResetPasswordScreen";
 
 export type AuthStackParamList = {
   Login: undefined;
   Register: undefined;
   LandingPage: undefined;
+  ResetPassword: undefined;
 };
 
 const Stack = createStackNavigator(); 
@@ -20,6 +22,7 @@ const AuthNavigator = () => {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="LandingPage" component={LandingPage} />
+        <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

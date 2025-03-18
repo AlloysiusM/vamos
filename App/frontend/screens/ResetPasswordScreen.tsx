@@ -5,27 +5,26 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const LoginScreen = () => {
+const ResetPasswordScreen = () => {
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList, 'Login'>>();
 
   
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [error, setError] = useState('');
   
     // Check submission form
-    const handleSubmit = async () => {
-      if (!email || !password) {
+    const handleReset = async () => {
+      if (!email) {
         setError('Please fill in all fields');
-        console.log('[DEBUG] Missing fields:', { email, password });
+        console.log('[DEBUG] Missing fields:', { email });
         return;
       }
     
-      const requestBody = JSON.stringify({ email, password });
+      const requestBody = JSON.stringify({ email });
       console.log('[DEBUG] Sending request:', requestBody);
     
       try {
-        const response = await fetch('http://localhost:5001/api/user/login', {
+        const response = await fetch('http://localhost:5001/api/user/reset', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -62,10 +61,10 @@ const LoginScreen = () => {
   
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sign in to Vamos</Text>
+      <Text style={styles.title}>Forgot Password?</Text>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Email Address</Text>
+        <Text style={styles.inputLabel}>Please enter your email</Text>
         <TextInput
           style={styles.input}
           placeholder="Email"
@@ -76,32 +75,17 @@ const LoginScreen = () => {
         />
       </View>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry
-          placeholderTextColor="#C9D3DB"
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-        />
-      </View>
-
-      {/* Forgot Button */}
-      <TouchableOpacity style={styles.thirdButton} onPress={() => navigation.replace('ResetPassword')}>
-        <Text style={styles.thirdButtonText}>Forget password</Text>
-      </TouchableOpacity>
 
       {/* Login Button */}
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Login</Text>
+      <TouchableOpacity style={styles.button} onPress={handleReset}>
+        <Text style={styles.buttonText}>Next</Text>
       </TouchableOpacity>
 
-      {/* Register Button */}
-      <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.replace('Register')}>
-        <Text style={styles.secondaryButtonText}>Go to Register</Text>
-      </TouchableOpacity>
+      {/* Back to Login Button */}
+            <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.replace('Login')}>
+              <Text style={styles.secondaryButtonText}>Back to Login</Text>
+            </TouchableOpacity>
+      
     </View>
   );
 };
@@ -184,20 +168,7 @@ const styles = StyleSheet.create({
     color: '#B88A4E',
   },
 
-  thirdButton: {
-    marginTop: 0,
-    paddingVertical: 12,
-    //alignSelf: 'flex-end',
-    //marginRight: 20,
-  },
-
-  thirdButtonText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#B88A4E',
-  },
-
 });
 
 
-export default LoginScreen;
+export default ResetPasswordScreen;

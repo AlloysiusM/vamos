@@ -62,4 +62,9 @@ const loginUser = async (req, res) => {
 
 // Create a get profile
 
-module.exports = { registerUser, loginUser };
+
+const resetPassword = async (req, res) => {
+    
+};
+
+module.exports = { registerUser, loginUser, resetPassword };
