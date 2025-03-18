@@ -1,4 +1,12 @@
 const User = require('../models/userModel.js');
+const jwt = require('jsonwebtoken');
+
+// create JWT Token
+const generateToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET, {
+        expiresIn: '1d',
+    })
+}
 
 const registerUser = async (req, res) => {
     const { fullName, email, password } = req.body;
@@ -31,7 +39,25 @@ const registerUser = async (req, res) => {
 
 // Login user (place holder)
 const loginUser = async (req, res) => {
-    res.json({ message: "Login endpoint not yet implemented" });
+    const { email, password } = req.body;
+
+    try {
+
+        const user = await User.findOne({ email });
+
+        if(user && (await user.matchPassword(password))) {
+            res.status(200).json({
+                _id: user._id,
+                fullName: user.fullName,
+                email: user.email,
+                token: generateToken(user._id)
+            });
+        } else {
+            res.status(400).json({ message: 'Invalid username or password' });
+        }
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
 };
 
 // Create a get profile
