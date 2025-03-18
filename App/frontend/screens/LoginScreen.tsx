@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = () => {
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList, 'Login'>>();
@@ -16,46 +17,48 @@ const LoginScreen = () => {
     const handleSubmit = async () => {
       if (!email || !password) {
         setError('Please fill in all fields');
-        console.log('[DEBUG] Missing fields:', {email, password });
+        console.log('[DEBUG] Missing fields:', { email, password });
         return;
       }
-      
-      // Convert request to json
-      const requestBody = JSON.stringify({email, password });
+    
+      const requestBody = JSON.stringify({ email, password });
       console.log('[DEBUG] Sending request:', requestBody);
-      
-      // Post data to db
+    
       try {
         const response = await fetch('http://localhost:5001/api/user/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ email, password }),
+          body: requestBody,
         });
     
         console.log('[DEBUG] Response Status:', response.status);
-        
-        // await json response
+    
         const data = await response.json();
         console.log('[DEBUG] Response Data:', data);
     
-        
         if (!response.ok) {
           setError(data.message || 'Login failed');
           console.log('[DEBUG] Error Response:', data);
           return;
         }
-        
-        localStorage.setItem('token', data.token);
-        console.log(localStorage.getItem("token"));
-        //navigation.replace('home');
-        
+    
+        // Store token in AsyncStorage (local phone storage)
+        await AsyncStorage.setItem('token', data.token);
+        console.log('[DEBUG] Token stored successfully');
+    
+        // get token for debugging
+        const storedToken = await AsyncStorage.getItem('token');
+        console.log('[DEBUG] Retrieved Token:', storedToken);
+    
+        navigation.navigate('LandingPage');
+    
       } catch (error) {
         console.log('[DEBUG] Fetch Error:', error);
         setError('Login failed');
       }
-    };  
+    };
   
   return (
     <View style={styles.container}>
