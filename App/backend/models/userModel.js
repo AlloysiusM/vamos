@@ -22,4 +22,9 @@ const userSchema = new Schema ({
     }
 }); 
 
+// ensuring user account matches details
+userSchema.methods.matchPassword = async function(password) {
+    return password === this.password; 
+  };
+
 module.exports = mongoose.model('User', userSchema);

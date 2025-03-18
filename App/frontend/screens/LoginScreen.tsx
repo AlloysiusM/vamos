@@ -46,15 +46,14 @@ const LoginScreen = () => {
           console.log('[DEBUG] Error Response:', data);
           return;
         }
-    
-        setError('');
-        console.log('[DEBUG] User registered successfully:', data);
         
-        //navigation.replace('Login');
-        console.log("login works");
+        localStorage.setItem('token', data.token);
+        console.log(localStorage.getItem("token"));
+        //navigation.replace('home');
+        
       } catch (error) {
         console.log('[DEBUG] Fetch Error:', error);
-        setError('Registration failed. Please try again.');
+        setError('Login failed');
       }
     };  
   
