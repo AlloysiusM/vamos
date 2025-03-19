@@ -5,15 +5,15 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ResetPasswordScreen = () => {
+const ForgotPasswordScreen = () => {
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList, 'Login'>>();
 
-  
+    
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
   
     // Check submission form
-    const handleReset = async () => {
+    const handleForgot = async () => {
       if (!email) {
         setError('Please fill in all fields');
         console.log('[DEBUG] Missing fields:', { email });
@@ -24,7 +24,7 @@ const ResetPasswordScreen = () => {
       console.log('[DEBUG] Sending request:', requestBody);
     
       try {
-        const response = await fetch('http://localhost:5001/api/user/reset', {
+        const response = await fetch('http://localhost:5001/api/user/forgotPassword', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -42,20 +42,10 @@ const ResetPasswordScreen = () => {
           console.log('[DEBUG] Error Response:', data);
           return;
         }
-    
-        // Store token in AsyncStorage (local phone storage)
-        await AsyncStorage.setItem('token', data.token);
-        console.log('[DEBUG] Token stored successfully');
-    
-        // get token for debugging
-        const storedToken = await AsyncStorage.getItem('token');
-        console.log('[DEBUG] Retrieved Token:', storedToken);
-    
-        navigation.navigate('LandingPage');
-    
+        Alert.alert("Success", "Check your email for reset instructions");
       } catch (error) {
         console.log('[DEBUG] Fetch Error:', error);
-        setError('Login failed');
+        setError('Something went wrong. Please try again');
       }
     };
   
@@ -77,7 +67,7 @@ const ResetPasswordScreen = () => {
 
 
       {/* Login Button */}
-      <TouchableOpacity style={styles.button} onPress={handleReset}>
+      <TouchableOpacity style={styles.button} onPress={handleForgot}>
         <Text style={styles.buttonText}>Next</Text>
       </TouchableOpacity>
 
@@ -85,7 +75,10 @@ const ResetPasswordScreen = () => {
             <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.replace('Login')}>
               <Text style={styles.secondaryButtonText}>Back to Login</Text>
             </TouchableOpacity>
-      
+      {/* Error Message */}
+                  {error ? (
+                    <Text style={styles.errorText}>{error}</Text>
+                  ) : null}
     </View>
   );
 };
@@ -168,7 +161,14 @@ const styles = StyleSheet.create({
     color: '#B88A4E',
   },
 
+  errorText: {
+    color: 'red',
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+
 });
 
 
-export default ResetPasswordScreen;
+export default ForgotPasswordScreen;

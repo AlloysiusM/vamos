@@ -62,9 +62,21 @@ const loginUser = async (req, res) => {
 
 // Create a get profile
 
+//Reset password
+const forgotPassword = async (req, res) => {
+    const { email } = req.body;
 
-const resetPassword = async (req, res) => {
-    
+    try {
+        // Check if the user exists
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: "Email not found" });
+        }
+
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
+    }
 };
 
-module.exports = { registerUser, loginUser, resetPassword };
+module.exports = { registerUser, loginUser, forgotPassword };

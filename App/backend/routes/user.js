@@ -1,5 +1,5 @@
 const express = require('express');
-const { registerUser, loginUser, resetPassword } = require('../controllers/userController');
+const { registerUser, loginUser,forgotPassword } = require('../controllers/userController');
 const { protect } = require('../middleware/authMiddleWare');
 
 const router = express.Router();
@@ -7,7 +7,7 @@ const router = express.Router();
 // Routes 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
-router.post('/reset', resetPassword);
+router.post("/forgotPassword", forgotPassword);
 
 // implement user profile (use protect jwt)
 
