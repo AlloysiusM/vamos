@@ -1,30 +1,32 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ForgotPasswordScreen = () => {
+
+const VerificationScreen = () => {
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList, 'Login'>>();
 
-    
-    const [email, setEmail] = useState('');
+    const route = useRoute();
+    const { email } = route.params as { email: string };
+    const [code, setCode] = useState('');
     const [error, setError] = useState('');
   
     // Check submission form
     const handleForgot = async () => {
-      if (!email) {
+      if (!code) {
         setError('Please fill in all fields');
-        console.log('[DEBUG] Missing fields:', { email });
+        console.log('[DEBUG] Missing fields:', { code });
         return;
       }
     
-      const requestBody = JSON.stringify({ email });
+      const requestBody = JSON.stringify({ email, code });
       console.log('[DEBUG] Sending request:', requestBody);
     
       try {
-        const response = await fetch('http://localhost:5001/api/user/forgotPassword', {
+        const response = await fetch('http://localhost:5001/api/user/verificationEmail', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -38,12 +40,13 @@ const ForgotPasswordScreen = () => {
         console.log('[DEBUG] Response Data:', data);
     
         if (!response.ok) {
-          setError(data.message || 'Login failed');
+          setError(data.message || 'Error sending reset code');
           console.log('[DEBUG] Error Response:', data);
           return;
         }
         Alert.alert("Success", "Check your email for reset instructions");
-        navigation.navigate('VerificationEmail', { email });
+        navigation.navigate('ResetPassword', { email });
+        
       } catch (error) {
         console.log('[DEBUG] Fetch Error:', error);
         setError('Something went wrong. Please try again');
@@ -52,24 +55,24 @@ const ForgotPasswordScreen = () => {
   
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Forgot Password?</Text>
+      <Text style={styles.title}>The verification code had been sent to your email</Text>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Please enter your email</Text>
+        <Text style={styles.inputLabel}>Please enter verification Code</Text>
         <TextInput
           style={styles.input}
-          placeholder="Email"
-          keyboardType="email-address"
+          placeholder="Enter Code"
+          keyboardType="number-pad"
           placeholderTextColor="#C9D3DB"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
+          value={code}
+          onChangeText={(text) => setCode(text)}
         />
       </View>
 
 
-      {/* Login Button */}
+      {/* submit Button */}
       <TouchableOpacity style={styles.button} onPress={handleForgot}>
-        <Text style={styles.buttonText}>Next</Text>
+        <Text style={styles.buttonText}>Submit</Text>
       </TouchableOpacity>
 
       {/* Back to Login Button */}
@@ -172,4 +175,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default ForgotPasswordScreen;
+export default VerificationScreen;

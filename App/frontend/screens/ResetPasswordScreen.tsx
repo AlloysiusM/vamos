@@ -5,7 +5,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ForgotPasswordScreen = () => {
+const ResetPasswordScreen = () => {
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList, 'Login'>>();
 
     
@@ -43,7 +43,6 @@ const ForgotPasswordScreen = () => {
           return;
         }
         Alert.alert("Success", "Check your email for reset instructions");
-        navigation.navigate('VerificationEmail', { email });
       } catch (error) {
         console.log('[DEBUG] Fetch Error:', error);
         setError('Something went wrong. Please try again');
@@ -52,7 +51,7 @@ const ForgotPasswordScreen = () => {
   
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Forgot Password?</Text>
+      <Text style={styles.title}>Reset Password?</Text>
 
       <View style={styles.inputContainer}>
         <Text style={styles.inputLabel}>Please enter your email</Text>
@@ -172,4 +171,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default ForgotPasswordScreen;
+export default ResetPasswordScreen;
