@@ -6,8 +6,26 @@ const LandingPage = () => {
 
       return (
         <View style={styles.container}>
-          <Text style={styles.title}>Vamos</Text>
+          
+          <View style={styles.buttonContainer}>
+          
+          <TouchableOpacity style={styles.button}> 
+            <Text style={styles.buttonText}>Find Activity</Text>
+          </TouchableOpacity>
+  
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Host Activity</Text>
+          </TouchableOpacity>
+  
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Friends List</Text>
+          </TouchableOpacity>
+  
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Schedule</Text>
+          </TouchableOpacity>
         </View>
+      </View>
       );
     };
     
@@ -60,8 +78,8 @@ const LandingPage = () => {
     
       button: {
         backgroundColor: '#B88A4E',
-        paddingVertical: 14,
-        paddingHorizontal: 30,
+        paddingVertical: 50,
+        paddingHorizontal: 40,
         borderRadius: 10,
         width: '80%',
         alignItems: 'center',
@@ -87,6 +105,11 @@ const LandingPage = () => {
         fontSize: 16,
         fontWeight: '500',
         color: '#B88A4E',
+      },
+
+      buttonContainer: {
+        width: '100%',
+        alignItems: 'center',
       },
 });
 
