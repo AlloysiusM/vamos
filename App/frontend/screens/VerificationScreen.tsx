@@ -26,7 +26,7 @@ const VerificationScreen = () => {
       console.log('[DEBUG] Sending request:', requestBody);
     
       try {
-        const response = await fetch('http://localhost:5001/api/user/verificationEmail', {
+        const response = await fetch('http://localhost:5001/api/user/verify-Email', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

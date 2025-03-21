@@ -8,8 +8,8 @@ const router = express.Router();
 router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.post("/forgotPassword", forgotPassword);
-router.post("/verificationEmail", verificationEmail);
-//router.post("/resetPassword", verificationEmail);
+router.post("/verify-Email", verificationEmail);
+router.post("/resetPassword", forgotPassword);
 
 // implement user profile (use protect jwt)
 

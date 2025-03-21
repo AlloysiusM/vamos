@@ -71,7 +71,7 @@ const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS, // Use environment variables in production
+      pass: process.env.EMAIL_PASS, 
     },
   });
 
@@ -109,27 +109,49 @@ const forgotPassword = async (req, res) => {
     };
 
     //Verify code
-    const verificationEmail =  async (req, res) => {
-        const { email, code } = req.body;
-      
-        try {
+    const verificationEmail = async (req, res) => {
+      const { email, code } = req.body;
+  
+      try {
           const user = await User.findOne({ email });
-      
-          if (!user || user.resetCode !== code || Date.now() > user.resetCodeExpires) {
-            return res.status(400).json({ message: 'Invalid or expired code' });
+  
+          if (!user) {
+              return res.status(404).json({ message: 'User not found' });
           }
-      
+  
+          console.log("[DEBUG] Found User:", user);
+          console.log("[DEBUG] Stored Code:", user.resetCode);
+          console.log("[DEBUG] Received Code:", code);
+          console.log("[DEBUG] Expiry Time:", user.resetCodeExpires);
+  
+          // Check if resetCode is undefined or expired
+          if (!user.resetCode) {
+              return res.status(400).json({ message: 'No verification code found. Please request a new one.' });
+          }
+  
+          if (Date.now() > user.resetCodeExpires) {
+              return res.status(400).json({ message: 'Verification code expired. Request a new one.' });
+          }
+  
+          if (user.resetCode.toString() !== code) {
+              return res.status(400).json({ message: 'Invalid verification code' });
+          }
+  
           // Clear the reset code after successful verification
           user.resetCode = null;
           user.resetCodeExpires = null;
           await user.save();
-      
-          res.json({ message: 'Code verified successfully' });
-        } catch (error) {
-          console.error(error);
+  
+          // Generate a temporary token for password reset
+          const tempToken = generateToken(user._id);
+  
+          res.json({ message: 'Code verified successfully', token: tempToken });
+  
+      } catch (error) {
+          console.error("[ERROR] Server Error:", error);
           res.status(500).json({ message: 'Something went wrong' });
-        }
-      };
+      }
+  };
 
 
 
