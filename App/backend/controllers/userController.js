@@ -95,10 +95,10 @@ const forgotPassword = async (req, res) => {
     
         // Send email with the verification code
         await transporter.sendMail({
-          from: '"Your App" <your-email@gmail.com>',
+          from: '"Vamos Unlimited" <your-email@gmail.com>',
           to: user.email,
           subject: 'Password Reset Code',
-          text: `Your password reset code is: ${verificationCode}`,
+          text: `Your Vamos password reset code is: ${verificationCode}`,
         });
     
         res.json({ message: 'Verification code sent successfully' });
@@ -153,6 +153,36 @@ const forgotPassword = async (req, res) => {
       }
   };
 
+  //reset password
+  const resetPassword = async (req, res) => {
+    const { email, newPassword } = req.body;
 
+    console.log("[DEBUG] Received Reset Password Request:");
+    console.log("Email:", email);
+    console.log("New Password:", newPassword);
 
-module.exports = { registerUser, loginUser, forgotPassword, verificationEmail };
+    try {
+        // Check is user exists
+        const user = await User.findOne({ email });
+
+        if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+        }
+      // Ensure user has verified the reset code
+      if (user.resetCode || user.resetCodeExpires) {
+        return res.status(400).json({ message: 'Password reset code not verified' });
+    }
+
+    // Update password
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ message: 'Password reset successfully' });
+       
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Something went wrong' });
+    }
+  }
+
+module.exports = { registerUser, loginUser, forgotPassword, verificationEmail, resetPassword };

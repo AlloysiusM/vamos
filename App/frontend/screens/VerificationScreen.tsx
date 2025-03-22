@@ -3,7 +3,6 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const VerificationScreen = () => {
@@ -55,10 +54,10 @@ const VerificationScreen = () => {
   
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>The verification code had been sent to your email</Text>
+      <Text style={styles.title}>The verify code had been sent to your email</Text>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Please enter verification Code</Text>
+        <Text style={styles.inputLabel}>Please enter verify Code</Text>
         <TextInput
           style={styles.input}
           placeholder="Enter Code"

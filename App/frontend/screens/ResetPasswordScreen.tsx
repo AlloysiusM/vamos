@@ -1,30 +1,37 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ResetPasswordScreen = () => {
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList, 'Login'>>();
 
-    
-    const [email, setEmail] = useState('');
+    const route = useRoute();
+    const { email } = route.params as { email: string };
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+
     const [error, setError] = useState('');
   
     // Check submission form
     const handleForgot = async () => {
-      if (!email) {
+      if (!newPassword || !confirmPassword) {
         setError('Please fill in all fields');
-        console.log('[DEBUG] Missing fields:', { email });
+        console.log('[DEBUG] Missing fields:', { newPassword,confirmPassword });
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        setError('Your password does not match');
         return;
       }
     
-      const requestBody = JSON.stringify({ email });
+      const requestBody = JSON.stringify({ email: email, newPassword });
       console.log('[DEBUG] Sending request:', requestBody);
     
       try {
-        const response = await fetch('http://localhost:5001/api/user/forgotPassword', {
+        const response = await fetch('http://localhost:5001/api/user/resetPassword', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -38,11 +45,13 @@ const ResetPasswordScreen = () => {
         console.log('[DEBUG] Response Data:', data);
     
         if (!response.ok) {
-          setError(data.message || 'Login failed');
+          setError(data.message || 'Reset password failed');
           console.log('[DEBUG] Error Response:', data);
           return;
         }
-        Alert.alert("Success", "Check your email for reset instructions");
+        Alert.alert("Success", "Your new password is updated");
+        navigation.navigate('Login');
+        
       } catch (error) {
         console.log('[DEBUG] Fetch Error:', error);
         setError('Something went wrong. Please try again');
@@ -51,24 +60,36 @@ const ResetPasswordScreen = () => {
   
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Reset Password?</Text>
+      <Text style={styles.title}>Reset Password</Text>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Please enter your email</Text>
+        <Text style={styles.inputLabel}>Please enter your new password</Text>
         <TextInput
           style={styles.input}
-          placeholder="Email"
-          keyboardType="email-address"
+          placeholder="New password"
+          secureTextEntry
           placeholderTextColor="#C9D3DB"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
+          value={newPassword}
+          onChangeText={(text) => setNewPassword(text)}
         />
       </View>
+
+      <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Please re-enter your new password</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Password"
+                secureTextEntry
+                placeholderTextColor="#C9D3DB"
+                value={confirmPassword}
+                onChangeText={(text) => setConfirmPassword(text)}
+              />
+            </View>
 
 
       {/* Login Button */}
       <TouchableOpacity style={styles.button} onPress={handleForgot}>
-        <Text style={styles.buttonText}>Next</Text>
+        <Text style={styles.buttonText}>Submit</Text>
       </TouchableOpacity>
 
       {/* Back to Login Button */}
