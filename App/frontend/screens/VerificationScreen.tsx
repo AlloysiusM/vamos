@@ -54,7 +54,7 @@ const VerificationScreen = () => {
   
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>The verify code had been sent to your email</Text>
+      <Text style={styles.title}>The verify code has been sent to your email</Text>
 
       <View style={styles.inputContainer}>
         <Text style={styles.inputLabel}>Please enter verify Code</Text>
