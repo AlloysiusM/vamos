@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
@@ -63,6 +63,9 @@ const RegisterScreen = () => {
 
   return (
     <View style={styles.container}>
+      {/*Creating the image from our miro for the logo*/}
+      <Image source={require('../assets/Vamos.jpg')} style={styles.logo} />
+      
       <Text style={styles.title}>Register to Vamos</Text>
 
       <View style={styles.inputContainer}>
@@ -201,6 +204,16 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     fontWeight: '600',
+  },
+
+  //placement of the vamos logo, adjust this customize placement.
+  logo: {
+    width: 400,         
+    height: 150,       
+    //resizeMode: 'contain',
+    marginTop: 40,      
+    marginBottom: 20,   
+    //alignSelf: 'center',
   },
 });
 
