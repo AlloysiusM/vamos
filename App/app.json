@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "App",
-    "slug": "App",
+    "name": "Vamos",
+    "slug": "vamos",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,16 +13,26 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.app.vamos"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.app.vamos"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "c13627c6-602f-49f7-93fa-45ca98617a5a"
+      },
+      "google": {
+        "redirectUri": "https://auth.expo.io/@alloysiusm/vamos"
+      }
     }
   }
 }

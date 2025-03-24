@@ -1,0 +1,21 @@
+{
+    "build": {
+      "development": {
+        "android": {
+          "gradleCommand": ":app:assembleDebug"
+        },
+        "ios": {
+          "buildConfiguration": "Debug"
+        }
+      },
+      "production": {
+        "android": {
+          "gradleCommand": ":app:assembleRelease"
+        },
+        "ios": {
+          "buildConfiguration": "Release"
+        }
+      }
+    }
+  }
+  
