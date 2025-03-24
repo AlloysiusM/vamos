@@ -18,7 +18,9 @@ const userSchema = new Schema ({
     password: {
         type: String, 
         required: true
-    }
+    },
+    resetCode: { type: String, default: null }, // Added resetCode
+    resetCodeExpires: { type: Date, default: null }, // Expiry field
 }); 
 
 // Hash password, ensuring security

@@ -145,6 +145,11 @@ const LoginScreen = () => {
         />
       </View>
 
+      {/* Forgot Button */}
+      <TouchableOpacity style={styles.thirdButton} onPress={() => navigation.replace('ForgotPassword')}>
+        <Text style={styles.thirdButtonText}>Forgot password</Text>
+      </TouchableOpacity>
+
       {/* Login Button */}
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Login</Text>
@@ -166,6 +171,11 @@ const LoginScreen = () => {
       <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.replace('Register')}>
         <Text style={styles.secondaryButtonText}>Go to Register</Text>
       </TouchableOpacity>
+
+       {/* Error Message */}
+            {error ? (
+              <Text style={styles.errorText}>{error}</Text>
+            ) : null}
     </View>
   );
 };
@@ -258,6 +268,19 @@ const styles = StyleSheet.create({
     color: '#B88A4E',
   },
 
+  thirdButton: {
+    marginTop: 0,
+    paddingVertical: 12,
+    //alignSelf: 'flex-end',
+    //marginRight: 20,
+  },
+
+  thirdButtonText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#B88A4E',
+  },
+
   errorText: {
     color: 'red',
     marginTop: 10,
@@ -273,8 +296,7 @@ const styles = StyleSheet.create({
     marginTop: 40,      
     marginBottom: 20,   
     //alignSelf: 'center',
-  },
-
 });
+
 
 export default LoginScreen;
