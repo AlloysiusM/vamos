@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
@@ -296,6 +296,7 @@ const styles = StyleSheet.create({
     marginTop: 40,      
     marginBottom: 20,   
     //alignSelf: 'center',
+  },
 });
 
 
