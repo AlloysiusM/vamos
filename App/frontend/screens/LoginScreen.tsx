@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
+
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
@@ -114,6 +116,9 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
+      {/*Creating the image from our miro for the logo*/}
+      <Image source={require('../assets/Vamos.jpg')} style={styles.logo} />
+      
       <Text style={styles.title}>Sign in to Vamos</Text>
 
       <View style={styles.inputContainer}>
@@ -252,6 +257,24 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#B88A4E',
   },
+
+  errorText: {
+    color: 'red',
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  
+  //placement of the vamos logo, adjust this customize placement.
+  logo: {
+    width: 400,         
+    height: 150,       
+    //resizeMode: 'contain',
+    marginTop: 40,      
+    marginBottom: 20,   
+    //alignSelf: 'center',
+  },
+
 });
 
 export default LoginScreen;
