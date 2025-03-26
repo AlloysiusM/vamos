@@ -54,11 +54,11 @@ const AppTab = () => {
           tabBarStyle: styles.tabBarStyle,
         })}
       >
-        <Tab.Screen name="Landing" component={LandingPage} />
-        <Tab.Screen name="Search" component={SearchPage} />
-        <Tab.Screen name="Favourites" component={FavouritesPage} />
-        <Tab.Screen name="Notification" component={NotificationsPage} />
-        <Tab.Screen name="Profile" component={ProfilePage} />
+        <Tab.Screen name="Landing" component={LandingPage} options={{ headerShown: false }} />
+        <Tab.Screen name="Search" component={SearchPage} options={{ headerShown: false }}/>
+        <Tab.Screen name="Favourites" component={FavouritesPage} options={{ headerShown: false }}/>
+        <Tab.Screen name="Notification" component={NotificationsPage} options={{ headerShown: false }}/>
+        <Tab.Screen name="Profile" component={ProfilePage} options={{ headerShown: false }}/>
       </Tab.Navigator>
   );
 };
