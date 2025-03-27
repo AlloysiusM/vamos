@@ -3,13 +3,13 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { AuthStackParamList } from "../navigation/AuthNavigator"; 
 
-
 const LandingPage = () => {
     //add page routs and other functions 
     const navigation = useNavigation<StackNavigationProp<AuthStackParamList>>();
 
-    return (
-      <View style={styles.container}>
+      return (
+        <View style={styles.container}>
+          <Image source={require('../assets/Vamos2.jpg')} style={styles.logo} />
           <View style={styles.buttonContainer}>
               <TouchableOpacity 
                   style={styles.button} 
@@ -125,6 +125,18 @@ const LandingPage = () => {
         width: '100%',
         alignItems: 'center',
       },
+
+      
+      //placement of the vamos logo, adjust this customize placement.
+  logo: {
+    width: 400,         
+    height: 300,       
+    //resizeMode: 'contain',
+    marginTop: 20,      
+    marginBottom: 20,   
+    //alignSelf: 'center',
+  },
+
 });
 
 export default LandingPage;
