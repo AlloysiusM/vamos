@@ -1,33 +1,47 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { AuthStackParamList } from "../navigation/AuthNavigator"; 
 
 const LandingPage = () => {
     //add page routs and other functions 
-
+    const navigation = useNavigation<StackNavigationProp<AuthStackParamList>>();
 
       return (
         <View style={styles.container}>
           <Image source={require('../assets/Vamos2.jpg')} style={styles.logo} />
           <View style={styles.buttonContainer}>
-          
-          <TouchableOpacity style={styles.button}> 
-            <Text style={styles.buttonText}>Find Activity</Text>
-          </TouchableOpacity>
-  
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Host Activity</Text>
-          </TouchableOpacity>
-  
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Friends List</Text>
-          </TouchableOpacity>
-  
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Schedule</Text>
-          </TouchableOpacity>
-        </View>
+              <TouchableOpacity 
+                  style={styles.button} 
+                  onPress={() => navigation.navigate("FindActivity")}
+              >
+                  <Text style={styles.buttonText}>Find Activity</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                  style={styles.button} 
+                  onPress={() => navigation.navigate("HostActivity")}
+              >
+                  <Text style={styles.buttonText}>Host Activity</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                  style={styles.button} 
+                  onPress={() => navigation.navigate("FriendsList")}
+              >
+                  <Text style={styles.buttonText}>Friends List</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                  style={styles.button} 
+                  onPress={() => navigation.navigate("Schedule")}
+              >
+                  <Text style={styles.buttonText}>Schedule</Text>
+              </TouchableOpacity>
+          </View>
       </View>
-      );
-    };
+  );
+};
     
     const styles = StyleSheet.create({
       container: {
