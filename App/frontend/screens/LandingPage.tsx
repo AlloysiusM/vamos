@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { AuthStackParamList } from "../navigation/AuthNavigator"; 
@@ -125,18 +125,15 @@ const LandingPage = () => {
         width: '100%',
         alignItems: 'center',
       },
-
       
-      //placement of the vamos logo, adjust this customize placement.
-  logo: {
-    width: 400,         
-    height: 300,       
-    //resizeMode: 'contain',
-    marginTop: 20,      
-    marginBottom: 20,   
-    //alignSelf: 'center',
-  },
-
+      logo: {
+      width: 250,         
+      height: 150,       
+      //resizeMode: 'contain',
+      marginTop: 20,      
+      marginBottom: 20,   
+      //alignSelf: 'center',
+    },
 });
 
 export default LandingPage;
