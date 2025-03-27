@@ -10,6 +10,11 @@ import SearchPage from '../screens/SearchPage';
 import ProfilePage from '../screens/ProfilePage';
 import NotificationsPage from '../screens/NotificationPage';
 import FavouritesPage from '../screens/FavouritesPage';
+import FindActivity from "../screens/FindActivityScreen";
+import HostActivity from "../screens/HostActivityScreen";
+import FriendsList from "../screens/FriendsListScreen";
+import Schedule from "../screens/ScheduleScreen";
+
 
 // nav stack type
 export type RootStackParamList = {
@@ -18,6 +23,11 @@ export type RootStackParamList = {
   Favourites: undefined;
   Notification: undefined;
   Profile: undefined;
+  FindActivity: undefined;
+  HostActivity: undefined;
+  FriendsList: undefined;
+  Schedule: undefined;
+  
 };
 
 // create navbar list
@@ -40,7 +50,15 @@ const AppTab = () => {
               iconName = 'notifications-outline';
             } else if (route.name === 'Profile') {
               iconName = 'person-outline';
-            }
+            }else if (route.name === 'FindActivity') {
+              iconName = 'walk-outline';
+            } else if (route.name === 'HostActivity') {
+              iconName = 'people-outline';
+            } else if (route.name === 'FriendsList') {
+              iconName = 'chatbubble-outline';
+            } else if (route.name === 'Schedule') {
+              iconName = 'calendar-outline';
+            }  
 
             return (
               <View style={styles.iconContainer}>
@@ -59,6 +77,10 @@ const AppTab = () => {
         <Tab.Screen name="Favourites" component={FavouritesPage} />
         <Tab.Screen name="Notification" component={NotificationsPage} />
         <Tab.Screen name="Profile" component={ProfilePage} />
+        <Tab.Screen name="FindActivity" component={FindActivity} />
+        <Tab.Screen name="HostActivity" component={HostActivity} />
+       <Tab.Screen name="FriendsList" component={FriendsList} />
+       <Tab.Screen name="Schedule" component={Schedule} />
       </Tab.Navigator>
   );
 };
