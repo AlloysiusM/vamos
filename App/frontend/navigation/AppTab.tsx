@@ -9,18 +9,16 @@ import SearchPage from "../screens/SearchPage"
 import ProfilePage from "../screens/ProfilePage"
 import NotificationsPage from "../screens/NotificationPage"
 import FavouritesPage from "../screens/FavouritesPage"
-import FindActivityScreen from "../screens/FindActivityScreen"
-import HostActivityScreen from "../screens/HostActivityScreen"
 import FriendsListScreen from "../screens/FriendsListScreen"
 import ScheduleScreen from "../screens/ScheduleScreen"
+import EventActivities from "../screens/EventActivitiesScreen"
 
 // To get navbar to show on screens without adding to Tab stack
 const HomeStack = createStackNavigator()
 const HomeStackScreen = () => (
   <HomeStack.Navigator screenOptions={{ headerShown: false }}>
     <HomeStack.Screen name="HomeMain" component={LandingPage}  options={{ headerShown: false }}/>
-    <HomeStack.Screen name="FindActivity" component={FindActivityScreen} />
-    <HomeStack.Screen name="HostActivity" component={HostActivityScreen} />
+    <HomeStack.Screen name="EventActivities" component={EventActivities} />
     <HomeStack.Screen name="FriendsList" component={FriendsListScreen} />
     <HomeStack.Screen name="Schedule" component={ScheduleScreen} />
   </HomeStack.Navigator>
