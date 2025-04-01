@@ -1,1 +1,101 @@
-App/.env
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# Node modules
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Logs
+logs
+*.log
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
+lerna-debug.log
+
+# Build artifacts
+dist/
+build/
+.cache/
+.next/
+expo/
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env.*.local
+
+# Editor & OS specific files
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# React Native specific
+android/.gradle/
+android/app/build/
+android/.idea/
+android/local.properties
+android/.cxx/
+ios/Pods/
+ios/build/
+ios/.xcodeproj/project.xcworkspace/
+ios/*.xcworkspace/
+ios/DerivedData/
+ios/.expo/
+
+# Expo-specific
+.expo/
+.expo-shared/
+web-build/
+
+# TypeScript
+*.tsbuildinfo
+
+# Firebase
+firebase-debug.log
+firestore.indexes.json
+firestore.rules
+firebase.json
+
+# MongoDB
+dump/
+data/
+*.pem
+
+# Misc
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Testing
+jest/
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+tests/
+mocks/
+cypress/videos/
+cypress/screenshots/
+cypress/reports/
+
+# Storybook
+storybook-static/
+
+# Ignore local dev tools
+*.eslintcache
+.prettier_cache/
+stylelint.config.js

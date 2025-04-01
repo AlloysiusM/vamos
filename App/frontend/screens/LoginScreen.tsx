@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GOOGLE_REDIRECT_URI, GOOGLE_IOS_CLIENT_ID, GOOGLE_ANDROID_CLIENT_ID, GOOGLE_WEB_CLIENT_ID } from '@env';
 
 // Google Auth Imports
 import * as WebBrowser from 'expo-web-browser';
@@ -14,7 +15,6 @@ WebBrowser.maybeCompleteAuthSession();
 
 const LoginScreen = () => {
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList, 'Login'>>();
-  
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,16 +22,19 @@ const LoginScreen = () => {
 
   // Google Auth Request
   const [request, response, promptAsync] = Google.useAuthRequest({
-    iosClientId: "509264945237-b46pi68ojbnhr87ucss680u9du0h2mt7.apps.googleusercontent.com",
-    androidClientId: "509264945237-vh6t78o6ico6e52mn5cutuq8b27rsfji.apps.googleusercontent.com",
-    webClientId: "509264945237-1ghnuup9jhemcug74knqmrvravjdst08.apps.googleusercontent.com",
-    redirectUri: "http://localhost:8081",
+    iosClientId: GOOGLE_IOS_CLIENT_ID,
+    androidClientId: GOOGLE_ANDROID_CLIENT_ID,
+    webClientId: GOOGLE_WEB_CLIENT_ID,
+    redirectUri: GOOGLE_REDIRECT_URI,
   });
 
   // debug logs for web uri
   console.log('[DEBUG] Google Auth Request:', request);
   console.log('[DEBUG] Google Auth Response:', response);
   console.log('Redirect URI:', process.env.GOOGLE_REDIRECT_URI);
+  console.log('IOS CLIENT ID:', process.env.GOOGLE_IOS_CLIENT_ID);
+  console.log('ANROID CLIENT ID:', process.env.GOOGLE_ANDROID_CLIENT_ID);
+  console.log('WED CLIENT IT:', process.env.GOOGLE_WEB_CLIENT_ID);
 
   useEffect(() => {
     console.log('[DEBUG] Google Auth Response:', response);
