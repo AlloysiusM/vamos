@@ -28,6 +28,7 @@ const dummyEvents = [
   { id: "14", name: "Movie Night - Outdoor Screening", description: "An outdoor movie screening under the stars." },
 ];
 
+
 // main event activities page;
 const EventActivities = () => {
   const [searchQuery, setSearchQuery] = useState("");
