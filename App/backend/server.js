@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const cors = require('cors');
 const userRoutes = require('./routes/user');
+const eventRoutes = require('./routes/event'); 
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 
 // Mount routes
 app.use('/api/user', userRoutes);
+app.use('/api/events', eventRoutes);
 
 console.log("DB_URI:", process.env.DB_URI);
 
