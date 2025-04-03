@@ -75,7 +75,7 @@ const LandingPage = () => {
     
       input: {
         height: 50,
-        backgroundColor: '#333', 
+        backgroundColor: '#000000', 
         paddingHorizontal: 16,
         borderRadius: 12,
         fontSize: 16,

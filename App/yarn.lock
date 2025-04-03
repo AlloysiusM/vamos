@@ -1866,12 +1866,12 @@
     "@react-navigation/elements" "^2.3.0"
     color "^4.2.3"
 
-"@react-navigation/core@^7.6.1":
-  version "7.6.1"
-  resolved "https://registry.npmjs.org/@react-navigation/core/-/core-7.6.1.tgz"
-  integrity sha512-mbqL0dYFTlKlSjgZz1Mm/CVEa7cnvEc7kE5Te9q3Z3/iFHdlZmKxEWAdRU2cUnpCXwo3DvmAENzVHbHsTKtT5Q==
+"@react-navigation/core@^7.8.0":
+  version "7.8.0"
+  resolved "https://registry.npmjs.org/@react-navigation/core/-/core-7.8.0.tgz"
+  integrity sha512-eKHe3ZEVsAHalMdugaCIhc2bUTYI7am9oT8CIhOQg2xiZ9OlT6eKYQacby6gVCHLJWNBOawrtENhuFJervkLRw==
   dependencies:
-    "@react-navigation/routers" "^7.3.1"
+    "@react-navigation/routers" "^7.3.2"
     escape-string-regexp "^4.0.0"
     nanoid "3.3.8"
     query-string "^7.1.3"
@@ -1879,10 +1879,20 @@
     use-latest-callback "^0.2.1"
     use-sync-external-store "^1.2.2"
 
-"@react-navigation/elements@^2.2.6", "@react-navigation/elements@^2.3.0":
-  version "2.3.0"
-  resolved "https://registry.npmjs.org/@react-navigation/elements/-/elements-2.3.0.tgz"
-  integrity sha512-2VGB6rFejk1fGxU4PuqPKXPzuqD0nC6iCSjMRsyM5CetcwiEidHmv4nGIXvw7D9CvqoZxvcQWxL4X3uSodj0PA==
+"@react-navigation/drawer@^7.1.1":
+  version "7.3.3"
+  resolved "https://registry.npmjs.org/@react-navigation/drawer/-/drawer-7.3.3.tgz"
+  integrity sha512-ws90BIqOO+qSekMMMAJah0pr7/yg3sMuf5nH2dlBbV5ot1r/swNMgbLyu2D+5nppSDRu4uZ/nbVQWcLC/o4cBA==
+  dependencies:
+    "@react-navigation/elements" "^2.3.2"
+    color "^4.2.3"
+    react-native-drawer-layout "^4.1.3"
+    use-latest-callback "^0.2.1"
+
+"@react-navigation/elements@^2.2.6", "@react-navigation/elements@^2.3.0", "@react-navigation/elements@^2.3.2":
+  version "2.3.2"
+  resolved "https://registry.npmjs.org/@react-navigation/elements/-/elements-2.3.2.tgz"
+  integrity sha512-8MWcL/TVCg3MTOaAXMSPM8OrvZFQ16EPj/a+wVRDKiyl/GFnchu3ho3tsP+4odAMbWXNRsHMdHNxgFVCmPhNNA==
   dependencies:
     color "^4.2.3"
 
@@ -1894,21 +1904,21 @@
     "@react-navigation/elements" "^2.2.6"
     warn-once "^0.1.1"
 
-"@react-navigation/native@^7.0.14", "@react-navigation/native@^7.0.15", "@react-navigation/native@^7.0.18":
-  version "7.0.18"
-  resolved "https://registry.npmjs.org/@react-navigation/native/-/native-7.0.18.tgz"
-  integrity sha512-XDOfbY/M8IMMyLY9iVW0f6nCYs3iZbAP2njKV2TpT6rG0VX4xVBl2VhrZe55XBFtJFawLMsb13c/QUSTn5O4Lg==
+"@react-navigation/native@^7.0.14", "@react-navigation/native@^7.0.15", "@react-navigation/native@^7.0.18", "@react-navigation/native@^7.1.0":
+  version "7.1.0"
+  resolved "https://registry.npmjs.org/@react-navigation/native/-/native-7.1.0.tgz"
+  integrity sha512-7ScBWNca2jEcfkekMHp6/NJbLADgRKRYEXZ2gILR/riM0Yq8by4RyHmdgXT70oYRUT+MQ/tm70YBFv/4ubAzVg==
   dependencies:
-    "@react-navigation/core" "^7.6.1"
+    "@react-navigation/core" "^7.8.0"
     escape-string-regexp "^4.0.0"
     fast-deep-equal "^3.1.3"
     nanoid "3.3.8"
     use-latest-callback "^0.2.1"
 
-"@react-navigation/routers@^7.3.1":
-  version "7.3.1"
-  resolved "https://registry.npmjs.org/@react-navigation/routers/-/routers-7.3.1.tgz"
-  integrity sha512-d0hJi4eZJQB84JtHlA3HDR9VHoKDfyknSCdz/7a3Mdz1OJDZsvU+qjfK2c9mxNFd+ak/ekLhEkwwh8QtVF0faw==
+"@react-navigation/routers@^7.3.2":
+  version "7.3.2"
+  resolved "https://registry.npmjs.org/@react-navigation/routers/-/routers-7.3.2.tgz"
+  integrity sha512-FZsMPbFP8FubdlA0oa+2bLhgwDNSk+ezIUETxIvMazoz715LTpXzPNBiQ29AMfZztADAWniTjotWSOREwKETkA==
   dependencies:
     nanoid "3.3.8"
 
@@ -5769,6 +5779,13 @@ react-native-dotenv@^3.4.11:
   dependencies:
     dotenv "^16.4.5"
 
+react-native-drawer-layout@^4.1.3:
+  version "4.1.3"
+  resolved "https://registry.npmjs.org/react-native-drawer-layout/-/react-native-drawer-layout-4.1.3.tgz"
+  integrity sha512-ydG7+0hLrIyQEgNcgqoZarp5T23xsREnF6jI9TUC/OMSSRXO4QSFEvs1rXUfqUzx+Mv1gH/owTeckbFlERm+ng==
+  dependencies:
+    use-latest-callback "^0.2.1"
+
 "react-native-gesture-handler@>= 2.0.0", react-native-gesture-handler@~2.20.2:
   version "2.20.2"
   resolved "https://registry.npmjs.org/react-native-gesture-handler/-/react-native-gesture-handler-2.20.2.tgz"
@@ -5793,7 +5810,7 @@ react-native-is-edge-to-edge@^1.1.6:
   resolved "https://registry.npmjs.org/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.1.6.tgz"
   integrity sha512-1pHnFTlBahins6UAajXUqeCOHew9l9C2C8tErnpGC3IyLJzvxD+TpYAixnCbrVS52f7+NvMttbiSI290XfwN0w==
 
-react-native-reanimated@*, react-native-reanimated@~3.16.1:
+react-native-reanimated@*, "react-native-reanimated@>= 2.0.0", react-native-reanimated@~3.16.1:
   version "3.16.7"
   resolved "https://registry.npmjs.org/react-native-reanimated/-/react-native-reanimated-3.16.7.tgz"
   integrity sha512-qoUUQOwE1pHlmQ9cXTJ2MX9FQ9eHllopCLiWOkDkp6CER95ZWeXhJCP4cSm6AD4jigL5jHcZf/SkWrg8ttZUsw==
@@ -6886,9 +6903,9 @@ use-latest-callback@^0.2.1:
   integrity sha512-7vI3fBuyRcP91pazVboc4qu+6ZqM8izPWX9k7cRnT8hbD5svslcknsh3S9BUhaK11OmgTV4oWZZVSeQAiV53SQ==
 
 use-sync-external-store@^1.2.2:
-  version "1.4.0"
-  resolved "https://registry.npmjs.org/use-sync-external-store/-/use-sync-external-store-1.4.0.tgz"
-  integrity sha512-9WXSPC5fMv61vaupRkCKCxsPxBocVnwakBEkMIHHpkTTg6icbJtg6jzgtLDm4bl3cSHAca52rYWih0k4K3PfHw==
+  version "1.5.0"
+  resolved "https://registry.npmjs.org/use-sync-external-store/-/use-sync-external-store-1.5.0.tgz"
+  integrity sha512-Rb46I4cGGVBmjamjphe8L/UnvJD+uPPtTkNvX5mZgqdbavhI4EbgIWJiIHXJ8bc/i9EQGPRh4DwEURJ552Do0A==
 
 util-deprecate@^1.0.1:
   version "1.0.2"
