@@ -6,6 +6,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GOOGLE_REDIRECT_URI, GOOGLE_IOS_CLIENT_ID, GOOGLE_ANDROID_CLIENT_ID, GOOGLE_WEB_CLIENT_ID } from '@env';
+import { LinearGradient } from 'expo-linear-gradient';
 
 // Google Auth Imports
 import * as WebBrowser from 'expo-web-browser';
@@ -154,8 +155,13 @@ const LoginScreen = () => {
 
       {/* Login Button */}
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
+              <LinearGradient
+                colors={['#b57e10', '#f9df7b', '#f9df7b', '#b57e10', '#b57e10' ]} //custom gradient for our gold
+                  style={styles.button}
+                  >
+                    <Text style={styles.buttonText}>Sign Up</Text>
+              </LinearGradient>
+            </TouchableOpacity>
 
       {/* Google Sign-In Button */}
       <TouchableOpacity 
@@ -187,7 +193,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#1E1E1E', 
+    backgroundColor: '#000000', 
     paddingHorizontal: 20,
     paddingVertical: 30,
   },
@@ -196,7 +202,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 30,
-    color: '#B88A4E',
+    color: '#C9D3DB',
     letterSpacing: 1,
   },
 
@@ -214,7 +220,7 @@ const styles = StyleSheet.create({
 
   input: {
     height: 50,
-    backgroundColor: '#333', 
+    backgroundColor: '#1E1E1E', 
     paddingHorizontal: 16,
     borderRadius: 12,
     fontSize: 16,
@@ -230,17 +236,12 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    backgroundColor: '#B88A4E',
     paddingVertical: 14,
     paddingHorizontal: 30,
     borderRadius: 10,
     width: '80%',
     alignItems: 'center',
     marginTop: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 3,
   },
 
   buttonText: {
@@ -267,7 +268,7 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#B88A4E',
+    color: '#C9D3DB',
   },
 
   thirdButton: {
@@ -280,7 +281,7 @@ const styles = StyleSheet.create({
   thirdButtonText: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#B88A4E',
+    color: '#C9D3DB' ,
   },
 
   errorText: {
