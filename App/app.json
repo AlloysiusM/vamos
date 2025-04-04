@@ -24,7 +24,6 @@
       "package": "com.app.vamos"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {

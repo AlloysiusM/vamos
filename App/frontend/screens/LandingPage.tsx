@@ -13,16 +13,9 @@ const LandingPage = () => {
           <View style={styles.buttonContainer}>
               <TouchableOpacity 
                   style={styles.button} 
-                  onPress={() => navigation.navigate("FindActivity")}
+                  onPress={() => navigation.navigate("EventActivities")}
               >
-                  <Text style={styles.buttonText}>Find Activity</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity 
-                  style={styles.button} 
-                  onPress={() => navigation.navigate("HostActivity")}
-              >
-                  <Text style={styles.buttonText}>Host Activity</Text>
+                  <Text style={styles.buttonText}>My Events</Text>
               </TouchableOpacity>
 
               <TouchableOpacity 

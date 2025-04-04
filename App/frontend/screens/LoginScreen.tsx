@@ -5,8 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LinearGradient } from 'expo-linear-gradient';
-
+import { GOOGLE_REDIRECT_URI, GOOGLE_IOS_CLIENT_ID, GOOGLE_ANDROID_CLIENT_ID, GOOGLE_WEB_CLIENT_ID } from '@env';
 
 // Google Auth Imports
 import * as WebBrowser from 'expo-web-browser';
@@ -16,7 +15,6 @@ WebBrowser.maybeCompleteAuthSession();
 
 const LoginScreen = () => {
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList, 'Login'>>();
-  
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,16 +22,19 @@ const LoginScreen = () => {
 
   // Google Auth Request
   const [request, response, promptAsync] = Google.useAuthRequest({
-    iosClientId: "509264945237-b46pi68ojbnhr87ucss680u9du0h2mt7.apps.googleusercontent.com",
-    androidClientId: "509264945237-vh6t78o6ico6e52mn5cutuq8b27rsfji.apps.googleusercontent.com",
-    webClientId: "509264945237-1ghnuup9jhemcug74knqmrvravjdst08.apps.googleusercontent.com",
-    redirectUri: "http://localhost:8081",
+    iosClientId: GOOGLE_IOS_CLIENT_ID,
+    androidClientId: GOOGLE_ANDROID_CLIENT_ID,
+    webClientId: GOOGLE_WEB_CLIENT_ID,
+    redirectUri: GOOGLE_REDIRECT_URI,
   });
 
   // debug logs for web uri
   console.log('[DEBUG] Google Auth Request:', request);
   console.log('[DEBUG] Google Auth Response:', response);
   console.log('Redirect URI:', process.env.GOOGLE_REDIRECT_URI);
+  console.log('IOS CLIENT ID:', process.env.GOOGLE_IOS_CLIENT_ID);
+  console.log('ANROID CLIENT ID:', process.env.GOOGLE_ANDROID_CLIENT_ID);
+  console.log('WED CLIENT IT:', process.env.GOOGLE_WEB_CLIENT_ID);
 
   useEffect(() => {
     console.log('[DEBUG] Google Auth Response:', response);
@@ -153,12 +154,7 @@ const LoginScreen = () => {
 
       {/* Login Button */}
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-      <LinearGradient
-          colors={['#b57e10', '#f9df7b', '#f9df7b', '#b57e10', '#b57e10' ]} //custom gradient for our gold
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>Login</Text>
-        </LinearGradient>
+        <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
       {/* Google Sign-In Button */}
@@ -191,7 +187,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000000', 
+    backgroundColor: '#1E1E1E', 
     paddingHorizontal: 20,
     paddingVertical: 30,
   },
@@ -200,7 +196,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 30,
-    color: '#C9D3DB',
+    color: '#B88A4E',
     letterSpacing: 1,
   },
 
@@ -234,12 +230,17 @@ const styles = StyleSheet.create({
   },
 
   button: {
+    backgroundColor: '#B88A4E',
     paddingVertical: 14,
     paddingHorizontal: 30,
     borderRadius: 10,
     width: '80%',
     alignItems: 'center',
     marginTop: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 3,
   },
 
   buttonText: {
@@ -266,7 +267,7 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#C9D3DB',
+    color: '#B88A4E',
   },
 
   thirdButton: {
@@ -279,7 +280,7 @@ const styles = StyleSheet.create({
   thirdButtonText: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#C9D3DB',
+    color: '#B88A4E',
   },
 
   errorText: {
