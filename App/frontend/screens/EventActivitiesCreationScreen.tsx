@@ -80,7 +80,6 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
     }
   };
   
-
   return (
     <View style={styles.container}>
       {/* Category Picker */}

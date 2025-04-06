@@ -30,6 +30,8 @@ const dummyEvents = [
 
 
 // main event activities page;
+
+// Added onAddEvent parent to handle list events
 const EventActivities = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredEvents, setFilteredEvents] = useState(dummyEvents);
