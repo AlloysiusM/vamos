@@ -4,21 +4,19 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
- // ts declaration
+// ts declaration
 interface CreateEventScreenProps {
   onAddEvent: (
-    event: 
-      { 
-        category: string; 
-        title: string; 
-        description: string; 
-        location: string; 
-        maxPeople: number; 
-        startTime: Date; 
-        endTime: Date; 
-      }
-    ) => void;
+    event: { 
+      category: string; 
+      title: string; 
+      description: string; 
+      location: string; 
+      maxPeople: number; 
+      startTime: Date; 
+      endTime: Date; 
+    }
+  ) => void;
 }
 
 const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => {
@@ -86,9 +84,12 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
       <Text style={styles.label}>Category</Text>
       <Picker selectedValue={category} onValueChange={(itemValue) => setCategory(itemValue)} style={styles.input}>
         <Picker.Item label="Select a category" value="" />
-        <Picker.Item label="Sports" value="sports" />
-        <Picker.Item label="Music" value="music" />
-        <Picker.Item label="Networking" value="networking" />
+        <Picker.Item label="Football" value="football" />
+        <Picker.Item label="Basketball" value="basketball" />
+        <Picker.Item label="Yoga" value="yoga" />
+        <Picker.Item label="Gym session" value="gym" />
+        <Picker.Item label="Tennis" value="tennis" />
+        <Picker.Item label="Other" value="other" />
       </Picker>
 
       {/* Title */}
@@ -159,7 +160,7 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+  container: { flex: 1, padding: 20, backgroundColor: "1E1E1E" },
   label: { fontSize: 16, fontWeight: "bold", marginBottom: 5 },
   input: { borderWidth: 1, borderColor: "#ccc", padding: 10, borderRadius: 5, marginBottom: 10 },
   counterContainer: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
@@ -167,7 +168,7 @@ const styles = StyleSheet.create({
   counterText: { fontSize: 20 },
   counterValue: { fontSize: 18, marginHorizontal: 10 },
   dateButton: { borderWidth: 1, borderColor: "#ccc", padding: 10, borderRadius: 5, alignItems: "center", marginBottom: 10 },
-  submitButton: { backgroundColor: "#007BFF", padding: 15, borderRadius: 5, alignItems: "center", marginTop: 20 },
+  submitButton: { backgroundColor: "#B88A4E", padding: 15, borderRadius: 5, alignItems: "center", marginTop: 20 },
   submitText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
   errorText: { color: "red", marginTop: 10, fontSize: 16 },
 });
