@@ -1,11 +1,12 @@
 import React, { useState, useEffect, ReactNode } from "react";
 import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, ScrollView, ActivityIndicator, SafeAreaView, Dimensions, Platform } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createStackNavigator, StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthStackParamList } from "../navigation/AuthNavigator";
 
 // Drawer and stack nav for sidebar
 const Drawer = createDrawerNavigator();
@@ -31,6 +32,7 @@ const EventActivities = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const windowWidth = Dimensions.get("window").width;
+  const navigation = useNavigation<StackNavigationProp<AuthStackParamList>>();
 
   // Fetch events from the backend API on component mount
   useEffect(() => {
@@ -99,6 +101,9 @@ const EventActivities = () => {
         <Text style={styles.eventDetails}>Start Time: {startDate}</Text>
         <Text style={styles.eventDetails}>End Time: {endDate}</Text>
         <Text style={styles.eventDetails}>Max People: {item.maxPeople || 'N/A'}</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("CreateEvent")}>
+          <Text style={{ fontSize: 15, marginVertical: 10, color: "#B88A4E"}}>More details</Text>
+        </TouchableOpacity>
       </View>
     );
   };
@@ -186,7 +191,7 @@ const EventStack = () => {
             </TouchableOpacity>
           ),
           headerRight: () => (
-            <TouchableOpacity onPress={() => navigation.navigate("CreateEvent")} style={{ marginRight: 15 }}>
+            <TouchableOpacity onPress={() => navigation.navigate("EventDetailScreen")} style={{ marginRight: 15 }}>
               <Ionicons name="add-outline" size={28} color="#B88A4E" />
             </TouchableOpacity>
           ),
