@@ -11,6 +11,7 @@ import FriendsListScreen from "../screens/FriendsListScreen"
 import ScheduleScreen from "../screens/ScheduleScreen";
 import AppTab from "./AppTab";
 import EventActivities from "../screens/EventActivitiesScreen";
+import CreateEvent from "../screens/EventActivitiesCreationScreen";
 
 
 
@@ -25,6 +26,7 @@ export type AuthStackParamList = {
   EventActivities: undefined;
   FriendsList: undefined;
   Schedule: undefined;
+  CreateEvent: undefined;
 };
 
 const Stack = createStackNavigator(); 
@@ -42,6 +44,7 @@ const AuthNavigator = () => {
         <Stack.Screen name="EventActivities" component={EventActivities} options={{ headerShown: false }} />
         <Stack.Screen name="FriendsList" component={FriendsListScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Schedule" component={ScheduleScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="CreateEvent" component={CreateEvent} options={{ headerShown: false }} />
       </Stack.Navigator>
 
   );
