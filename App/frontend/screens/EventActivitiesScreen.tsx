@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#1E1E1E",
+    backgroundColor: "#000000",
     paddingHorizontal: 20,
     paddingVertical: 30,
   },
@@ -158,6 +158,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     color: "#B88A4E",
     letterSpacing: 1,
+    marginBottom: 20,
   },
 
   inputContainer: {
