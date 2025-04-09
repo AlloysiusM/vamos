@@ -1,83 +1,159 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, ScrollView } from "react-native";
+import React, { useState, useEffect, ReactNode } from "react";
+import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, ScrollView, ActivityIndicator, SafeAreaView, Dimensions, Platform } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createStackNavigator, StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthStackParamList } from "../navigation/AuthNavigator";
 
 // Drawer and stack nav for sidebar
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
-// dummy data
-const dummyEvents = [
-  { id: "1", name: "Football Match - Local League", description: "A local football match featuring teams from the area." },
-  { id: "2", name: "Basketball Tournament - Charity Event", description: "A charity basketball event to raise funds for a cause." },
-  { id: "3", name: "Music Concert - Rock Festival", description: "A rock music festival with multiple bands performing." },
-  { id: "4", name: "Coding Bootcamp - Web Development", description: "An intensive bootcamp teaching full-stack web development." },
-  { id: "5", name: "Art Exhibition - Modern Artists", description: "An exhibition showcasing modern and contemporary art." },
-  { id: "6", name: "Food Festival - Local Cuisine", description: "A food festival celebrating local and international cuisine." },
-  { id: "7", name: "Yoga Retreat - Relaxation & Wellness", description: "A weekend yoga retreat focused on relaxation and wellness." },
-  { id: "8", name: "Running Marathon - City Challenge", description: "A marathon through the city streets for all fitness levels." },
-  { id: "9", name: "Tech Conference - Innovation & Trends", description: "A conference showcasing the latest in tech and innovation." },
-  { id: "10", name: "Movie Night - Outdoor Screening", description: "An outdoor movie screening under the stars." },
-  { id: "11", name: "Tech Conference - Innovation & Trends", description: "A conference showcasing the latest in tech and innovation." },
-  { id: "12", name: "Movie Night - Outdoor Screening", description: "An outdoor movie screening under the stars." },
-  { id: "13", name: "Tech Conference - Innovation & Trends", description: "A conference showcasing the latest in tech and innovation." },
-  { id: "14", name: "Movie Night - Outdoor Screening", description: "An outdoor movie screening under the stars." },
-];
+interface Event {
+  _id: string;
+  title: string;
+  description: string;
+  category: string;
+  location: string;
+  maxPeople: number;
+  startTime: number;
+  endTime: number;
+  user: string;
+}
 
-// main event activities page;
+// main event activities page
 const EventActivities = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredEvents, setFilteredEvents] = useState(dummyEvents);
+  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const windowWidth = Dimensions.get("window").width;
+  const navigation = useNavigation<StackNavigationProp<AuthStackParamList>>();
 
+  // Fetch events from the backend API on component mount
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setIsLoading(true);
+      try {
+        const token = await AsyncStorage.getItem("token");
+
+        if (!token) {
+          setError("User not logged in");
+          return;
+        }
+
+        const response = await fetch("http://localhost:5001/api/events", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch events");
+        }
+
+        const data = await response.json();
+        setEvents(data);
+        setFilteredEvents(data);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+        setError("Error fetching events.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  // Handle search input and filter events based on the query
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-
-    // if empty show all
     if (query === "") {
-      setFilteredEvents(dummyEvents); 
+      setFilteredEvents(events);
     } else {
-
-      // Str lowercase
       setFilteredEvents(
-        dummyEvents.filter((event) =>
-          event.name.toLowerCase().includes(query.toLowerCase())
+        events.filter((event) =>
+          event.title?.toLowerCase().includes(query.toLowerCase()) // Filter events based on title
         )
       );
     }
   };
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>My Events</Text>
+  // Render each event item in the list
+  const renderEvent = ({ item }: { item: Event }) => {
 
-      {/* Search bar */}
-      <View style={styles.inputContainer}>
-        <Ionicons name="search" size={24} color="#C9D3DB" style={styles.searchIcon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Search for activities..."
-          placeholderTextColor="#C9D3DB"
-          value={searchQuery}
-          onChangeText={handleSearch}
-        />
+    // Date formatting for start and end times
+    const startDate = item.startTime ? new Date(item.startTime).toLocaleString() : 'N/A';
+    const endDate = item.endTime ? new Date(item.endTime).toLocaleString() : 'N/A';
+
+    return (
+      <View style={{ width: windowWidth - 40, marginBottom: 20, padding: 10, borderWidth: 1, borderColor: '#ccc', borderRadius: 5 }}>
+        <Text style={styles.eventTitle}>{item.title || 'Unnamed Event'}</Text>
+        <Text style={styles.eventCategory}>Category: {item.category || 'N/A'}</Text>
+        <Text style={styles.eventDetails}>Location: {item.location || 'N/A'}</Text>
+        <Text style={styles.eventDetails}>Start Time: {startDate}</Text>
+        <Text style={styles.eventDetails}>End Time: {endDate}</Text>
+        <Text style={styles.eventDetails}>Max People: {item.maxPeople || 'N/A'}</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("CreateEvent")}>
+          <Text style={{ fontSize: 15, marginVertical: 10, color: "#B88A4E"}}>More details</Text>
+        </TouchableOpacity>
       </View>
+    );
+  };
 
-      {/* List showing event data */}
-        <FlatList
-          data={filteredEvents}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.eventItem}>
-              <Text style={styles.eventName}>{item.name}</Text>
-              <Text style={styles.eventDescription}>{item.description}</Text>
-            </View>
-          )}
-        />
-    </View>
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <Text style={styles.title}>My Events</Text>
+
+        {error && <Text style={styles.errorText}>{error}</Text>}
+
+        <View style={styles.inputContainer}>
+          <Ionicons name="search" size={24} color="#C9D3DB" style={styles.searchIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Search for activities..."
+            placeholderTextColor="#C9D3DB"
+            value={searchQuery}
+            onChangeText={handleSearch}
+          />
+        </View>
+
+        {isLoading ? (
+          <ActivityIndicator size="large" color="#B88A4E" />
+        ) : (
+          // Use FlatList for iOS and ScrollView for web (used web for debugging) 
+          Platform.OS === 'web' ? (
+            <div style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
+              <FlatList
+                data={filteredEvents}
+                keyExtractor={(item) => item._id}
+                renderItem={renderEvent}
+                showsVerticalScrollIndicator={true}
+                contentContainerStyle={styles.flatListContent}
+              />
+            </div>
+          ) : (
+            <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}>
+              <FlatList
+                data={filteredEvents}
+                keyExtractor={(item) => item._id}
+                renderItem={renderEvent}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.flatListContent}
+              />
+            </ScrollView>
+          )
+        )}
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -115,7 +191,7 @@ const EventStack = () => {
             </TouchableOpacity>
           ),
           headerRight: () => (
-            <TouchableOpacity onPress={() => navigation.navigate("CreateEvent")} style={{ marginRight: 15 }}>
+            <TouchableOpacity onPress={() => navigation.navigate("EventDetailScreen")} style={{ marginRight: 15 }}>
               <Ionicons name="add-outline" size={28} color="#B88A4E" />
             </TouchableOpacity>
           ),
@@ -143,13 +219,16 @@ const EventsScreenDrawer = () => {
 export default EventsScreenDrawer;
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#1E1E1E",
+  },
+  
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     backgroundColor: "#1E1E1E",
     paddingHorizontal: 20,
-    paddingVertical: 30,
+    paddingTop: 30,
   },
 
   title: {
@@ -158,6 +237,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
     color: "#B88A4E",
     letterSpacing: 1,
+    marginBottom: 20,
+  },
+
+  errorText: {
+    color: "red",
+    fontSize: 16,
+    marginBottom: 10,
   },
 
   inputContainer: {
@@ -182,9 +268,13 @@ const styles = StyleSheet.create({
     width: "100%",
   },
 
-  flatListContainer: {
+  eventsContainer: {
+    flex: 1,
     width: "100%",
-    paddingBottom: 30,
+  },
+
+  flatListContent: {
+    paddingBottom: 120,
   },
 
   eventItem: {
@@ -192,7 +282,14 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom: 15,
     borderRadius: 8,
-    width: "100%",
+    minHeight: 150,
+  },
+
+  eventTitle: {
+    color: "#C9D3DB",
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 8,
   },
 
   eventName: {
@@ -226,5 +323,18 @@ const styles = StyleSheet.create({
     color: "#1E1E1E",
     fontSize: 18,
     fontWeight: "600",
+  },
+
+  eventDetails: {
+    color: "#C9D3DB",
+    fontSize: 14,
+    marginBottom: 4,
+  },
+
+  eventCategory: {
+    color: "#C9D3DB",
+    fontSize: 16,
+    fontWeight: "500",
+    marginBottom: 6,
   },
 });
