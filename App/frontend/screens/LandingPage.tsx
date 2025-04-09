@@ -2,35 +2,61 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } fro
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { AuthStackParamList } from "../navigation/AuthNavigator"; 
+import { LinearGradient } from 'expo-linear-gradient';
 
 const LandingPage = () => {
     //add page routs and other functions 
     const navigation = useNavigation<StackNavigationProp<AuthStackParamList>>();
 
       return (
+        
         <View style={styles.container}>
           <Image source={require('../assets/Vamos2.jpg')} style={styles.logo} />
           <View style={styles.buttonContainer}>
+             <LinearGradient
+              colors={['#6f6f73', '#5f6062', '#ffffff', '#b4b4b9', '#727176']} //silver shades for gradient
+                style={styles.button}
+                >
               <TouchableOpacity 
                   style={styles.button} 
                   onPress={() => navigation.navigate("EventActivities")}
               >
                   <Text style={styles.buttonText}>My Events</Text>
               </TouchableOpacity>
+              </LinearGradient>
 
+              <LinearGradient
+              colors={['#6f6f73', '#5f6062', '#ffffff', '#b4b4b9', '#727176']} //silver shades for gradient
+                style={styles.button}
+                >
               <TouchableOpacity 
                   style={styles.button} 
                   onPress={() => navigation.navigate("FriendsList")}
               >
                   <Text style={styles.buttonText}>Friends List</Text>
               </TouchableOpacity>
+              </LinearGradient>
 
+              <LinearGradient
+              colors={['#6f6f73', '#5f6062', '#ffffff', '#b4b4b9', '#727176']} //silver shades for gradient
+                style={styles.button}
+                >
               <TouchableOpacity 
                   style={styles.button} 
                   onPress={() => navigation.navigate("Schedule")}
               >
                   <Text style={styles.buttonText}>Schedule</Text>
               </TouchableOpacity>
+              </LinearGradient>
+              
+              
+              
+              
+              
+
+              
+              
+          
           </View>
       </View>
   );
@@ -41,7 +67,7 @@ const LandingPage = () => {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#1E1E1E', 
+        backgroundColor: '#000000', 
         paddingHorizontal: 20,
         paddingVertical: 30,
       },
@@ -68,7 +94,7 @@ const LandingPage = () => {
     
       input: {
         height: 50,
-        backgroundColor: '#333', 
+        backgroundColor: '#1E1E1E', 
         paddingHorizontal: 16,
         borderRadius: 12,
         fontSize: 16,
@@ -84,17 +110,12 @@ const LandingPage = () => {
       },
     
       button: {
-        backgroundColor: '#B88A4E',
-        paddingVertical: 50,
+        paddingVertical: 20,
         paddingHorizontal: 40,
         borderRadius: 10,
         width: '80%',
         alignItems: 'center',
         marginTop: 10,
-        shadowColor: '#000',
-        shadowOpacity: 0.2,
-        shadowRadius: 5,
-        elevation: 3,
       },
     
       buttonText: {
