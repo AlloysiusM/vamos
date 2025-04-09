@@ -95,13 +95,13 @@ const EventActivities = () => {
 
     return (
       <View style={{ width: windowWidth - 40, marginBottom: 20, padding: 10, borderWidth: 1, borderColor: '#ccc', borderRadius: 5 }}>
-        <Text style={styles.eventTitle}>{item.title || 'Unnamed Event'}</Text>
+        <Text style={styles.eventTitleStyle}>{item.title || 'Unnamed Event'}</Text>
         <Text style={styles.eventCategory}>Category: {item.category || 'N/A'}</Text>
         <Text style={styles.eventDetails}>Location: {item.location || 'N/A'}</Text>
         <Text style={styles.eventDetails}>Start Time: {startDate}</Text>
         <Text style={styles.eventDetails}>End Time: {endDate}</Text>
         <Text style={styles.eventDetails}>Max People: {item.maxPeople || 'N/A'}</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("CreateEvent")}>
+        <TouchableOpacity onPress={() => navigation.navigate("s")}>
           <Text style={{ fontSize: 15, marginVertical: 10, color: "#B88A4E"}}>More details</Text>
         </TouchableOpacity>
       </View>
@@ -137,7 +137,7 @@ const EventActivities = () => {
                 keyExtractor={(item) => item._id}
                 renderItem={renderEvent}
                 showsVerticalScrollIndicator={true}
-                contentContainerStyle={styles.flatListContent}
+                contentContainerStyle={styles.flatListContentStyle}
               />
             </div>
           ) : (
@@ -147,7 +147,7 @@ const EventActivities = () => {
                 keyExtractor={(item) => item._id}
                 renderItem={renderEvent}
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.flatListContent}
+                contentContainerStyle={styles.flatListContentStyle}
               />
             </ScrollView>
           )
@@ -191,7 +191,7 @@ const EventStack = () => {
             </TouchableOpacity>
           ),
           headerRight: () => (
-            <TouchableOpacity onPress={() => navigation.navigate("EventDetailScreen")} style={{ marginRight: 15 }}>
+            <TouchableOpacity onPress={() => navigation.navigate("CreateEvent")} style={{ marginRight: 15 }}>
               <Ionicons name="add-outline" size={28} color="#B88A4E" />
             </TouchableOpacity>
           ),
@@ -233,6 +233,19 @@ const styles = StyleSheet.create({
     paddingTop: 30,
   },
 
+  eventDetails: {
+    color: "#C9D3DB",
+    fontSize: 14,
+    marginBottom: 4,
+  },
+
+  eventCategory: {
+    color: "#C9D3DB",
+    fontSize: 16,
+    fontWeight: "500",
+    marginBottom: 6,
+  },
+
   title: {
     fontSize: 28,
     fontWeight: "bold",
@@ -246,7 +259,6 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 16,
     marginBottom: 10,
-    event-creation
   },
 
   inputContainer: {
@@ -268,6 +280,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     color: "#C9D3DB",
+    flex: 1,
+  },
+
+  inputField: {
+    height: 50,
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#C9D3DB",
     width: "100%",
   },
 
@@ -276,11 +296,18 @@ const styles = StyleSheet.create({
     width: "100%",
   },
 
-  flatListContent: {
+  flatListContentStyle: {
     paddingBottom: 120,
   },
 
-  eventItem: {
+  eventTitleStyle: {
+    color: "#C9D3DB",
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+
+  eventItemStyle: {
     backgroundColor: "#333",
     padding: 15,
     marginBottom: 15,
@@ -288,27 +315,20 @@ const styles = StyleSheet.create({
     minHeight: 150,
   },
 
-  eventTitle: {
+  eventNameStyle: {
     color: "#C9D3DB",
     fontSize: 18,
     fontWeight: "600",
     marginBottom: 8,
   },
 
-  eventName: {
-    color: "#C9D3DB",
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 8,
-  },
-
-  eventDescription: {
+  eventDescriptionStyle: {
     color: "#C9D3DB",
     fontSize: 14,
     lineHeight: 20,
   },
 
-  button: {
+  buttonStyle: {
     backgroundColor: "#B88A4E",
     paddingVertical: 14,
     paddingHorizontal: 30,
@@ -322,19 +342,19 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
 
-  buttonText: {
+  buttonTextStyle: {
     color: "#1E1E1E",
     fontSize: 18,
     fontWeight: "600",
   },
 
-  eventDetails: {
+  eventDetailsStyle: {
     color: "#C9D3DB",
     fontSize: 14,
     marginBottom: 4,
   },
 
-  eventCategory: {
+  eventCategoryStyle: {
     color: "#C9D3DB",
     fontSize: 16,
     fontWeight: "500",
