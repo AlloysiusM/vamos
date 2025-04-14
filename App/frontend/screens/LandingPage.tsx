@@ -48,14 +48,6 @@ const LandingPage = () => {
                   <Text style={styles.buttonText}>Schedule</Text>
               </TouchableOpacity>
               </LinearGradient>
-              
-              
-              
-              
-              
-
-              
-              
           
           </View>
       </View>

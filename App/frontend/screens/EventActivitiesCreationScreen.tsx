@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from "r
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_URL } from '@env';
 
 // ts declaration
 interface CreateEventScreenProps {
@@ -51,7 +52,7 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
       return;
     }
   
-    const response = await fetch('http://localhost:5001/api/events', { 
+      const response = await fetch(`${API_URL}/api/events`, { 
       method: 'POST',
       body: JSON.stringify(event),
       headers: {

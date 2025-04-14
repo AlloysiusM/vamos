@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
-
+import { API_URL } from '@env';
 
 const VerificationScreen = () => {
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList, 'Login'>>();
@@ -25,7 +25,7 @@ const VerificationScreen = () => {
       console.log('[DEBUG] Sending request:', requestBody);
     
       try {
-        const response = await fetch('http://localhost:5001/api/user/verify-Email', {
+        const response = await fetch(`${API_URL}/api/user/verify-Email`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

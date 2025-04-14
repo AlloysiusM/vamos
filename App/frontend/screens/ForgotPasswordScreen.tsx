@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_URL } from '@env';
 
 const ForgotPasswordScreen = () => {
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList, 'Login'>>();
@@ -24,7 +25,7 @@ const ForgotPasswordScreen = () => {
       console.log('[DEBUG] Sending request:', requestBody);
     
       try {
-        const response = await fetch('http://localhost:5001/api/user/forgotPassword', {
+        const response = await fetch(`${API_URL}/api/user/forgotPassword`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

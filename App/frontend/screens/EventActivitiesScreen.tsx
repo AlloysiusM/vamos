@@ -7,6 +7,7 @@ import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthStackParamList } from "../navigation/AuthNavigator";
+import { API_URL } from '@env';
 
 // Drawer and stack nav for sidebar
 const Drawer = createDrawerNavigator();
@@ -46,7 +47,7 @@ const EventActivities = () => {
           return;
         }
 
-        const response = await fetch("http://localhost:5001/api/events", {
+        const response = await fetch(`${API_URL}/api/events`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,

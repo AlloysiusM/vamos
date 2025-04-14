@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { GOOGLE_REDIRECT_URI, GOOGLE_IOS_CLIENT_ID, GOOGLE_ANDROID_CLIENT_ID, GOOGLE_WEB_CLIENT_ID } from '@env';
+import { GOOGLE_REDIRECT_URI, GOOGLE_IOS_CLIENT_ID, GOOGLE_ANDROID_CLIENT_ID, GOOGLE_WEB_CLIENT_ID, API_URL } from '@env';
 import { LinearGradient } from 'expo-linear-gradient';
 
 // Google Auth Imports
@@ -83,7 +83,7 @@ const LoginScreen = () => {
     console.log('[DEBUG] Sending request:', requestBody);
 
     try {
-      const response = await fetch('http://localhost:5001/api/user/login', {
+      const response = await fetch(`${API_URL}/api/user/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

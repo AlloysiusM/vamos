@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 import { LinearGradient } from 'expo-linear-gradient';
+import { API_URL } from '@env';
 
 const RegisterScreen = () => {
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList, 'Register'>>();
@@ -27,7 +28,7 @@ const RegisterScreen = () => {
     
     // Post data to db
     try {
-      const response = await fetch('http://localhost:5001/api/user/register', {
+      const response = await fetch(`${API_URL}/api/user/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
