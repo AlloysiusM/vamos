@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform, Modal } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -31,6 +31,7 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
   const [isStartPickerVisible, setStartPickerVisible] = useState(false);
   const [isEndPickerVisible, setEndPickerVisible] = useState(false);
   const [error, setError] = useState("");
+  const [isCategoryModalVisible, setCategoryModalVisible] = useState(false);
 
   const handleSubmit = async () => {
     const event = { 
@@ -52,7 +53,7 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
       return;
     }
   
-      const response = await fetch(`${API_URL}/api/events`, { 
+    const response = await fetch(`${API_URL}/api/events`, { 
       method: 'POST',
       body: JSON.stringify(event),
       headers: {
@@ -78,24 +79,60 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
       onAddEvent(json);
     }
   };
-  
+
+  const handleCategorySelect = (selectedCategory: string) => {
+    setCategory(selectedCategory);
+    setCategoryModalVisible(false);  // Close modal after selection
+  };
+
   return (
     <View style={styles.container}>
-      {/* Category Picker */}
-      <Text style={styles.label}>Category</Text>
-      <Picker selectedValue={category} onValueChange={(itemValue) => setCategory(itemValue)} style={styles.input}>
-        <Picker.Item label="Select a category" value="" />
-        <Picker.Item label="Football" value="football" />
-        <Picker.Item label="Basketball" value="basketball" />
-        <Picker.Item label="Yoga" value="yoga" />
-        <Picker.Item label="Gym session" value="gym" />
-        <Picker.Item label="Tennis" value="tennis" />
-        <Picker.Item label="Other" value="other" />
-      </Picker>
-
+      
       {/* Title */}
       <Text style={styles.label}>Title</Text>
       <TextInput style={styles.input} value={title} onChangeText={setTitle} placeholder="Enter title" />
+      
+      {/* Category Picker */}
+      <Text style={styles.label}>Category</Text>
+      <TouchableOpacity 
+        style={styles.input} 
+        onPress={() => setCategoryModalVisible(true)} // Open modal when pressed
+      >
+        <Text style={styles.placeholder}>{category || 'Select a category'}</Text>
+      </TouchableOpacity>
+
+      {/* Category Modal */}
+      <Modal 
+        visible={isCategoryModalVisible} 
+        transparent={true} 
+        animationType="fade" 
+        onRequestClose={() => setCategoryModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.label}>Select Category</Text>
+            <Picker
+              selectedValue={category}
+              onValueChange={(itemValue) => setCategory(itemValue)}
+              style={[styles.input, { color: '#fff' }]}
+            >
+              <Picker.Item label="Select a category" value="" />
+              <Picker.Item label="Football" value="football" />
+              <Picker.Item label="Basketball" value="basketball" />
+              <Picker.Item label="Yoga" value="yoga" />
+              <Picker.Item label="Gym session" value="gym" />
+              <Picker.Item label="Tennis" value="tennis" />
+              <Picker.Item label="Other" value="other" />
+            </Picker>
+            <TouchableOpacity 
+              style={styles.closeButton} 
+              onPress={() => setCategoryModalVisible(false)}
+            >
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       {/* Description */}
       <Text style={styles.label}>Description</Text>
@@ -118,6 +155,7 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
       </View>
 
       {/* Start Time Picker */}
+      <Text style={styles.label}>Start Time</Text>
       {Platform.OS === "web" ? (
         <input
           style={{ ...styles.input, padding: 8 }}
@@ -131,7 +169,16 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
         </TouchableOpacity>
       )}
 
-      <DateTimePickerModal isVisible={isStartPickerVisible} mode="datetime" onConfirm={(date) => { setStartTime(date); setStartPickerVisible(false); }} onCancel={() => setStartPickerVisible(false)} />
+      <DateTimePickerModal
+        isVisible={isStartPickerVisible}
+        mode="datetime"
+        display="inline"
+        onConfirm={(date) => {
+          setStartTime(date);
+          setStartPickerVisible(false);
+        }}
+        onCancel={() => setStartPickerVisible(false)}
+      />
 
       {/* End Time Picker */}
       <Text style={styles.label}>End Time</Text>
@@ -147,7 +194,18 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
           <Text>{endTime.toLocaleString()}</Text>
         </TouchableOpacity>
       )}
-      <DateTimePickerModal isVisible={isEndPickerVisible} mode="datetime" onConfirm={(date) => { setEndTime(date); setEndPickerVisible(false); }} onCancel={() => setEndPickerVisible(false)} />
+      
+      <DateTimePickerModal
+        isVisible={isEndPickerVisible}
+        mode="datetime"
+        display="inline"
+        onConfirm={(date) => {
+          setEndTime(date);
+          setEndPickerVisible(false);
+        }}
+        onCancel={() => setEndPickerVisible(false)}
+      />
+
 
       {/* Submit Button */}
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
@@ -160,18 +218,106 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
   );
 };
 
+const THEME_COLOR = "#B88A4E";
+
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "1E1E1E" },
-  label: { fontSize: 16, fontWeight: "bold", marginBottom: 5 },
-  input: { borderWidth: 1, borderColor: "#ccc", padding: 10, borderRadius: 5, marginBottom: 10 },
-  counterContainer: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
-  counterButton: { backgroundColor: "#ddd", padding: 10, borderRadius: 5 },
-  counterText: { fontSize: 20 },
-  counterValue: { fontSize: 18, marginHorizontal: 10 },
-  dateButton: { borderWidth: 1, borderColor: "#ccc", padding: 10, borderRadius: 5, alignItems: "center", marginBottom: 10 },
-  submitButton: { backgroundColor: "#B88A4E", padding: 15, borderRadius: 5, alignItems: "center", marginTop: 20 },
-  submitText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
-  errorText: { color: "red", marginTop: 10, fontSize: 16 },
+  container: { 
+    flex: 1, 
+    padding: 20, 
+    backgroundColor: "#000000", 
+    paddingTop: 100,
+  },
+  label: { 
+    fontSize: 16, 
+    fontWeight: "bold", 
+    marginBottom: 5, 
+    color: THEME_COLOR 
+  },
+  input: { 
+    borderWidth: 1, 
+    borderColor: "#ccc", 
+    padding: 10, 
+    borderRadius: 5, 
+    marginBottom: 20, 
+    color: THEME_COLOR, 
+    backgroundColor: "#333" 
+  },
+  counterContainer: { 
+    flexDirection: "row", 
+    alignItems: "center", 
+    marginBottom: 20, 
+  },
+  counterButton: { 
+    backgroundColor: "#1E1E1E", 
+    padding: 10, 
+    borderRadius: 5 
+  },
+  counterText: { 
+    fontSize: 20, 
+    color: "#fff" 
+  },
+  counterValue: { 
+    fontSize: 18, 
+    marginHorizontal: 10, 
+    color: THEME_COLOR 
+  },
+  dateButton: { 
+    borderWidth: 1, 
+    borderColor: "#ccc", 
+    padding: 10, 
+    borderRadius: 5, 
+    alignItems: "center", 
+    marginBottom: 20, 
+    backgroundColor: "#333" 
+  },
+  submitButton: { 
+    backgroundColor: THEME_COLOR, 
+    padding: 15, 
+    borderRadius: 5, 
+    alignItems: "center", 
+    marginTop: 10, 
+  },
+  submitText: { 
+    color: "#fff", 
+    fontSize: 16, 
+    fontWeight: "bold" 
+  },
+  errorText: { 
+    color: "red", 
+    marginTop: 10, 
+    fontSize: 16 
+  },
+  placeholder: { 
+    color: THEME_COLOR 
+  },
+  modalOverlay: { 
+    flex: 1, 
+    justifyContent: "center", 
+    alignItems: "center", 
+    backgroundColor: "rgba(0, 0, 0, 0.5)" 
+  },
+  modalContainer: { 
+    backgroundColor: "#1E1E1E", 
+    padding: 20, 
+    borderRadius: 10, 
+    width: "80%" 
+  },
+  picker: { 
+    height: 200, 
+    width: "100%", 
+    color: THEME_COLOR 
+  },
+  closeButton: { 
+    marginTop: 20, 
+    padding: 10, 
+    backgroundColor: THEME_COLOR, 
+    alignItems: "center", 
+    borderRadius: 5 
+  },
+  closeButtonText: { 
+    color: "#fff", 
+    fontWeight: "bold" 
+  }
 });
 
 export default CreateEventScreen;

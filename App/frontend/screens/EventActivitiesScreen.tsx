@@ -112,7 +112,6 @@ const EventActivities = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <Text style={styles.title}>My Events</Text>
 
         {error && <Text style={styles.errorText}>{error}</Text>}
 
@@ -128,31 +127,19 @@ const EventActivities = () => {
         </View>
 
         {isLoading ? (
-          <ActivityIndicator size="large" color="#B88A4E" />
-        ) : (
-          // Use FlatList for iOS and ScrollView for web (used web for debugging) 
-          Platform.OS === 'web' ? (
-            <div style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
-              <FlatList
-                data={filteredEvents}
-                keyExtractor={(item) => item._id}
-                renderItem={renderEvent}
-                showsVerticalScrollIndicator={true}
-                contentContainerStyle={styles.flatListContentStyle}
-              />
-            </div>
-          ) : (
-            <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}>
-              <FlatList
-                data={filteredEvents}
-                keyExtractor={(item) => item._id}
-                renderItem={renderEvent}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.flatListContentStyle}
-              />
-            </ScrollView>
-          )
-        )}
+        <ActivityIndicator size="large" color="#B88A4E" />
+      ) : (
+        <FlatList
+          data={filteredEvents}
+          keyExtractor={(item) => item._id}
+          renderItem={renderEvent}
+          showsVerticalScrollIndicator={Platform.OS !== 'web'}
+          contentContainerStyle={[
+            styles.flatListContentStyle,
+            Platform.OS === 'web' ? { maxHeight: Dimensions.get('window').height - 200, overflow: 'hidden' } : null,
+          ]}
+        />
+      )}
       </View>
     </SafeAreaView>
   );

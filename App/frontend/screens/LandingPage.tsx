@@ -103,7 +103,7 @@ const LandingPage = () => {
     
       button: {
         paddingVertical: 20,
-        paddingHorizontal: 40,
+        paddingHorizontal: 30,
         borderRadius: 10,
         width: '80%',
         alignItems: 'center',
@@ -135,8 +135,7 @@ const LandingPage = () => {
       logo: {
       width: 250,         
       height: 150,       
-      //resizeMode: 'contain',
-      marginTop: 20,      
+      //resizeMode: 'contain',      
       marginBottom: 20,   
       //alignSelf: 'center',
     },
