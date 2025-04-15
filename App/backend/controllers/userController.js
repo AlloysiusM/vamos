@@ -185,4 +185,52 @@ const forgotPassword = async (req, res) => {
     }
   }
 
-module.exports = { registerUser, loginUser, forgotPassword, verificationEmail, resetPassword };
+  const getUserName = async(req, res) => {
+    console.log('dada');
+    
+    let token;
+
+    // Check for token in Authorization header
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        try {
+            // Extract token ("Bearer <token>")
+            token = req.headers.authorization.split(' ')[1];
+
+            // Verify token and decode payload
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+            // Fetch user from DB using ID from token payload
+            // Select only necessary fields, explicitly exclude password
+            const user = await User.findById(decoded.id).select('-password');
+
+            if (user) {
+                // Send user data (without password)
+                res.status(200).json({
+                    _id: user._id,
+                    fullName: user.fullName,
+                    email: user.email,
+                    // Add any other non-sensitive fields you want to return
+                });
+            } else {
+                // This case might occur if the user was deleted after the token was issued
+                res.status(404).json({ message: 'User not found' });
+            }
+        } catch (error) {
+            console.error('Get User Profile Error:', error);
+            // Handle specific JWT errors
+            if (error.name === 'JsonWebTokenError') {
+                res.status(401).json({ message: 'Not authorized, token invalid' });
+            } else if (error.name === 'TokenExpiredError') {
+                res.status(401).json({ message: 'Not authorized, token expired' });
+            } else {
+                res.status(500).json({ message: 'Server Error' });
+            }
+        }
+    } else {
+        // Handle case where no token is provided
+        res.status(401).json({ message: 'Not authorized, no token provided' });
+    }
+};
+  
+
+module.exports = { registerUser, loginUser, forgotPassword, verificationEmail, resetPassword, getUserName };
