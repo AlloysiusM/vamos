@@ -11,6 +11,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 // Google Auth Imports
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
+import * as AuthSession from 'expo-auth-session';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -21,12 +22,14 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+  const redirectUri = AuthSession.makeRedirectUri({ });
+
   // Google Auth Request
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId: GOOGLE_IOS_CLIENT_ID,
     androidClientId: GOOGLE_ANDROID_CLIENT_ID,
     webClientId: GOOGLE_WEB_CLIENT_ID,
-    redirectUri: GOOGLE_REDIRECT_URI,
+    redirectUri,
   });
 
   // debug logs for web uri

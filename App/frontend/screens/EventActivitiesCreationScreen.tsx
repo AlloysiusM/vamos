@@ -178,7 +178,9 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
           setStartPickerVisible(false);
         }}
         onCancel={() => setStartPickerVisible(false)}
+        pickerStyleIOS={{ backgroundColor: "#1e1e1e" }} 
       />
+
 
       {/* End Time Picker */}
       <Text style={styles.label}>End Time</Text>
@@ -204,6 +206,7 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
           setEndPickerVisible(false);
         }}
         onCancel={() => setEndPickerVisible(false)}
+        pickerStyleIOS={{ backgroundColor: "#1e1e1e" }} 
       />
 
 

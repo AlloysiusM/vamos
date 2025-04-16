@@ -3,6 +3,8 @@
     "name": "Vamos",
     "slug": "vamos",
     "version": "1.0.0",
+    "scheme": "vamos",
+    "platforms": ["ios", "android", "web"],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
