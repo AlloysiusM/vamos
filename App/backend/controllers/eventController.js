@@ -87,6 +87,10 @@ const deleteEvent = async(req, res) => {
     }
 }
 
+const updateEvent = async(req, res) => {
+    
+}
+
 module.exports = {
     getEvents,
     getUserEvents,
