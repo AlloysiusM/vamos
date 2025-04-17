@@ -1,144 +1,94 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { AuthStackParamList } from "../navigation/AuthNavigator"; 
-import { LinearGradient } from 'expo-linear-gradient';
+import { AuthStackParamList } from "../navigation/AuthNavigator";
 
 const LandingPage = () => {
-    //add page routs and other functions 
-    const navigation = useNavigation<StackNavigationProp<AuthStackParamList>>();
+  const navigation = useNavigation<StackNavigationProp<AuthStackParamList>>();
 
-      return (
-        
-        <View style={styles.container}>
-          <Image source={require('../assets/Vamos2.jpg')} style={styles.logo} />
-          <View style={styles.buttonContainer}>
-             <LinearGradient
-              colors={['#6f6f73', '#5f6062', '#ffffff', '#b4b4b9', '#727176']} //silver shades for gradient
-                style={styles.button}
-                >
-              <TouchableOpacity 
-                  style={styles.button} 
-                  onPress={() => navigation.navigate("EventActivities")}
-              >
-                  <Text style={styles.buttonText}>My Events</Text>
-              </TouchableOpacity>
-              </LinearGradient>
+  return (
+    <View style={styles.container}>
+      {/* Logo */}
+      <Image source={require('../assets/Vamos2.jpg')} style={styles.logo} />
 
-              <LinearGradient
-              colors={['#6f6f73', '#5f6062', '#ffffff', '#b4b4b9', '#727176']} //silver shades for gradient
-                style={styles.button}
-                >
-              <TouchableOpacity 
-                  style={styles.button} 
-                  onPress={() => navigation.navigate("FriendsList")}
-              >
-                  <Text style={styles.buttonText}>Friends List</Text>
-              </TouchableOpacity>
-              </LinearGradient>
+      {/* Spacer */}
+      <View style={{ height: 20 }} />
 
-              <LinearGradient
-              colors={['#6f6f73', '#5f6062', '#ffffff', '#b4b4b9', '#727176']} //silver shades for gradient
-                style={styles.button}
-                >
-              <TouchableOpacity 
-                  style={styles.button} 
-                  onPress={() => navigation.navigate("Schedule")}
-              >
-                  <Text style={styles.buttonText}>Schedule</Text>
-              </TouchableOpacity>
-              </LinearGradient>
-          
+      {/* Card Buttons */}
+      <View style={styles.cardContainer}>
+        <View style={styles.cardRow}>
+          <TouchableOpacity onPress={() => navigation.navigate("EventActivities")}>
+            <View style={styles.card}>
+              <Text style={styles.cardLabel}>My Events</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => navigation.navigate("FriendsList")}>
+            <View style={styles.card}>
+              <Text style={styles.cardLabel}>Friends</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.cardRow}>
+          <TouchableOpacity onPress={() => navigation.navigate("Schedule")}>
+            <View style={styles.card}>
+              <Text style={styles.cardLabel}>Schedule</Text>
+            </View>
+          </TouchableOpacity>
+
+          <View style={styles.card}>
+            <Text style={styles.cardLabel}>Near me</Text>
           </View>
+        </View>
       </View>
+    </View>
   );
 };
-    
-    const styles = StyleSheet.create({
-      container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#000000', 
-        paddingHorizontal: 20,
-        paddingVertical: 30,
-      },
-    
-      title: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        marginBottom: 30,
-        color: '#B88A4E',
-        letterSpacing: 1,
-      },
-    
-      inputContainer: {
-        width: '100%',
-        marginBottom: 20,
-      },
-    
-      inputLabel: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#C9D3DB', 
-        marginBottom: 8,
-      },
-    
-      input: {
-        height: 50,
-        backgroundColor: '#1E1E1E', 
-        paddingHorizontal: 16,
-        borderRadius: 12,
-        fontSize: 16,
-        fontWeight: '500',
-        width: '100%',
-        color: '#C9D3DB', 
-        borderWidth: 1,
-        borderColor: '#444',
-        shadowColor: '#000', 
-        shadowOpacity: 0.1, 
-        shadowRadius: 5,
-        elevation: 3, 
-      },
-    
-      button: {
-        paddingVertical: 20,
-        paddingHorizontal: 30,
-        borderRadius: 10,
-        width: '80%',
-        alignItems: 'center',
-        marginTop: 10,
-      },
-    
-      buttonText: {
-        color: '#1E1E1E',
-        fontSize: 18,
-        fontWeight: '600',
-      },
-    
-      secondaryButton: {
-        marginTop: 20,
-        paddingVertical: 12,
-      },
-    
-      secondaryButtonText: {
-        fontSize: 16,
-        fontWeight: '500',
-        color: '#B88A4E',
-      },
 
-      buttonContainer: {
-        width: '100%',
-        alignItems: 'center',
-      },
-      
-      logo: {
-      width: 250,         
-      height: 150,       
-      //resizeMode: 'contain',      
-      marginBottom: 20,   
-      //alignSelf: 'center',
-    },
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000000',
+    paddingHorizontal: 20,
+    paddingTop: 80, 
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  logo: {
+    width: 180,
+    height: 180,
+    resizeMode: 'contain',
+  },
+  cardContainer: {
+    marginTop: 30,
+    width: '100%',
+    alignItems: 'center',
+  },
+  cardRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 30,
+  },
+  card: {
+    width: 150,
+    height: 150,
+    borderRadius: 20,
+    backgroundColor: '#FFF0C1',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#C9A348',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  cardLabel: {
+    fontSize: 16,
+    color: '#6B4C1E',
+    fontWeight: '600',
+  },
 });
 
 export default LandingPage;
