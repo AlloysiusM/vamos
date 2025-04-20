@@ -28,7 +28,7 @@ const getUserEvents = async (req, res) => {
 // Post create event
 const createEvent = async (req, res) => {
 
-    const { category, title, description, maxPeople, location, startTime, endTime } = req.body;
+    const { category, title, description, maxPeople, location, startTime, endTime, currentPeople, usersSignedup } = req.body;
 
     let emptyFields = [];
 
@@ -39,6 +39,9 @@ const createEvent = async (req, res) => {
     if (!location) emptyFields.push('location');
     if (!startTime) emptyFields.push('startTime');
     if (!endTime) emptyFields.push('endTime');
+    if (!currentPeople) emptyFields.push('currentPeople');
+    if (!usersSignedup) emptyFields.push('usersSignedup');
+
 
     if (emptyFields.length > 0) {
         return res.status(400).json({ 
@@ -58,9 +61,12 @@ const createEvent = async (req, res) => {
             location, 
             startTime, 
             endTime, 
+            currentPeople,
+            usersSignedup,
             user: userId 
         });
-
+        console.log(startTime);
+        console.log(endTime);
         res.status(201).json(event); 
     } catch (error) {
         res.status(500).json({ error: error.message });
