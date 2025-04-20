@@ -42,14 +42,13 @@ const eventSchema = new Schema({
     //variable that stores the current number of people signed up to the event.
     currentPeople: {
         type: Number, 
-        required: true
+        default: 0,
     },
     //array that stores the users ids that are signed up to the event.
     usersSignedup: [
        {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
        }
     ],
     // ref user

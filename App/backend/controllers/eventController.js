@@ -28,9 +28,12 @@ const getUserEvents = async (req, res) => {
 // Post create event
 const createEvent = async (req, res) => {
 
-    const { category, title, description, maxPeople, location, startTime, endTime, currentPeople, usersSignedup } = req.body;
+    const { category, title, description, maxPeople, location, startTime, endTime, } = req.body;
 
     let emptyFields = [];
+
+    const usersSignedup = [];
+    const currentPeople = 0;
 
     if (!category) emptyFields.push('category');
     if (!title) emptyFields.push('title');
@@ -39,9 +42,6 @@ const createEvent = async (req, res) => {
     if (!location) emptyFields.push('location');
     if (!startTime) emptyFields.push('startTime');
     if (!endTime) emptyFields.push('endTime');
-    if (!currentPeople) emptyFields.push('currentPeople');
-    if (!usersSignedup) emptyFields.push('usersSignedup');
-
 
     if (emptyFields.length > 0) {
         return res.status(400).json({ 
