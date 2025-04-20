@@ -76,6 +76,7 @@ const LoginScreen = () => {
   }
 
   const handleSubmit = async () => {
+    
     if (!email || !password) {
       setError('Please fill in all fields');
       console.log('[DEBUG] Missing fields:', { email, password });
