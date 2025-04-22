@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ReactNode } from "react";
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, ScrollView, ActivityIndicator, SafeAreaView, Dimensions, Platform } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, ScrollView, ActivityIndicator, SafeAreaView, Dimensions, Platform, Alert } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createStackNavigator, StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
@@ -8,6 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthStackParamList } from "../navigation/AuthNavigator";
 import { API_URL } from '@env';
+
 
 // Drawer and stack nav for sidebar
 const Drawer = createDrawerNavigator();
@@ -34,6 +35,32 @@ const EventActivities = () => {
   const [isLoading, setIsLoading] = useState(true);
   const windowWidth = Dimensions.get("window").width;
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList>>();
+  
+  const EventSignup = async (eventId: string) => {
+    try
+    {
+      const token = await AsyncStorage.getItem("token");
+
+      const response = await fetch(`${API_URL}/api/events`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error("Failed to join event");
+      }
+      Alert.alert("Failed to join event");
+      
+
+    }catch(error){
+      console.error("error");
+    }
+  }
 
   // Fetch events from the backend API on component mount
   useEffect(() => {
@@ -102,7 +129,7 @@ const EventActivities = () => {
         <Text style={styles.eventDetails}>Start Time: {startDate}</Text>
         <Text style={styles.eventDetails}>End Time: {endDate}</Text>
         <Text style={styles.eventDetails}>Max People: {item.maxPeople || 'N/A'}</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("s")}>
+        <TouchableOpacity onPress={() => EventSignup(item._id)}>
           <Text style={{ fontSize: 15, marginVertical: 10, color: "#B88A4E"}}>More details</Text>
         </TouchableOpacity>
       </View>

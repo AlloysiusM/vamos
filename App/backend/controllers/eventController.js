@@ -93,7 +93,33 @@ const deleteEvent = async(req, res) => {
     }
 }
 
-const updateEvent = async(req, res) => {
+const addUser = async(req, res) => {
+    const userId = req.user._id;
+    
+    const { id } = req.params;
+
+    if(!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ error: 'No such event' });
+    }
+
+    try {
+        const event = await Event.findById(id);
+        if(event.currentPeople >= event.maxPeople)
+            {
+                return res.status(400).json({ error: 'Event Full' });
+            }
+        event.currentPeople += 1; //increments currentPeople to fill up
+        event.usersSignedup.push(userId);// adds user id to the array
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+
+const removeUser = async(req, res) => {
+
+}
+
+
+
     
 }
 
@@ -101,5 +127,8 @@ module.exports = {
     getEvents,
     getUserEvents,
     createEvent,
-    deleteEvent
+    deleteEvent,
+    addUser
 }
+
+
