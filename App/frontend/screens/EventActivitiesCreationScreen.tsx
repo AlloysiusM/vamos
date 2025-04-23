@@ -32,6 +32,7 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
   const [isEndPickerVisible, setEndPickerVisible] = useState(false);
   const [error, setError] = useState("");
   const [isCategoryModalVisible, setCategoryModalVisible] = useState(false);
+  const maxDate = new Date();
 
   const handleSubmit = async () => {
     const event = { 
@@ -173,6 +174,7 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
         isVisible={isStartPickerVisible}
         mode="datetime"
         display="inline"
+        minimumDate={maxDate}
         onConfirm={(date) => {
           setStartTime(date);
           setStartPickerVisible(false);
@@ -201,6 +203,7 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
         isVisible={isEndPickerVisible}
         mode="datetime"
         display="inline"
+        minimumDate={maxDate}
         onConfirm={(date) => {
           setEndTime(date);
           setEndPickerVisible(false);
