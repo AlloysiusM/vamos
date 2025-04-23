@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
-
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
@@ -22,7 +21,7 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const redirectUri = AuthSession.makeRedirectUri({ });
+  const redirectUri = AuthSession.makeRedirectUri({});
 
   // Google Auth Request
   const [request, response, promptAsync] = Google.useAuthRequest({
@@ -32,16 +31,7 @@ const LoginScreen = () => {
     redirectUri,
   });
 
-  // debug logs for web uri
-  console.log('[DEBUG] Google Auth Request:', request);
-  console.log('[DEBUG] Google Auth Response:', response);
-  console.log('Redirect URI:', process.env.GOOGLE_REDIRECT_URI);
-  console.log('IOS CLIENT ID:', process.env.GOOGLE_IOS_CLIENT_ID);
-  console.log('ANROID CLIENT ID:', process.env.GOOGLE_ANDROID_CLIENT_ID);
-  console.log('WED CLIENT IT:', process.env.GOOGLE_WEB_CLIENT_ID);
-
   useEffect(() => {
-    console.log('[DEBUG] Google Auth Response:', response);
     if (response?.type === 'success') {
       const { authentication } = response;
       if (authentication?.accessToken) {
@@ -61,8 +51,6 @@ const LoginScreen = () => {
       });
       const user = await res.json();
 
-      console.log('[DEBUG] Google User Info:', user);
-
       // Store user email locally
       await AsyncStorage.setItem('userEmail', user.email);
       Alert.alert('Success', `Welcome ${user.name}`);
@@ -79,12 +67,10 @@ const LoginScreen = () => {
     
     if (!email || !password) {
       setError('Please fill in all fields');
-      console.log('[DEBUG] Missing fields:', { email, password });
       return;
     }
 
     const requestBody = JSON.stringify({ email, password });
-    console.log('[DEBUG] Sending request:', requestBody);
 
     try {
       const response = await fetch(`${API_URL}/api/user/login`, {
@@ -95,99 +81,107 @@ const LoginScreen = () => {
         body: requestBody,
       });
 
-      console.log('[DEBUG] Response Status:', response.status);
-
       const data = await response.json();
-      console.log('[DEBUG] Response Data:', data);
 
       if (!response.ok) {
         setError(data.message || 'Login failed');
-        console.log('[DEBUG] Error Response:', data);
         return;
       }
 
-      // Store token in AsyncStorage (local phone storage)
+      // Store token in AsyncStorage
       await AsyncStorage.setItem('token', data.token);
-      console.log('[DEBUG] Token stored successfully');
-
-      // get token for debugging
-      const storedToken = await AsyncStorage.getItem('token');
-      console.log('[DEBUG] Retrieved Token:', storedToken);
-
       navigation.replace('AppTab'); 
     } catch (error) {
-      console.log('[DEBUG] Fetch Error:', error);
       setError('Login failed');
     }
   };
 
   return (
     <View style={styles.container}>
-      {/*Creating the image from our miro for the logo*/}
-      <Image source={require('../assets/Vamos.jpg')} style={styles.logo} />
-      
-      <Text style={styles.title}>Sign in to Vamos</Text>
+      <View style={styles.phoneFrame}>
+        {/* Bigger Vamos logo */}
+        <Image source={require('../assets/Vamos.jpg')} style={styles.logo} />
+        
+        <Text style={styles.welcomeText}>Sign in to Vamos</Text>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Email Address</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          keyboardType="email-address"
-          placeholderTextColor="#C9D3DB"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-        />
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            keyboardType="email-address"
+            placeholderTextColor="#BDB298"
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            secureTextEntry
+            placeholderTextColor="#BDB298"
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+          />
+        </View>
+
+        {/* Forgot Password */}
+        <TouchableOpacity 
+          style={styles.forgotPasswordContainer} 
+          onPress={() => navigation.replace('ForgotPassword')}
+        >
+          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+        </TouchableOpacity>
+
+        {/* Login Button - Using original gradient */}
+        <TouchableOpacity onPress={handleSubmit}>
+          <LinearGradient
+            colors={['#b57e10', '#f9df7b', '#f9df7b', '#b57e10', '#b57e10']}
+            style={styles.loginButton}
+          >
+            <Text style={styles.loginButtonText}>Login</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        {/* Or continue with */}
+        <View style={styles.orContainer}>
+          <View style={styles.divider} />
+          <Text style={styles.orText}>Or continue with</Text>
+          <View style={styles.divider} />
+        </View>
+
+        {/* Social Login Buttons */}
+
+        {/* google login */}
+        <View style={styles.socialButtonsContainer}>
+          <TouchableOpacity 
+            style={styles.socialButton} 
+            onPress={() => promptAsync()}
+            disabled={!request}
+          >
+            <Text style={styles.socialButtonText}>G</Text>
+          </TouchableOpacity>
+          
+          {/* Apple login placeholder */}
+          <TouchableOpacity style={styles.socialButton}>
+            <Text style={styles.socialButtonText}></Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Register Link */}
+        <View style={styles.registerContainer}>
+          <Text style={styles.registerText}>Not a member? </Text>
+          <TouchableOpacity onPress={() => navigation.replace('Register')}>
+            <Text style={styles.registerLinkText}>Register now</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Error Message */}
+        {error ? (
+          <Text style={styles.errorText}>{error}</Text>
+        ) : null}
       </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry
-          placeholderTextColor="#C9D3DB"
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-        />
-      </View>
-
-      {/* Forgot Button */}
-      <TouchableOpacity style={styles.thirdButton} onPress={() => navigation.replace('ForgotPassword')}>
-        <Text style={styles.thirdButtonText}>Forgot password</Text>
-      </TouchableOpacity>
-
-      {/* Login Button */}
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-              <LinearGradient
-                colors={['#b57e10', '#f9df7b', '#f9df7b', '#b57e10', '#b57e10' ]} //custom gradient for our gold
-                  style={styles.button}
-                  >
-                    <Text style={styles.buttonText}>Sign Up</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-
-      {/* Google Sign-In Button */}
-      <TouchableOpacity 
-        style={[styles.button, styles.googleButton]} 
-        onPress={() => {
-          console.log('[DEBUG] Prompting Google Auth...');
-          promptAsync();
-        }}
-        disabled={!request}
-      >
-        <Text style={styles.googleButtonText}>Sign in with Google</Text>
-      </TouchableOpacity>
-
-      {/* Register Button */}
-      <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.replace('Register')}>
-        <Text style={styles.secondaryButtonText}>Go to Register</Text>
-      </TouchableOpacity>
-
-       {/* Error Message */}
-            {error ? (
-              <Text style={styles.errorText}>{error}</Text>
-            ) : null}
     </View>
   );
 };
@@ -197,114 +191,121 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000000', 
-    paddingHorizontal: 20,
-    paddingVertical: 30,
+    backgroundColor: '#000000',
+    padding: 20,
   },
-
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 30,
-    color: '#C9D3DB',
-    letterSpacing: 1,
-  },
-
-  inputContainer: {
+  phoneFrame: {
     width: '100%',
+    maxWidth: 350,
+    padding: 20,
+    borderRadius: 30,
+    alignItems: 'center',
+  },
+  logo: {
+    width: 180,
+    height: 180,
+    resizeMode: 'contain',
     marginBottom: 20,
   },
-
-  inputLabel: {
+  welcomeText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#C9D3DB', 
-    marginBottom: 8,
+    color: '#f9df7b', 
+    marginBottom: 30,
+    textAlign: 'center',
   },
-
+  inputContainer: {
+    width: '100%',
+    marginBottom: 15,
+  },
   input: {
     height: 50,
-    backgroundColor: '#1E1E1E', 
-    paddingHorizontal: 16,
-    borderRadius: 12,
+    backgroundColor: '#1A1A1A',
+    borderRadius: 8,
+    paddingHorizontal: 15,
     fontSize: 16,
-    fontWeight: '500',
+    color: '#f9df7b', 
     width: '100%',
-    color: '#C9D3DB', 
     borderWidth: 1,
-    borderColor: '#444',
-    shadowColor: '#000', 
-    shadowOpacity: 0.1, 
-    shadowRadius: 5,
-    elevation: 3, 
+    borderColor: '#333',
   },
-
-  button: {
-    paddingVertical: 14,
-    paddingHorizontal: 30,
-    borderRadius: 10,
-    width: '80%',
+  forgotPasswordContainer: {
+    alignSelf: 'flex-end',
+    marginBottom: 20,
+  },
+  forgotPasswordText: {
+    color: '#f9df7b', 
+    fontSize: 14,
+  },
+  loginButton: {
+    width: 280,
+    height: 50,
+    borderRadius: 8,
+    justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 20,
+  },
+  loginButtonText: {
+    color: '#1E1E1E', 
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  orContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+    width: '100%',
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#333',
+  },
+  orText: {
+    color: '#f9df7b', 
+    paddingHorizontal: 10,
+    fontSize: 14,
+  },
+  socialButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '100%',
+    marginBottom: 30,
+  },
+  socialButton: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#1A1A1A',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 10,
+    borderWidth: 1,
+    borderColor: '#f9df7b', 
+  },
+  socialButtonText: {
+    fontSize: 20,
+    color: '#f9df7b', 
+  },
+  registerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
     marginTop: 10,
   },
-
-  buttonText: {
-    color: '#1E1E1E',
-    fontSize: 18,
+  registerText: {
+    color: '#BDB298', 
+    fontSize: 14,
+  },
+  registerLinkText: {
+    color: '#f9df7b', 
+    fontSize: 14,
     fontWeight: '600',
   },
-
-  googleButton: {
-    backgroundColor: '#DB4437',
-  },
-
-  googleButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-
-  secondaryButton: {
-    marginTop: 20,
-    paddingVertical: 12,
-  },
-
-  secondaryButtonText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#C9D3DB',
-  },
-
-  thirdButton: {
-    marginTop: 0,
-    paddingVertical: 12,
-    //alignSelf: 'flex-end',
-    //marginRight: 20,
-  },
-
-  thirdButtonText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#C9D3DB' ,
-  },
-
   errorText: {
-    color: 'red',
-    marginTop: 10,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  
-  //placement of the vamos logo, adjust this customize placement.
-  logo: {
-    width: 400,         
-    height: 150,       
-    //resizeMode: 'contain',
-    marginTop: 40,      
-    marginBottom: 20,   
-    //alignSelf: 'center',
+    color: '#FF6B6B',
+    marginTop: 15,
+    fontSize: 14,
+    textAlign: 'center',
   },
 });
-
 
 export default LoginScreen;

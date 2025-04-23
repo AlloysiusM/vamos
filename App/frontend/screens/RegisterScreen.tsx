@@ -18,13 +18,11 @@ const RegisterScreen = () => {
   const handleSubmit = async () => {
     if (!fullName || !email || !password) {
       setError('Please fill in all fields');
-      console.log('[DEBUG] Missing fields:', { fullName, email, password });
       return;
     }
     
     // Convert request to json
     const requestBody = JSON.stringify({ fullName, email, password });
-    console.log('[DEBUG] Sending request:', requestBody);
     
     // Post data to db
     try {
@@ -35,12 +33,9 @@ const RegisterScreen = () => {
         },
         body: requestBody,
       });
-  
-      console.log('[DEBUG] Response Status:', response.status);
       
       // await json response
       const data = await response.json();
-      console.log('[DEBUG] Response Data:', data);
   
       if (response.status === 400) {
         setError(data.message || 'Invalid request. Please check your details.');
@@ -49,81 +44,79 @@ const RegisterScreen = () => {
 
       if (!response.ok) {
         setError(data.message || 'Registration failed');
-        console.log('[DEBUG] Error Response:', data);
         return;
       }
   
       setError('');
-      console.log('[DEBUG] User registered successfully:', data);
-      
       navigation.replace('Login');
     } catch (error) {
-      console.log('[DEBUG] Fetch Error:', error);
       setError('Registration failed. Please try again.');
     }
   };  
 
   return (
     <View style={styles.container}>
-      {/*Creating the image from our miro for the logo*/}
-      <Image source={require('../assets/Vamos.jpg')} style={styles.logo} />
-      
-      <Text style={styles.title}>Register to Vamos</Text>
+      <View style={styles.phoneFrame}>
+        {/* Vamos logo */}
+        <Image source={require('../assets/Vamos.jpg')} style={styles.logo} />
+        
+        <Text style={styles.welcomeText}>Let's create an account for you</Text>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Full Name</Text>
-        <TextInput 
-          style={styles.input} 
-          placeholder="Full Name" 
-          placeholderTextColor="#C9D3DB"
-          value={fullName}
-          onChangeText={(text) => setFullName(text)}
-        />
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Full name"
+            placeholderTextColor="#BDB298"
+            value={fullName}
+            onChangeText={(text) => setFullName(text)}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            keyboardType="email-address"
+            placeholderTextColor="#BDB298"
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            secureTextEntry
+            placeholderTextColor="#BDB298"
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+          />
+        </View>
+
+        {/* Sign Up Button */}
+        <TouchableOpacity onPress={handleSubmit}>
+          <LinearGradient
+            colors={['#b57e10', '#f9df7b', '#f9df7b', '#b57e10', '#b57e10']}
+            style={styles.signUpButton}
+          >
+            <Text style={styles.signUpButtonText}>Sign Up</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        {/* Already a member */}
+        <View style={styles.loginContainer}>
+          <Text style={styles.loginText}>Already a member? </Text>
+          <TouchableOpacity onPress={() => navigation.replace('Login')}>
+            <Text style={styles.loginLinkText}>Login now</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Error Message */}
+        {error ? (
+          <Text style={styles.errorText}>{error}</Text>
+        ) : null}
       </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Email Address</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          keyboardType="email-address"
-          placeholderTextColor="#C9D3DB"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-        />
-      </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry
-          placeholderTextColor="#C9D3DB"
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-        />
-      </View>
-
-      {/* Sign Up Button */}
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <LinearGradient
-          colors={['#b57e10', '#f9df7b', '#f9df7b', '#b57e10', '#b57e10' ]} //custom gradient for our gold
-            style={styles.button}
-            >
-              <Text style={styles.buttonText}>Sign Up</Text>
-        </LinearGradient>
-      </TouchableOpacity>
-
-      {/* Back to Login Button */}
-      <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.replace('Login')}>
-        <Text style={styles.secondaryButtonText}>Back to Login</Text>
-      </TouchableOpacity>
-
-      {/* Error Message */}
-      {error ? (
-        <Text style={styles.errorText}>{error}</Text>
-      ) : null}
     </View>
   );
 };
@@ -133,90 +126,76 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000000', 
-    paddingHorizontal: 20,
-    paddingVertical: 30,
+    backgroundColor: '#000000',
+    padding: 20,
   },
-
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 30,
-    color: '#C9D3DB', 
-    letterSpacing: 1,
-  },
-
-  inputContainer: {
+  phoneFrame: {
     width: '100%',
+    maxWidth: 350,
+    padding: 20,
+    borderRadius: 30,
+    alignItems: 'center',
+  },
+  logo: {
+    width: 180,
+    height: 180,
+    resizeMode: 'contain',
     marginBottom: 20,
   },
-
-  inputLabel: {
+  welcomeText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#C9D3DB', 
-    marginBottom: 8,
+    color: '#f9df7b',
+    marginBottom: 30,
+    textAlign: 'center',
   },
-
+  inputContainer: {
+    width: '100%',
+    marginBottom: 15,
+  },
   input: {
     height: 50,
-    backgroundColor: '#333', 
-    paddingHorizontal: 16,
-    borderRadius: 12,
+    backgroundColor: '#1A1A1A',
+    borderRadius: 8,
+    paddingHorizontal: 15,
     fontSize: 16,
-    fontWeight: '500',
+    color: '#f9df7b',
     width: '100%',
-    color: '#C9D3DB', 
     borderWidth: 1,
-    borderColor: '#444', 
-    shadowColor: '#000',
-    shadowOpacity: 0.1, 
-    shadowRadius: 5,
-    elevation: 3, 
+    borderColor: '#333',
   },
-
-  button: {
-     
-    paddingVertical: 14,
-    paddingHorizontal: 30,
-    borderRadius: 10,
-    width: '80%',
+  signUpButton: {
+    width: 280,
+    height: 50,
+    borderRadius: 8,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 10,
-  },
-
-  buttonText: {
-    color: '#1E1E1E',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-
-  secondaryButton: {
     marginTop: 20,
-    paddingVertical: 12,
+    marginBottom: 20,
   },
-
-  secondaryButtonText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#C9D3DB', 
-  },
-
-  errorText: {
-    color: 'red',
-    marginTop: 10,
+  signUpButtonText: {
+    color: '#1E1E1E',
     fontSize: 16,
     fontWeight: '600',
   },
-
-  //placement of the vamos logo, adjust this customize placement.
-  logo: {
-    width: 400,         
-    height: 150,       
-    //resizeMode: 'contain',
-    marginTop: 40,      
-    marginBottom: 20,   
-    //alignSelf: 'center',
+  loginContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 10,
+  },
+  loginText: {
+    color: '#BDB298',
+    fontSize: 14,
+  },
+  loginLinkText: {
+    color: '#f9df7b',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  errorText: {
+    color: '#FF6B6B',
+    marginTop: 15,
+    fontSize: 14,
+    textAlign: 'center',
   },
 });
 
