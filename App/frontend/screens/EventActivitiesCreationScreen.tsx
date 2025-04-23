@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform, Modal } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform, Modal, Keyboard } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -91,7 +91,7 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
       
       {/* Title */}
       <Text style={styles.label}>Title</Text>
-      <TextInput style={styles.input} value={title} onChangeText={setTitle} placeholder="Enter title" />
+      <TextInput   placeholderTextColor="#d3d3d3" style={styles.input} value={title} onChangeText={setTitle} placeholder="Enter title" />
       
       {/* Category Picker */}
       <Text style={styles.label}>Category</Text>
@@ -137,7 +137,7 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
 
       {/* Description */}
       <Text style={styles.label}>Description</Text>
-      <TextInput style={styles.input} value={description} onChangeText={setDescription} placeholder="Enter description" multiline />
+      <TextInput placeholderTextColor="#d3d3d3" style={styles.input} value={description} onChangeText={setDescription} placeholder="Enter description" multiline blurOnSubmit={true} onSubmitEditing={() => Keyboard.dismiss()} />
 
       {/* Location */}
       <Text style={styles.label}>Location</Text>
@@ -166,7 +166,7 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
         />
       ) : (
         <TouchableOpacity style={styles.dateButton} onPress={() => setStartPickerVisible(true)}>
-          <Text>{startTime.toLocaleString()}</Text>
+          <Text style={styles.dateText}>{startTime.toLocaleString()}</Text>
         </TouchableOpacity>
       )}
 
@@ -195,7 +195,7 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
         />
       ) : (
         <TouchableOpacity style={styles.dateButton} onPress={() => setEndPickerVisible(true)}>
-          <Text>{endTime.toLocaleString()}</Text>
+          <Text style={styles.dateText}>{startTime.toLocaleString()}</Text>
         </TouchableOpacity>
       )}
       
@@ -224,106 +224,113 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
   );
 };
 
-const THEME_COLOR = "#B88A4E";
+const THEME_COLOR = "#f9df7b";
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    padding: 20, 
-    backgroundColor: "#000000", 
+  container: {
+    flex: 1,
+    padding: 24,
+    backgroundColor: "#000000",
     paddingTop: 100,
   },
-  label: { 
+  label: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: THEME_COLOR,
+    marginBottom: 8,
+  },
+  input: {
+    backgroundColor: "#1a1a1a",
+    padding: 14,
+    borderRadius: 12,
+    color: "#f0f0f0", 
+    fontSize: 15,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "#2c2c2c",
+  },
+  counterContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  counterButton: {
+    backgroundColor: "#2b2b2b",
+    padding: 12,
+    borderRadius: 8,
+  },
+  counterText: {
+    fontSize: 20,
+    color: "#fff",
+  },
+  counterValue: {
+    fontSize: 18,
+    color: THEME_COLOR,
+    marginHorizontal: 16,
+  },
+  dateButton: {
+    backgroundColor: "#1a1a1a",
+    padding: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#2c2c2c",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  dateText: {
+    color: "#f0f0f0",
     fontSize: 16, 
-    fontWeight: "bold", 
-    marginBottom: 5, 
-    color: THEME_COLOR 
   },
-  input: { 
-    borderWidth: 1, 
-    borderColor: "#ccc", 
-    padding: 10, 
-    borderRadius: 5, 
-    marginBottom: 20, 
-    color: THEME_COLOR, 
-    backgroundColor: "#333" 
+  submitButton: {
+    backgroundColor: THEME_COLOR,
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    marginTop: 20,
   },
-  counterContainer: { 
-    flexDirection: "row", 
-    alignItems: "center", 
-    marginBottom: 20, 
+  submitText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
-  counterButton: { 
-    backgroundColor: "#1E1E1E", 
-    padding: 10, 
-    borderRadius: 5 
+  errorText: {
+    color: "#ff4d4f",
+    fontSize: 14,
+    marginTop: 12,
+    fontWeight: "500",
   },
-  counterText: { 
-    fontSize: 20, 
-    color: "#fff" 
+  placeholder: {
+    color: "#ccc",
   },
-  counterValue: { 
-    fontSize: 18, 
-    marginHorizontal: 10, 
-    color: THEME_COLOR 
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
   },
-  dateButton: { 
-    borderWidth: 1, 
-    borderColor: "#ccc", 
-    padding: 10, 
-    borderRadius: 5, 
-    alignItems: "center", 
-    marginBottom: 20, 
-    backgroundColor: "#333" 
+  modalContainer: {
+    backgroundColor: "#1a1a1a",
+    padding: 24,
+    borderRadius: 16,
+    width: "85%",
   },
-  submitButton: { 
-    backgroundColor: THEME_COLOR, 
-    padding: 15, 
-    borderRadius: 5, 
-    alignItems: "center", 
-    marginTop: 10, 
+  picker: {
+    height: 180,
+    width: "100%",
+    color: "#f0f0f0",
   },
-  submitText: { 
-    color: "#fff", 
-    fontSize: 16, 
-    fontWeight: "bold" 
+  closeButton: {
+    marginTop: 24,
+    padding: 12,
+    backgroundColor: THEME_COLOR,
+    borderRadius: 8,
+    alignItems: "center",
   },
-  errorText: { 
-    color: "red", 
-    marginTop: 10, 
-    fontSize: 16 
+  closeButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 15,
   },
-  placeholder: { 
-    color: THEME_COLOR 
-  },
-  modalOverlay: { 
-    flex: 1, 
-    justifyContent: "center", 
-    alignItems: "center", 
-    backgroundColor: "rgba(0, 0, 0, 0.5)" 
-  },
-  modalContainer: { 
-    backgroundColor: "#1E1E1E", 
-    padding: 20, 
-    borderRadius: 10, 
-    width: "80%" 
-  },
-  picker: { 
-    height: 200, 
-    width: "100%", 
-    color: THEME_COLOR 
-  },
-  closeButton: { 
-    marginTop: 20, 
-    padding: 10, 
-    backgroundColor: THEME_COLOR, 
-    alignItems: "center", 
-    borderRadius: 5 
-  },
-  closeButtonText: { 
-    color: "#fff", 
-    fontWeight: "bold" 
-  }
 });
 
 export default CreateEventScreen;

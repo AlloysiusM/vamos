@@ -103,7 +103,7 @@ const EventActivities = () => {
         <Text style={styles.eventDetails}>End Time: {endDate}</Text>
         <Text style={styles.eventDetails}>Max People: {item.maxPeople || 'N/A'}</Text>
         <TouchableOpacity onPress={() => navigation.navigate("s")}>
-          <Text style={{ fontSize: 15, marginVertical: 10, color: "#B88A4E"}}>More details</Text>
+          <Text style={{ fontSize: 15, marginVertical: 10, color: "#cccccc"}}>More details</Text>
         </TouchableOpacity>
       </View>
     );
@@ -172,15 +172,15 @@ const EventStack = () => {
         options={{
           title: "My Events",
           headerStyle: { backgroundColor: "#1E1E1E" },
-          headerTintColor: "#B88A4E",
+          headerTintColor: "#f9df7b",
           headerLeft: () => (
             <TouchableOpacity onPress={() => navigation.toggleDrawer()} style={{ marginLeft: 15 }}>
-              <Ionicons name="menu" size={28} color="#B88A4E" />
+              <Ionicons name="menu" size={28} color="#f9df7b" />
             </TouchableOpacity>
           ),
           headerRight: () => (
             <TouchableOpacity onPress={() => navigation.navigate("CreateEvent")} style={{ marginRight: 15 }}>
-              <Ionicons name="add-outline" size={28} color="#B88A4E" />
+              <Ionicons name="add-outline" size={28} color="#f9df7b" />
             </TouchableOpacity>
           ),
         }}
@@ -209,79 +209,52 @@ export default EventsScreenDrawer;
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#1E1E1E",
+    backgroundColor: "#121212", 
   },
-  
+
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#000000",
+    backgroundColor: "#000000", 
     paddingHorizontal: 20,
-    paddingTop: 30,
-  },
-
-  eventDetails: {
-    color: "#C9D3DB",
-    fontSize: 14,
-    marginBottom: 4,
-  },
-
-  eventCategory: {
-    color: "#C9D3DB",
-    fontSize: 16,
-    fontWeight: "500",
-    marginBottom: 6,
-  },
-
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginTop: 10,
-    color: "#B88A4E",
-    letterSpacing: 1,
-    marginBottom: 20,
+    paddingTop: 40,
   },
 
   errorText: {
-    color: "red",
+    color: "#FF6B6B",  
     fontSize: 16,
-    marginBottom: 10,
+    textAlign: "center",
+    marginBottom: 15,
+    fontWeight: "500",  
   },
 
   inputContainer: {
-    width: "100%",
-    marginBottom: 20,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#333",
-    borderRadius: 12,
+    backgroundColor: "#121212", 
+    borderRadius: 40,
     paddingHorizontal: 16,
+    paddingVertical: 14,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "#1E1E1E",  
+    shadowColor: "#000",
+    shadowOpacity: 0.2, 
+    shadowRadius: 8,
+    elevation: 4,  
   },
 
   searchIcon: {
     marginRight: 10,
+    color: "#cccccc",  
   },
 
   input: {
-    height: 50,
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#C9D3DB",
     flex: 1,
-  },
-
-  inputField: {
-    height: 50,
+    color: "#FFF",
     fontSize: 16,
-    fontWeight: "500",
-    color: "#C9D3DB",
-    width: "100%",
-  },
-
-  eventsContainer: {
-    flex: 1,
-    width: "100%",
+    fontWeight: "400", 
+    paddingVertical: 6,
+    letterSpacing: 1.0, 
   },
 
   flatListContentStyle: {
@@ -289,63 +262,87 @@ const styles = StyleSheet.create({
   },
 
   eventTitleStyle: {
-    color: "#C9D3DB",
-    fontSize: 18,
+    fontSize: 22,  
     fontWeight: "600",
+    color: "#FFFFFF",
+    marginBottom: 10,
+    letterSpacing: 1.0,  
+    textTransform: "uppercase",
+  },
+
+  eventCategory: {
+    fontSize: 16,
+    color: "#f9df7b",
+    marginBottom: 10,
+    fontWeight: "400", 
+    textTransform: "capitalize",
+    letterSpacing: 0.8, 
+  },
+
+  eventDetails: {
+    fontSize: 14,
+    color: "#C0C0C0",
     marginBottom: 8,
+    fontWeight: "300",
+    letterSpacing: 1.0,  
   },
 
   eventItemStyle: {
-    backgroundColor: "#333",
-    padding: 15,
-    marginBottom: 15,
-    borderRadius: 8,
-    minHeight: 150,
+    backgroundColor: "#292929", 
+    padding: 20,
+    borderRadius: 18,
+    marginBottom: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15, 
+    shadowRadius: 12,
+    elevation: 6, 
   },
 
-  eventNameStyle: {
-    color: "#C9D3DB",
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 8,
-  },
-
-  eventDescriptionStyle: {
-    color: "#C9D3DB",
-    fontSize: 14,
-    lineHeight: 20,
+  eventItemStyleHover: {
+    backgroundColor: "#333", 
+    transform: [{ scale: 1.02 }], 
+    shadowOpacity: 0.2, 
   },
 
   buttonStyle: {
     backgroundColor: "#B88A4E",
-    paddingVertical: 14,
+    paddingVertical: 16,
     paddingHorizontal: 30,
-    borderRadius: 10,
-    width: "80%",
+    borderRadius: 40,
     alignItems: "center",
-    marginTop: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
+    marginTop: 15,
     elevation: 3,
+
   },
 
   buttonTextStyle: {
     color: "#1E1E1E",
-    fontSize: 18,
+    fontSize: 18, 
     fontWeight: "600",
+    letterSpacing: 1.2,
   },
 
-  eventDetailsStyle: {
-    color: "#C9D3DB",
-    fontSize: 14,
-    marginBottom: 4,
+  buttonStyleActive: {
+    backgroundColor: "#A2743D", 
   },
 
-  eventCategoryStyle: {
-    color: "#C9D3DB",
-    fontSize: 16,
-    fontWeight: "500",
-    marginBottom: 6,
+  eventItemStyleTouch: {
+    backgroundColor: "#292929",
+    padding: 20,
+    borderRadius: 18,
+    marginBottom: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
+    transform: [{ scale: 1 }],
+  },
+
+  eventItemStyleTouchActive: {
+    transform: [{ scale: 1.02 }],
+    backgroundColor: "#333", 
+    shadowOpacity: 0.18,
   },
 });

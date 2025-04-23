@@ -100,7 +100,7 @@ const LoginScreen = () => {
     <View style={styles.container}>
       <View style={styles.phoneFrame}>
         {/* Bigger Vamos logo */}
-        <Image source={require('../assets/Vamos.jpg')} style={styles.logo} />
+        <Image source={require('../assets/Vamos2.jpg')} style={styles.logo} />
         
         <Text style={styles.welcomeText}>Sign in to Vamos</Text>
 

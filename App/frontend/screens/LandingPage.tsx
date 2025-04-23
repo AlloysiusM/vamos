@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { AuthStackParamList } from "../navigation/AuthNavigator";
+import { LinearGradient } from 'expo-linear-gradient';
 
 const LandingPage = () => {
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList>>();
@@ -9,7 +10,7 @@ const LandingPage = () => {
   return (
     <View style={styles.container}>
       {/* Logo */}
-      <Image source={require('../assets/Vamos2.jpg')} style={styles.logo} />
+      <Image source={require('../assets/Vamos.jpg')} style={styles.logo} />
 
       {/* Spacer */}
       <View style={{ height: 20 }} />
@@ -18,28 +19,42 @@ const LandingPage = () => {
       <View style={styles.cardContainer}>
         <View style={styles.cardRow}>
           <TouchableOpacity onPress={() => navigation.navigate("EventActivities")}>
-            <View style={styles.card}>
+            <LinearGradient
+              colors={['#b57e10', '#f9df7b', '#d8a90d']}
+              style={styles.card}
+            >
               <Text style={styles.cardLabel}>My Events</Text>
-            </View>
+            </LinearGradient>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => navigation.navigate("FriendsList")}>
-            <View style={styles.card}>
+            <LinearGradient
+              colors={['#b57e10', '#f9df7b', '#d8a90d']}
+              style={styles.card}
+            >
               <Text style={styles.cardLabel}>Friends</Text>
-            </View>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
 
         <View style={styles.cardRow}>
           <TouchableOpacity onPress={() => navigation.navigate("Schedule")}>
-            <View style={styles.card}>
+            <LinearGradient
+              colors={['#b57e10', '#f9df7b', '#d8a90d']}
+              style={styles.card}
+            >
               <Text style={styles.cardLabel}>Schedule</Text>
-            </View>
+            </LinearGradient>
           </TouchableOpacity>
 
-          <View style={styles.card}>
-            <Text style={styles.cardLabel}>Near me</Text>
-          </View>
+          <TouchableOpacity onPress={() => navigation.navigate("NearMe")}> 
+            <LinearGradient
+              colors={['#b57e10', '#f9df7b', '#d8a90d']}
+              style={styles.card}
+            >
+              <Text style={styles.cardLabel}>Near me</Text>
+            </LinearGradient>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -51,17 +66,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000000',
     paddingHorizontal: 20,
-    paddingTop: 80, 
+    paddingTop: 80,
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
   logo: {
-    width: 180,
-    height: 180,
+    width: 200,
+    height: 200,
     resizeMode: 'contain',
   },
   cardContainer: {
-    marginTop: 30,
     width: '100%',
     alignItems: 'center',
   },
@@ -72,10 +86,9 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   card: {
-    width: 150,
-    height: 150,
+    width: 165,
+    height: 165,
     borderRadius: 20,
-    backgroundColor: '#FFF0C1',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#C9A348',

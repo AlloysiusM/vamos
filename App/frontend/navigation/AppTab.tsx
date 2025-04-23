@@ -63,7 +63,7 @@ const AppTab = () => {
             </View>
           )
         },
-        tabBarActiveTintColor: "#B88A4E",
+        tabBarActiveTintColor: "#f9df7b",
         tabBarInactiveTintColor: "gray",
         tabBarShowLabel: false,
         tabBarStyle: styles.tabBarStyle,
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
     elevation: 5,
-    backgroundColor: "#2E2E2E",
+    backgroundColor: "#121212",
     borderRadius: 25,
     height: 80,
     paddingBottom: 20,
