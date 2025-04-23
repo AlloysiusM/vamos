@@ -64,6 +64,7 @@ const LoginScreen = () => {
   }
 
   const handleSubmit = async () => {
+    
     if (!email || !password) {
       setError('Please fill in all fields');
       return;

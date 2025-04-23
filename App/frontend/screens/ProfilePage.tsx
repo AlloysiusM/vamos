@@ -48,6 +48,7 @@ const ProfilePage = () => {
             
     
             if (response.ok) {
+              
               setFullName(data.fullName);
             } else {
              // Handle specific errors (e.g., token expired -> redirect to login)
