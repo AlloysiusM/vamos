@@ -41,7 +41,7 @@ const EventActivities = () => {
     {
       const token = await AsyncStorage.getItem("token");
 
-      const response = await fetch(`${API_URL}/api/events`, {
+      const response = await fetch(`${API_URL}/api/events/${eventId}`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -130,7 +130,7 @@ const EventActivities = () => {
         <Text style={styles.eventDetails}>End Time: {endDate}</Text>
         <Text style={styles.eventDetails}>Max People: {item.maxPeople || 'N/A'}</Text>
         <TouchableOpacity onPress={() => EventSignup(item._id)}>
-          <Text style={{ fontSize: 15, marginVertical: 10, color: "#B88A4E"}}>More details</Text>
+          <Text style={{ fontSize: 15, marginVertical: 10, color: "#B88A4E"}}>Sign Up</Text>
         </TouchableOpacity>
       </View>
     );

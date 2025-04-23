@@ -110,6 +110,8 @@ const addUser = async(req, res) => {
             }
         event.currentPeople += 1; //increments currentPeople to fill up
         event.usersSignedup.push(userId);// adds user id to the array
+        await event.save();
+        res.status(200).json(event);
     } catch (error) {
         res.status(500).json({ error: 'Server error' });
     }

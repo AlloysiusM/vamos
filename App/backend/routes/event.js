@@ -24,6 +24,6 @@ router.post('/', protect, createEvent);
 // delete users own events
 router.delete('/:id', protect, deleteEvent);
 
-router.put('/:id', protect, addUser);
+router.patch('/:id', protect, addUser);
 
 module.exports = router;
