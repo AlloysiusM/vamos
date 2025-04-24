@@ -34,6 +34,7 @@ const ProfilePage = () => {
             }
   
             const response = await fetch(`${API_URL}/api/user/profile`, {
+              
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json',

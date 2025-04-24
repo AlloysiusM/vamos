@@ -73,7 +73,9 @@ const LoginScreen = () => {
     const requestBody = JSON.stringify({ email, password });
 
     try {
+      console.log('gg');
       const response = await fetch(`${API_URL}/api/user/login`, {
+
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
