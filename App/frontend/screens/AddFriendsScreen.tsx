@@ -6,21 +6,11 @@ import { View, Text, StyleSheet } from "react-native";
 import { AuthStackParamList } from "../navigation/AuthNavigator";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-const FriendsList: React.FC = () => {
-  const navigation = useNavigation<StackNavigationProp<AuthStackParamList>>();
+const AddFriendScreen: React.FC = () => {
   
   return (
     <View style={styles.container}>
-      {/* Row with title and icon */}
-      <View style={styles.headerRow}>
-        <Text style={styles.title}>Friends List</Text>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("AddFriend")}
-          style={styles.addButton}
-        >
-          <Ionicons name="add-outline" size={28} color="#f9df7b" />
-        </TouchableOpacity>
-      </View>
+        <Text style={styles.title}>People you might know</Text>
     </View>
   ); 
 };
@@ -34,15 +24,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  headerRow: {
-    alignItems: 'center',
-  justifyContent: 'center',
-  position: 'relative',
-  width: '100%',
-  marginTop: -520,
-  backgroundColor: "#1E1E1E",
-  },
-
   title: {
     fontSize: 28,
     fontWeight: "bold",
@@ -50,16 +31,12 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     textAlign: "center",
     lineHeight: 34,
-  },
-
-  addButton: {
-    position: 'absolute',
-  right: 0,
-  top: -5,
-  padding: 10,
+    marginTop: -520,
+    
+    
   },
 
 
 });
 
-export default FriendsList;
+export default AddFriendScreen;
