@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 30,
     justifyContent: "center",
+    marginTop: -160,
   },
 
   headerRow: {
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
 
   addButton: {
     position: 'absolute',
-  right: 0,
+  right: -10,
   top: -5,
   padding: 10,
   },

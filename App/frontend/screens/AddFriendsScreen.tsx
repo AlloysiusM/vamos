@@ -1,7 +1,7 @@
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useState } from "react";
-import { ActivityIndicator, Alert, TouchableOpacity } from "react-native";
+import { ActivityIndicator, Alert, ScrollView, TouchableOpacity } from "react-native";
 import { View, Text, StyleSheet } from "react-native";
 import { AuthStackParamList } from "../navigation/AuthNavigator";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -78,7 +78,7 @@ const AddFriendsScreen: React.FC = () => {
       );
   
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
         <Text style={styles.title}>People you might know</Text>
         {isLoading ? (
         <ActivityIndicator size="large" color="#B88A4E" style={{ marginTop: 20 }} />
@@ -95,7 +95,7 @@ const AddFriendsScreen: React.FC = () => {
           </View>
         ))
       )}
-    </View>
+    </ScrollView>
   ); 
 };
 
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#1E1E1E",
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 40,
   },
   title: {
     fontSize: 28,
@@ -112,7 +112,8 @@ const styles = StyleSheet.create({
     color: "#B88A4E",
     letterSpacing: 1,
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 40,
+    marginTop: 20,
   },
 
   userCard: {

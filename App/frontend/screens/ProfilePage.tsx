@@ -100,8 +100,8 @@ const ProfilePage = () => {
       title: {
         fontSize: 28,
         fontWeight: 'bold',
-        marginTop: -300,
-        marginBottom: 30,
+        marginTop: -400,
+        marginBottom: 60,
         color: '#B88A4E',
         letterSpacing: 1,
       },
