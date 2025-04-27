@@ -240,26 +240,16 @@ const getPeopleName = async(req, res) => {
     // Check for token in Authorization header
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         try {
+            console.log('kk');
             // Extract token ("Bearer <token>")
             token = req.headers.authorization.split(' ')[1];
 
             // Verify token and decode payload
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-            const user = await User.findById(decoded.id);
-    
-        if (user) {
-            // Send user data (without password)
-            res.status(200).json({
-                _id: user._id,
-                fullName: user.fullName,
-                email: user.email,
-                // Add any other non-sensitive fields you want to return
-            });
-        } else {
-            // This case might occur if the user was deleted after the token was issued
-            res.status(404).json({ message: 'User not found' });
-        }
+            const users = await User.find({ _id: { $ne: decoded.id } }).select('fullName email');
+            res.status(200).json(users);
+       
     } catch (error) {
         console.error('Get User Profile Error:', error);
         // Handle specific JWT errors

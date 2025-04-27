@@ -1,7 +1,7 @@
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useState } from "react";
-import { Alert, TouchableOpacity } from "react-native";
+import { ActivityIndicator, Alert, TouchableOpacity } from "react-native";
 import { View, Text, StyleSheet } from "react-native";
 import { AuthStackParamList } from "../navigation/AuthNavigator";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -11,7 +11,7 @@ import { API_URL } from "@env";
 const AddFriendsScreen: React.FC = () => {
 
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList, 'AddFriend'>>();
-      const [fullName, setFullName] = useState('');
+      const [users, setUsers] = useState<any[]>([]);
       const [isLoading, setIsLoading] = useState(true); 
   
       useFocusEffect(
@@ -47,11 +47,12 @@ const AddFriendsScreen: React.FC = () => {
               const data = await response.json();
     
               console.log(data);
+
               
       
               if (response.ok) {
                 
-                setFullName(data.fullName);
+                setUsers(data);
               } else {
                // Handle specific errors (e.g., token expired -> redirect to login)
                if (response.status === 401) {
@@ -79,7 +80,21 @@ const AddFriendsScreen: React.FC = () => {
   return (
     <View style={styles.container}>
         <Text style={styles.title}>People you might know</Text>
-        <Text> {fullName}</Text>
+        {isLoading ? (
+        <ActivityIndicator size="large" color="#B88A4E" style={{ marginTop: 20 }} />
+      ) : (
+        users.map((user) => (
+          <View key={user._id} style={styles.userCard}>
+            <View style={styles.userInfo}>
+              <Text style={styles.name}>{user.fullName}</Text>
+              <Text style={styles.email}>{user.email}</Text>
+            </View>
+            <TouchableOpacity style={styles.addButton} onPress={() => console.log('Add friend:', user._id)}>
+              <Text style={styles.addButtonText}>Add</Text>
+            </TouchableOpacity>
+          </View>
+        ))
+      )}
     </View>
   ); 
 };
@@ -89,23 +104,50 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#1E1E1E",
     paddingHorizontal: 20,
-    paddingVertical: 30,
-    justifyContent: "center",
+    paddingTop: 20,
   },
-
   title: {
     fontSize: 28,
     fontWeight: "bold",
     color: "#B88A4E",
     letterSpacing: 1,
     textAlign: "center",
-    lineHeight: 34,
-    marginTop: -520,
-    
-    
+    marginBottom: 20,
   },
 
+  userCard: {
+    backgroundColor: "#2A2A2A",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 15,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  userInfo: {
+    flex: 1,
+  },
 
+  name: {
+    color: "#F9DF7B",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  email: {
+    color: "#ccc",
+    fontSize: 14,
+    marginTop: 5,
+  },
+  addButton: {
+    backgroundColor: "#B88A4E",
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  addButtonText: {
+    color: "#1E1E1E",
+    fontWeight: "bold",
+  },
 });
 
 export default AddFriendsScreen;
