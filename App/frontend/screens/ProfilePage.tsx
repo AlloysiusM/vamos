@@ -18,6 +18,7 @@ const ProfilePage = () => {
       useCallback(() => {
         console.log('fafaf');
         
+        
         const fetchUserName = async () => {
           setIsLoading(true); // Start loading
           try {
