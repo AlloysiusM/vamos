@@ -266,6 +266,15 @@ const getPeopleName = async(req, res) => {
     res.status(401).json({ message: 'Not authorized, no token provided' });
 }
 };
+
+const getFriendReq = async (req, res) => {
+    try {
+        // get friend request notification
+        res.status(200).json(events); 
+    } catch (error) {
+        res.status(500).json({ message: error.message }); 
+    }
+};
   
 
-module.exports = { registerUser, loginUser, forgotPassword, verificationEmail, resetPassword, getUserName, getPeopleName };
+module.exports = { registerUser, loginUser, forgotPassword, verificationEmail, resetPassword, getUserName, getPeopleName, getFriendReq };
