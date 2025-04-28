@@ -1,6 +1,6 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, FlatList } from 'react-native';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 import { useCallback, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -33,7 +33,7 @@ useFocusEffect(
           return;
         }
 
-        const response = await fetch(`${API_URL}/api/user/notif`, {
+        const response = await fetch(`${API_URL}/api/user/getFriendReq`, {
           
           method: 'GET',
           headers: {
@@ -54,7 +54,6 @@ useFocusEffect(
           setUsers(data);
         } 
       } catch (error) {
-        console.error('Fetch user profile error:', error);
         Alert.alert('Error', 'Something went wrong while fetching profile. Check your network connection and API server.');
       }
       finally {
@@ -66,34 +65,67 @@ useFocusEffect(
   }, [])
 );
 
+const renderNotificationItem = ({ item }: { item: any }) => (
+  <View style={styles.notificationItem}>
+    <Text style={styles.notificationText}>{item.senderId || 'Unknown User'} sent you a friend request.</Text>
+  </View>
+);
+
       return (
         <View style={styles.container}>
           <Text style={styles.title}>Notifications</Text>
-          <Text></Text>
+      {isLoading ? (
+        <ActivityIndicator size="large" color="#B88A4E" />
+      ) : users.length === 0 ? (
+        <Text style={styles.noNotificationsText}>No notifications available.</Text>
+      ) : (
+        <FlatList
+          data={users}
+          keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+          renderItem={renderNotificationItem}
+          contentContainerStyle={styles.listContent}
+        />
+      )}
         </View>
       );
     };
     
     const styles = StyleSheet.create({
       container: {
-       flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#1E1E1E', 
+        flex: 1,
+        backgroundColor: '#1E1E1E',
         paddingHorizontal: 20,
-        paddingVertical: 30,
+        paddingTop: 60,
       },
-    
       title: {
         fontSize: 28,
         fontWeight: 'bold',
-        marginTop: -400,
-        marginBottom: 60,
+        marginBottom: 30,
         color: '#B88A4E',
         letterSpacing: 1,
+        textAlign: 'center',
       },
     
-    
+      notificationItem: {
+        backgroundColor: '#2E2E2E',
+        padding: 15,
+        borderRadius: 8,
+        marginBottom: 10,
+      },
+      notificationText: {
+        color: '#FFF',
+        fontSize: 16,
+      },
+
+      noNotificationsText: {
+        marginTop: 20,
+        color: '#888',
+        fontSize: 16,
+        textAlign: 'center',
+      },
+      listContent: {
+        paddingBottom: 20,
+      },
       
 });
 

@@ -291,10 +291,20 @@ const sendingReq = async (req, res) => {
     }
 };
 
-const getNotif = async (req, res) => {
+const getFriendReq = async (req, res) => {
+   try {
+    const userId = req.user.id;
+    const notification = await Notification.find({user: userId})
+    .populate('sender', 'fullName email') // Populate sender details (fullName, email)
+    .sort({ createdAt: -1 }); // Optional: latest first
 
+    res.status(200).json(notification);
+    
+   } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+}
 };
 
   
 
-module.exports = { registerUser, loginUser, forgotPassword, verificationEmail, resetPassword, getUserName, getPeopleName, sendingReq, getNotif };
+module.exports = { registerUser, loginUser, forgotPassword, verificationEmail, resetPassword, getUserName, getPeopleName, sendingReq, getFriendReq };

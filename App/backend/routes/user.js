@@ -1,5 +1,5 @@
 const express = require('express');
-const { registerUser, loginUser,forgotPassword, verificationEmail, resetPassword, getUserName, getPeopleName, sendingReq, getNotif} = require('../controllers/userController');
+const { registerUser, loginUser,forgotPassword, verificationEmail, resetPassword, getUserName, getPeopleName, sendingReq, getFriendReq} = require('../controllers/userController');
 const { protect } = require('../middleware/authMiddleWare');
 
 const router = express.Router();
@@ -15,7 +15,7 @@ router.get("/add-friends", getPeopleName);
 
 router.post("/sending-req",protect, sendingReq);
 
-router.get("/notif", protect, getNotif);
+router.get("/getFriendReq", protect, getFriendReq);
 
 // implement user profile (use protect jwt)
 
