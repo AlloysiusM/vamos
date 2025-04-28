@@ -76,6 +76,55 @@ const AddFriendsScreen: React.FC = () => {
           fetchUserName();
         }, [])
       );
+
+      const handleSendingReq = async (friendId: string) => {
+        
+            try {
+              const token = await AsyncStorage.getItem('token');
+    
+              if (!token) {
+                console.log('dfd');
+                
+                // Handle case where user is not logged in (e.g., redirect to login)
+                Alert.alert('Error', 'You are not logged in.');
+                // Example: navigation.navigate('Login'); // Or your login screen name
+                
+                return;
+              }
+
+    
+          // Post data to db
+            const response = await fetch(`${API_URL}/api/user/sending-req`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+              },
+              body: JSON.stringify({ friendId }), // send the friend ID you want to notify
+            });
+            
+            const data = await response.json();
+    
+            console.log(data);
+
+            console.log('Sending Friend Request to:', `${API_URL}/api/user/sending-req`);
+console.log('Token:', token);
+console.log('ReceiverId:', friendId);
+
+            if (response.ok) {
+              Alert.alert('Sending request successfully.');
+            } else {
+             // Handle specific errors (e.g., token expired -> redirect to login)
+             
+              Alert.alert('Error', data.message || 'Could not send request');
+         
+       }
+          } catch (error) {
+            Alert.alert('Error', 'Something went wrong while fetching profile. Check your network connection and API server.');
+          }
+  
+        };
+      
   
   return (
     <ScrollView style={styles.container}>
@@ -89,7 +138,7 @@ const AddFriendsScreen: React.FC = () => {
               <Text style={styles.name}>{user.fullName}</Text>
               <Text style={styles.email}>{user.email}</Text>
             </View>
-            <TouchableOpacity style={styles.addButton} onPress={() => console.log('Add friend:', user._id)}>
+            <TouchableOpacity style={styles.addButton} onPress={() => handleSendingReq(user._id)}>
               <Text style={styles.addButtonText}>Add</Text>
             </TouchableOpacity>
           </View>

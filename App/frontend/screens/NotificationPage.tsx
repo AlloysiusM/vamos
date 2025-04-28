@@ -52,17 +52,7 @@ useFocusEffect(
         if (response.ok) {
           
           setUsers(data);
-        } else {
-         // Handle specific errors (e.g., token expired -> redirect to login)
-         if (response.status === 401) {
-          Alert.alert('Session Expired', 'Please log in again.');
-          // Optionally clear token and navigate to login
-          await AsyncStorage.removeItem('token');
-          // navigation.navigate('Login');
-     } else {
-          Alert.alert('Error', data.message || 'Could not load user profile');
-     }
-   }
+        } 
       } catch (error) {
         console.error('Fetch user profile error:', error);
         Alert.alert('Error', 'Something went wrong while fetching profile. Check your network connection and API server.');
@@ -79,6 +69,7 @@ useFocusEffect(
       return (
         <View style={styles.container}>
           <Text style={styles.title}>Notifications</Text>
+          <Text></Text>
         </View>
       );
     };

@@ -2,6 +2,7 @@ const User = require('../models/userModel.js');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto'); // For generating a random code
+const Notification = require('../models/notificationModel');
 
 // create JWT Token
 const generateToken = (id) => {
@@ -267,14 +268,33 @@ const getPeopleName = async(req, res) => {
 }
 };
 
-const getFriendReq = async (req, res) => {
+const sendingReq = async (req, res) => {
+
     try {
-        // get friend request notification
-        res.status(200).json(events); 
+        const { friendId } = req.body;
+        const senderId = req.user.id;
+        
+
+        // Create a notification for the user
+    const newNotif = new Notification({
+        user: friendId,          // who will RECEIVE this notification
+        message: `You have a new friend request!`,
+        sender: senderId,        // who sent it
+        type: 'friend_request',  // optional
+      });
+  
+      await newNotif.save();
+        res.status(201).json({ message: 'Notification sent'});
+        
     } catch (error) {
-        res.status(500).json({ message: error.message }); 
+        res.status(500).json({ message: 'Server error' });
     }
 };
+
+const getNotif = async (req, res) => {
+
+};
+
   
 
-module.exports = { registerUser, loginUser, forgotPassword, verificationEmail, resetPassword, getUserName, getPeopleName, getFriendReq };
+module.exports = { registerUser, loginUser, forgotPassword, verificationEmail, resetPassword, getUserName, getPeopleName, sendingReq, getNotif };
