@@ -13,8 +13,7 @@ import AppTab from "./AppTab";
 import EventActivities from "../screens/EventActivitiesScreen";
 import CreateEvent from "../screens/EventActivitiesCreationScreen";
 import ProfilePage from "../screens/ProfilePage";
-
-
+import FindMe from "../screens/FindNearMe";
 
 export type AuthStackParamList = {
   Login: undefined;
@@ -29,6 +28,7 @@ export type AuthStackParamList = {
   Schedule: undefined;
   CreateEvent: undefined;
   Profile: undefined;
+  FindMe: undefined;
 };
 
 const Stack = createStackNavigator(); 
@@ -47,6 +47,8 @@ const AuthNavigator = () => {
         <Stack.Screen name="FriendsList" component={FriendsListScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Schedule" component={ScheduleScreen} options={{ headerShown: false }} />
         <Stack.Screen name="CreateEvent" component={CreateEvent} options={{ headerShown: false }} />
+        <Stack.Screen name="FindMe" component={FindMe} options={{ headerShown: false }} />
+        {/* Add other screens here */}
 
         <Stack.Screen name="Profile" component={ProfilePage} options={{ headerShown: false }} />
       </Stack.Navigator>

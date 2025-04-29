@@ -47,7 +47,7 @@ const LandingPage = () => {
             </LinearGradient>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => navigation.navigate("NearMe")}> 
+          <TouchableOpacity onPress={() => navigation.navigate("FindMe")}> 
             <LinearGradient
               colors={['#b57e10', '#f9df7b', '#d8a90d']}
               style={styles.card}
