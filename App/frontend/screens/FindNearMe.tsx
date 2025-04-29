@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import * as Location from 'expo-location';
 import { WebView } from 'react-native-webview';
+import { GOOGLE_MAPS_API_KEY } from '@env';
 
 const NearMeScreen = () => {
   const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
@@ -20,7 +21,7 @@ const NearMeScreen = () => {
   // Ref for WebView to interact with the map
   const webViewRef = useRef<any>(null);
 
-  const API_KEY = 'AIzaSyALdL2WbdFIU5qNMbd4ecNnunriZ-_Wufk';
+  const API_KEY = GOOGLE_MAPS_API_KEY;
 
   // Fetch current location on component mount
   useEffect(() => {
