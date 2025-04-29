@@ -21,6 +21,7 @@ const FriendsList: React.FC = () => {
   // State for friends list, loading, and errors
   const [friends, setFriends] = useState<Friend[]>([]); // Use the Friend interface
   const [isLoading, setIsLoading] = useState(true);
+  const [isAccepting, setIsAccepting] = useState<string | null>(null);
 
   // Function to fetch friends
   const fetchFriends = useCallback(async () => {
@@ -80,6 +81,7 @@ const FriendsList: React.FC = () => {
           };
       }, [fetchFriends]) // Depend on the stable fetchFriends function
   );
+  
 
   // Render item for the FlatList
   const renderFriendItem = ({ item }: { item: Friend }) => (
@@ -89,10 +91,16 @@ const FriendsList: React.FC = () => {
               <Text style={styles.friendName}>{item.fullName}</Text>
               {item.email && <Text style={styles.friendEmail}>{item.email}</Text>}
           </View>
-          {/* Optional: Add a button to view profile or chat */}
-          {/* <TouchableOpacity style={styles.actionButton}>
-              <Ionicons name="chatbubble-outline" size={24} color="#f9df7b" />
-          </TouchableOpacity> */}
+          <TouchableOpacity style={styles.messageButton}
+            onPress={() => console.log('message')}>
+          <Text style={styles.messageButtonText}>Message</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={[styles.removeButton, isAccepting === item._id && styles.buttonDisabled]}
+            onPress={() => console.log('deleted')}
+            disabled={isAccepting === item._id}>
+          <Text style={styles.removeButtonText}>Remove</Text>
+          </TouchableOpacity>
       </View>
   );
 
@@ -128,7 +136,7 @@ const FriendsList: React.FC = () => {
   );
 };
 
-// --- Styles Update ---
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -208,9 +216,45 @@ const styles = StyleSheet.create({
       fontSize: 14,
       marginTop: 2,
   },
-//   actionButton: { // Optional action button styling
-//       padding: 5,
-//   },
+
+  messageButtonText:{
+    color: "#1E1E1E",
+    fontWeight: "bold",
+      fontSize: 16,
+  },
+
+  messageButton: { 
+    backgroundColor: "#B88A4E",
+    paddingVertical: 10,
+    borderRadius: 8,
+    flex: 0.45, // Assign portion of width
+    alignItems: 'center',
+    justifyContent: 'center', // Center activity indicator
+    minHeight: 40, // Ensure minimum height for indicator
+    marginRight: 10,
+  },
+
+  removeButton: { 
+  backgroundColor: "#ca2729",
+      paddingVertical: 10,
+    //   paddingHorizontal: 20, // Use flex instead
+      borderRadius: 8,
+      flex: 0.45, // Assign portion of width
+      // marginLeft: 10, // Remove margin if using flex
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: 40,
+  },
+
+  removeButtonText: { 
+    color: "#1E1E1E",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+
+  buttonDisabled: { // Style for disabled buttons
+    opacity: 0.6,
+},
 });
 
 export default FriendsList;
