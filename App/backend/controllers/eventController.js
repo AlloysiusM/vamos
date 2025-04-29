@@ -104,6 +104,12 @@ const addUser = async(req, res) => {
 
     try {
         const event = await Event.findById(id);
+
+        //stops duplicate sign ups
+        if (event.usersSignedup.includes(userId)) {
+            return res.status(400).json({ error: 'User already signed up' });
+        }
+
         if(event.currentPeople >= event.maxPeople)
             {
                 return res.status(400).json({ error: 'Event Full' });

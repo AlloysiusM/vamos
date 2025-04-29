@@ -35,6 +35,7 @@ const EventActivities = () => {
   const [isLoading, setIsLoading] = useState(true);
   const windowWidth = Dimensions.get("window").width;
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList>>();
+  const [signedUpEvents, setSignedUpEvents] = useState<Set<string>>(new Set());
   
   const EventSignup = async (eventId: string) => {
     try
