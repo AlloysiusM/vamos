@@ -1,5 +1,5 @@
 const express = require('express');
-const { registerUser, loginUser,forgotPassword, verificationEmail, resetPassword, getUserName, getPeopleName, sendingReq, getFriendReq} = require('../controllers/userController');
+const { registerUser, loginUser,forgotPassword, verificationEmail, resetPassword, getUserName, getPeopleName, sendingReq, getFriendReq, acceptFriendRequest, getFriends} = require('../controllers/userController');
 const { protect } = require('../middleware/authMiddleWare');
 
 const router = express.Router();
@@ -16,6 +16,9 @@ router.get("/add-friends", getPeopleName);
 router.post("/sending-req",protect, sendingReq);
 
 router.get("/getFriendReq", protect, getFriendReq);
+
+router.post('/acceptfriendrequest', protect, acceptFriendRequest); // POST or PUT/PATCH could be argued
+router.get('/friends', protect, getFriends);
 
 // implement user profile (use protect jwt)
 

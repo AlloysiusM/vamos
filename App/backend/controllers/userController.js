@@ -305,6 +305,84 @@ const getFriendReq = async (req, res) => {
 }
 };
 
+const acceptFriendRequest = async (req, res) => {
+    const { notificationId } = req.body; // Get notification ID from request body
+    const recipientId = req.user.id; // Logged-in user (the one accepting)
+
+    if (!notificationId) {
+        return res.status(400).json({ message: 'Notification ID is required' });
+    }
+
+    try {
+        // 1. Find the notification
+        const notification = await Notification.findById(notificationId);
+
+        if (!notification) {
+            return res.status(404).json({ message: 'Friend request notification not found' });
+        }
+
+        // 2. Verify the logged-in user is the recipient of this notification
+        if (notification.user.toString() !== recipientId) {
+            return res.status(403).json({ message: 'You are not authorized to accept this request' });
+        }
+
+        // 3. Verify it's a friend request type (optional but good practice)
+        if (notification.type !== 'friend_request') {
+             return res.status(400).json({ message: 'This notification is not a friend request' });
+        }
+
+        const senderId = notification.sender; // Get the ID of the user who sent the request
+
+        // 4. Find both users
+        const recipient = await User.findById(recipientId);
+        const sender = await User.findById(senderId);
+
+        if (!recipient || !sender) {
+            // This case might happen if a user was deleted after sending the request
+             await Notification.findByIdAndDelete(notificationId); // Clean up notification
+            return res.status(404).json({ message: 'One or both users involved no longer exist' });
+        }
+
+        // 5. Add each user to the other's friends list (if not already friends)
+        // Use $addToSet to prevent duplicates
+        await User.findByIdAndUpdate(recipientId, { $addToSet: { friends: senderId } });
+        await User.findByIdAndUpdate(senderId, { $addToSet: { friends: recipientId } });
+
+        // 6. Delete the notification now that it's handled
+        await Notification.findByIdAndDelete(notificationId);
+
+        res.status(200).json({ message: 'Friend request accepted successfully' });
+
+    } catch (error) {
+        console.error('Accept Friend Request Error:', error);
+        if (error.kind === 'ObjectId') { // Handle invalid Mongo IDs
+            return res.status(400).json({ message: 'Invalid Notification ID format' });
+        }
+        res.status(500).json({ message: 'Server error while accepting friend request' });
+    }
+};
+
+const getFriends = async (req, res) => {
+    const userId = req.user.id; // Get the logged-in user's ID
+
+    try {
+        const user = await User.findById(userId)
+                               .populate('friends', 'fullName email');
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json(user.friends); // Send the array of friends
+
+    } catch (error) {
+        console.log(error);
+        
+        console.error('Get Friends Error:', error);
+        res.status(500).json({ message: 'Server error while fetching friends list' });
+    }
+};
+
   
 
-module.exports = { registerUser, loginUser, forgotPassword, verificationEmail, resetPassword, getUserName, getPeopleName, sendingReq, getFriendReq };
+module.exports = { registerUser, loginUser, forgotPassword, verificationEmail, resetPassword, getUserName, getPeopleName, sendingReq, getFriendReq, acceptFriendRequest,getFriends  };
