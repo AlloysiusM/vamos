@@ -23,6 +23,7 @@ interface Event {
   maxPeople: number;
   startTime: number;
   endTime: number;
+  currentPeople: number;
   user: string;
 }
 
@@ -55,9 +56,18 @@ const EventActivities = () => {
       if (!response.ok) {
         throw new Error("Failed to join event");
       }
-      Alert.alert("Failed to join event");
       
 
+      setSignedUpEvents((prev) => {
+      const updated = new Set(prev);
+      if (updated.has(eventId)) {
+        updated.delete(eventId);
+      } else {
+        updated.add(eventId);
+      }
+      return updated;
+    });
+      
     }catch(error){
       console.error("error");
     }
@@ -130,8 +140,11 @@ const EventActivities = () => {
         <Text style={styles.eventDetails}>Start Time: {startDate}</Text>
         <Text style={styles.eventDetails}>End Time: {endDate}</Text>
         <Text style={styles.eventDetails}>Max People: {item.maxPeople || 'N/A'}</Text>
+        <Text style={styles.eventDetails}>Current People: {item.currentPeople || 'N/A'}</Text>
         <TouchableOpacity onPress={() => EventSignup(item._id)}>
-          <Text style={{ fontSize: 15, marginVertical: 10, color: "#B88A4E"}}>Sign Up</Text>
+          <Text style={{ fontSize: 15, marginVertical: 10, color: "#B88A4E" }}>
+            {signedUpEvents.has(item._id) ? "Unsign up" : "Sign Up"}
+          </Text>
         </TouchableOpacity>
       </View>
     );
