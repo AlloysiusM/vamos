@@ -1,6 +1,6 @@
 import React, { useState, useEffect, ReactNode } from "react";
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, ScrollView, ActivityIndicator, SafeAreaView, Dimensions, Platform } from "react-native";
-import { createDrawerNavigator, DrawerContentComponentProps } from "@react-navigation/drawer";
+import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, ScrollView, ActivityIndicator, SafeAreaView, Dimensions, Platform, Alert } from "react-native";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createStackNavigator, StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
@@ -8,6 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthStackParamList } from "../navigation/AuthNavigator";
 import { API_URL } from '@env';
+
 
 // Drawer and stack nav for sidebar
 const Drawer = createDrawerNavigator();
@@ -22,6 +23,7 @@ interface Event {
   maxPeople: number;
   startTime: number;
   endTime: number;
+  currentPeople: number;
   user: string;
 }
 
@@ -35,6 +37,42 @@ const EventActivities = ({ route }: { route: any }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const windowWidth = Dimensions.get("window").width;
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList>>();
+  const [signedUpEvents, setSignedUpEvents] = useState<Set<string>>(new Set());
+  
+  const EventSignup = async (eventId: string) => {
+    try
+    {
+      const token = await AsyncStorage.getItem("token");
+
+      const response = await fetch(`${API_URL}/api/events/${eventId}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error("Failed to join event");
+      }
+      
+
+      setSignedUpEvents((prev) => {
+      const updated = new Set(prev);
+      if (updated.has(eventId)) {
+        updated.delete(eventId);
+      } else {
+        updated.add(eventId);
+      }
+      return updated;
+    });
+      
+    }catch(error){
+      console.error("error");
+    }
+  }
 
   // Fetch events from the backend API on component mount
   useEffect(() => {
@@ -131,6 +169,11 @@ const EventActivities = ({ route }: { route: any }) => {
         <Text style={styles.eventDetails}>Start Time: {startDate}</Text>
         <Text style={styles.eventDetails}>End Time: {endDate}</Text>
         <Text style={styles.eventDetails}>Max People: {item.maxPeople || 'N/A'}</Text>
+        <Text style={styles.eventDetails}>Current People: {item.currentPeople || 'N/A'}</Text>
+        <TouchableOpacity onPress={() => EventSignup(item._id)}>
+          <Text style={{ fontSize: 15, marginVertical: 10, color: "#B88A4E" }}>
+            {signedUpEvents.has(item._id) ? "Unsign up" : "Sign Up"}
+          </Text>
         <TouchableOpacity onPress={() => navigation.navigate("s")}>
           <Text style={{ fontSize: 15, marginVertical: 10, color: "#cccccc"}}>More details</Text>
         </TouchableOpacity>
