@@ -1,87 +1,82 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 import { API_URL } from '@env';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const VerificationScreen = () => {
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList, 'Login'>>();
+  const route = useRoute();
+  const { email } = route.params as { email: string };
 
-    const route = useRoute();
-    const { email } = route.params as { email: string };
-    const [code, setCode] = useState('');
-    const [error, setError] = useState('');
-  
-    // Check submission form
-    const handleForgot = async () => {
-      if (!code) {
-        setError('Please fill in all fields');
-        console.log('[DEBUG] Missing fields:', { code });
+  const [code, setCode] = useState('');
+  const [error, setError] = useState('');
+
+  const handleForgot = async () => {
+    if (!code) {
+      setError('Please fill in the code');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/api/user/verify-Email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || 'Verification failed');
         return;
       }
-    
-      const requestBody = JSON.stringify({ email, code });
-      console.log('[DEBUG] Sending request:', requestBody);
-    
-      try {
-        const response = await fetch(`${API_URL}/api/user/verify-Email`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: requestBody,
-        });
-    
-        console.log('[DEBUG] Response Status:', response.status);
-    
-        const data = await response.json();
-        console.log('[DEBUG] Response Data:', data);
-    
-        if (!response.ok) {
-          setError(data.message || 'Error sending reset code');
-          console.log('[DEBUG] Error Response:', data);
-          return;
-        }
-        Alert.alert("Success", "Check your email for reset instructions");
-        navigation.navigate('ResetPassword', { email });
-        
-      } catch (error) {
-        console.log('[DEBUG] Fetch Error:', error);
-        setError('Something went wrong. Please try again');
-      }
-    };
-  
+
+      Alert.alert('Success', 'Code verified. Proceed to reset your password.');
+      navigation.navigate('ResetPassword', { email });
+
+    } catch (err) {
+      console.error('[DEBUG] Verification Error:', err);
+      setError('Something went wrong. Please try again.');
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>The verify code has been sent to your email</Text>
+      <View style={styles.phoneFrame}>
+        <Image source={require('../assets/Vamos.jpg')} style={styles.logo} />
+        <Text style={styles.title}>Verify Your Email</Text>
+        <Text style={styles.subtitle}>A verification code has been sent to:</Text>
+        <Text style={styles.email}>{email}</Text>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Please enter verify Code</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter Code"
-          keyboardType="number-pad"
-          placeholderTextColor="#C9D3DB"
-          value={code}
-          onChangeText={(text) => setCode(text)}
-        />
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter verification code"
+            placeholderTextColor="#BDB298"
+            keyboardType="number-pad"
+            value={code}
+            onChangeText={(text) => setCode(text)}
+          />
+        </View>
+
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+        <TouchableOpacity onPress={handleForgot}>
+          <LinearGradient
+            colors={['#b57e10', '#f9df7b', '#f9df7b', '#b57e10']}
+            style={styles.verifyButton}
+          >
+            <Text style={styles.verifyButtonText}>Verify Code</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => navigation.replace('Login')}>
+          <Text style={styles.backText}>Back to Login</Text>
+        </TouchableOpacity>
       </View>
-
-
-      {/* submit Button */}
-      <TouchableOpacity style={styles.button} onPress={handleForgot}>
-        <Text style={styles.buttonText}>Submit</Text>
-      </TouchableOpacity>
-
-      {/* Back to Login Button */}
-            <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.replace('Login')}>
-              <Text style={styles.secondaryButtonText}>Back to Login</Text>
-            </TouchableOpacity>
-      {/* Error Message */}
-                  {error ? (
-                    <Text style={styles.errorText}>{error}</Text>
-                  ) : null}
     </View>
   );
 };
@@ -89,89 +84,82 @@ const VerificationScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#000000',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#1E1E1E', 
-    paddingHorizontal: 20,
-    paddingVertical: 30,
   },
-
+  phoneFrame: {
+    width: '90%',
+    backgroundColor: '#0C0C0C',
+    padding: 20,
+    borderRadius: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  logo: {
+    width: 120,
+    height: 120,
+    marginBottom: 20,
+    borderRadius: 10,
+  },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 30,
-    color: '#B88A4E',
-    letterSpacing: 1,
+    color: '#f9df7b',
+    marginBottom: 5,
   },
-
+  subtitle: {
+    fontSize: 14,
+    color: '#BDB298',
+    marginBottom: 4,
+  },
+  email: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#F5F5DC',
+    marginBottom: 25,
+  },
   inputContainer: {
     width: '100%',
     marginBottom: 20,
   },
-
-  inputLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#C9D3DB', 
-    marginBottom: 8,
-  },
-
   input: {
     height: 50,
-    backgroundColor: '#333', 
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    fontSize: 16,
-    fontWeight: '500',
-    width: '100%',
-    color: '#C9D3DB', 
-    borderWidth: 1,
-    borderColor: '#444',
-    shadowColor: '#000', 
-    shadowOpacity: 0.1, 
-    shadowRadius: 5,
-    elevation: 3, 
-  },
-
-  button: {
-    backgroundColor: '#B88A4E',
-    paddingVertical: 14,
-    paddingHorizontal: 30,
+    backgroundColor: '#444',
     borderRadius: 10,
-    width: '80%',
-    alignItems: 'center',
-    marginTop: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 3,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    color: '#fff',
+    borderColor: '#666',
+    borderWidth: 1,
   },
-
-  buttonText: {
-    color: '#1E1E1E',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-
-  secondaryButton: {
-    marginTop: 20,
+  verifyButton: {
+    width: 200,
     paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 15,
   },
-
-  secondaryButtonText: {
+  verifyButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1E1E1E',
+  },
+  backText: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#B88A4E',
+    color: '#f9df7b',
+    textDecorationLine: 'underline',
   },
-
   errorText: {
     color: 'red',
-    marginTop: 10,
-    fontSize: 16,
+    marginBottom: 10,
+    fontSize: 14,
     fontWeight: '600',
   },
-
 });
-
 
 export default VerificationScreen;

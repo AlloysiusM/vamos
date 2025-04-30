@@ -28,12 +28,13 @@ interface Event {
 }
 
 // main event activities page
-const EventActivities = () => {
+const EventActivities = ({ route }: { route: any }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const windowWidth = Dimensions.get("window").width;
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList>>();
   const [signedUpEvents, setSignedUpEvents] = useState<Set<string>>(new Set());
@@ -111,15 +112,45 @@ const EventActivities = () => {
     fetchEvents();
   }, []);
 
+  // Handle category selection from drawer
+  useEffect(() => {
+    if (route.params?.selectedCategory) {
+      setSelectedCategory(route.params.selectedCategory);
+      filterEventsByCategory(route.params.selectedCategory);
+    } else {
+      setSelectedCategory(null);
+      setFilteredEvents(events);
+    }
+  }, [route.params?.selectedCategory, events]);
+
+  // Filter events by category
+  const filterEventsByCategory = (category: string) => {
+    if (category === "All") {
+      setFilteredEvents(events);
+      setSelectedCategory(null);
+    } else {
+      setFilteredEvents(
+        events.filter((event) => 
+          event.category?.toLowerCase() === category.toLowerCase()
+        )
+      );
+    }
+  };
+
   // Handle search input and filter events based on the query
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     if (query === "") {
-      setFilteredEvents(events);
+      if (selectedCategory) {
+        filterEventsByCategory(selectedCategory);
+      } else {
+        setFilteredEvents(events);
+      }
     } else {
       setFilteredEvents(
         events.filter((event) =>
-          event.title?.toLowerCase().includes(query.toLowerCase()) // Filter events based on title
+          event.title?.toLowerCase().includes(query.toLowerCase()) && 
+          (selectedCategory ? event.category?.toLowerCase() === selectedCategory.toLowerCase() : true)
         )
       );
     }
@@ -127,8 +158,6 @@ const EventActivities = () => {
 
   // Render each event item in the list
   const renderEvent = ({ item }: { item: Event }) => {
-
-    // Date formatting for start and end times
     const startDate = item.startTime ? new Date(item.startTime).toLocaleString() : 'N/A';
     const endDate = item.endTime ? new Date(item.endTime).toLocaleString() : 'N/A';
 
@@ -145,6 +174,8 @@ const EventActivities = () => {
           <Text style={{ fontSize: 15, marginVertical: 10, color: "#B88A4E" }}>
             {signedUpEvents.has(item._id) ? "Unsign up" : "Sign Up"}
           </Text>
+        <TouchableOpacity onPress={() => navigation.navigate("s")}>
+          <Text style={{ fontSize: 15, marginVertical: 10, color: "#cccccc"}}>More details</Text>
         </TouchableOpacity>
       </View>
     );
@@ -153,7 +184,6 @@ const EventActivities = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
-
         {error && <Text style={styles.errorText}>{error}</Text>}
 
         <View style={styles.inputContainer}>
@@ -167,39 +197,72 @@ const EventActivities = () => {
           />
         </View>
 
+        {selectedCategory && (
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+            <Text style={{ color: '#f9df7b', marginRight: 10 }}>Filtering by:</Text>
+            <Text style={{ color: '#B88A4E', fontWeight: 'bold' }}>{selectedCategory}</Text>
+            <TouchableOpacity 
+              onPress={() => {
+                setSelectedCategory(null);
+                setFilteredEvents(events);
+              }}
+              style={{ marginLeft: 10 }}
+            >
+              <Ionicons name="close" size={20} color="#FF6B6B" />
+            </TouchableOpacity>
+          </View>
+        )}
+
         {isLoading ? (
-        <ActivityIndicator size="large" color="#B88A4E" />
-      ) : (
-        <FlatList
-          data={filteredEvents}
-          keyExtractor={(item) => item._id}
-          renderItem={renderEvent}
-          showsVerticalScrollIndicator={Platform.OS !== 'web'}
-          contentContainerStyle={[
-            styles.flatListContentStyle,
-            Platform.OS === 'web' ? { maxHeight: Dimensions.get('window').height - 200, overflow: 'hidden' } : null,
-          ]}
-        />
-      )}
+          <ActivityIndicator size="large" color="#B88A4E" />
+        ) : (
+          <FlatList
+            data={filteredEvents}
+            keyExtractor={(item) => item._id}
+            renderItem={renderEvent}
+            showsVerticalScrollIndicator={Platform.OS !== 'web'}
+            contentContainerStyle={[
+              styles.flatListContentStyle,
+              Platform.OS === 'web' ? { maxHeight: Dimensions.get('window').height - 200, overflow: 'hidden' } : null,
+            ]}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
 };
 
 // Side nav
-const DrawerContent = () => {
+const DrawerContent = (props: DrawerContentComponentProps) => {
+  const categories = ["Football", "Basketball", "Yoga", "Running", "Gym session", "Tennis", "All"];
+
+  const handleCategorySelect = (category: string) => {
+    props.navigation.navigate("EventStack", { 
+      screen: "EventActivitiesScreen",
+      params: { selectedCategory: category }
+    });
+    props.navigation.closeDrawer();
+  };
+
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#2E2E2E" }}>
-      <Text style={{ fontSize: 24, marginBottom: 20, color: "#B88A4E" }}>Categories</Text>
-      <TouchableOpacity>
-        <Text style={{ fontSize: 18, marginVertical: 10, color: "#B88A4E" }}>Football</Text>
-      </TouchableOpacity>
-      <TouchableOpacity>
-        <Text style={{ fontSize: 18, marginVertical: 10, color: "#B88A4E" }}>Basketball</Text>
-      </TouchableOpacity>
+    <View style={{ flex: 1, justifyContent: "flex-start", alignItems: "center", backgroundColor: "#2E2E2E", paddingTop: 50 }}>
+      <Text style={{ fontSize: 24, marginTop: 100, marginBottom: 20, color: "#B88A4E" }}>Categories</Text>
+      
+      <View style={{ width: '80%', height: 1, backgroundColor: '#ffffff', marginBottom: 20 }} />
+
+      {categories.map((category) => (
+        <TouchableOpacity
+          key={category}
+          onPress={() => handleCategorySelect(category)}
+          style={{ width: '100%', padding: 15, alignItems: 'center' }}
+        >
+          <Text style={{ fontSize: 18, marginVertical: 5, color: "#B88A4E" }}>{category}</Text>
+        </TouchableOpacity>
+      ))}
     </View>
   );
 };
+
 
 // Stack Screen with Drawer Button (3 lines nav btn)
 const EventStack = () => {
@@ -208,20 +271,20 @@ const EventStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="EventActivities"
+        name="EventActivitiesScreen" 
         component={EventActivities}
         options={{
           title: "My Events",
           headerStyle: { backgroundColor: "#1E1E1E" },
-          headerTintColor: "#B88A4E",
+          headerTintColor: "#f9df7b",
           headerLeft: () => (
             <TouchableOpacity onPress={() => navigation.toggleDrawer()} style={{ marginLeft: 15 }}>
-              <Ionicons name="menu" size={28} color="#B88A4E" />
+              <Ionicons name="menu" size={28} color="#f9df7b" />
             </TouchableOpacity>
           ),
           headerRight: () => (
             <TouchableOpacity onPress={() => navigation.navigate("CreateEvent")} style={{ marginRight: 15 }}>
-              <Ionicons name="add-outline" size={28} color="#B88A4E" />
+              <Ionicons name="add-outline" size={28} color="#f9df7b" />
             </TouchableOpacity>
           ),
         }}
@@ -230,99 +293,76 @@ const EventStack = () => {
   );
 };
 
-// Main Drawer Navigation
 const EventsScreenDrawer = () => {
   return (
     <Drawer.Navigator
-      drawerContent={() => <DrawerContent />}
-      initialRouteName="My Events"
+      drawerContent={(props) => <DrawerContent {...props} />}
+      initialRouteName="EventStack"
       screenOptions={{
         headerShown: false,
       }}
     >
-      <Drawer.Screen name="My Events" component={EventStack} />
+      <Drawer.Screen 
+        name="EventStack" 
+        component={EventStack}
+        options={{
+          title: "My Events",
+        }}
+      />
     </Drawer.Navigator>
   );
 };
-
 export default EventsScreenDrawer;
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#1E1E1E",
+    backgroundColor: "#121212", 
   },
-  
+
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#000000",
+    backgroundColor: "#000000", 
     paddingHorizontal: 20,
-    paddingTop: 30,
-  },
-
-  eventDetails: {
-    color: "#C9D3DB",
-    fontSize: 14,
-    marginBottom: 4,
-  },
-
-  eventCategory: {
-    color: "#C9D3DB",
-    fontSize: 16,
-    fontWeight: "500",
-    marginBottom: 6,
-  },
-
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginTop: 10,
-    color: "#B88A4E",
-    letterSpacing: 1,
-    marginBottom: 20,
+    paddingTop: 40,
   },
 
   errorText: {
-    color: "red",
+    color: "#FF6B6B",  
     fontSize: 16,
-    marginBottom: 10,
+    textAlign: "center",
+    marginBottom: 15,
+    fontWeight: "500",  
   },
 
   inputContainer: {
-    width: "100%",
-    marginBottom: 20,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#333",
-    borderRadius: 12,
+    backgroundColor: "#121212", 
+    borderRadius: 40,
     paddingHorizontal: 16,
+    paddingVertical: 14,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "#1E1E1E",  
+    shadowColor: "#000",
+    shadowOpacity: 0.2, 
+    shadowRadius: 8,
+    elevation: 4,  
   },
 
   searchIcon: {
     marginRight: 10,
+    color: "#cccccc",  
   },
 
   input: {
-    height: 50,
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#C9D3DB",
     flex: 1,
-  },
-
-  inputField: {
-    height: 50,
+    color: "#FFF",
     fontSize: 16,
-    fontWeight: "500",
-    color: "#C9D3DB",
-    width: "100%",
-  },
-
-  eventsContainer: {
-    flex: 1,
-    width: "100%",
+    fontWeight: "400", 
+    paddingVertical: 6,
+    letterSpacing: 1.0, 
   },
 
   flatListContentStyle: {
@@ -330,63 +370,87 @@ const styles = StyleSheet.create({
   },
 
   eventTitleStyle: {
-    color: "#C9D3DB",
-    fontSize: 18,
+    fontSize: 22,  
     fontWeight: "600",
+    color: "#FFFFFF",
+    marginBottom: 10,
+    letterSpacing: 1.0,  
+    textTransform: "uppercase",
+  },
+
+  eventCategory: {
+    fontSize: 16,
+    color: "#f9df7b",
+    marginBottom: 10,
+    fontWeight: "400", 
+    textTransform: "capitalize",
+    letterSpacing: 0.8, 
+  },
+
+  eventDetails: {
+    fontSize: 14,
+    color: "#C0C0C0",
     marginBottom: 8,
+    fontWeight: "300",
+    letterSpacing: 1.0,  
   },
 
   eventItemStyle: {
-    backgroundColor: "#333",
-    padding: 15,
-    marginBottom: 15,
-    borderRadius: 8,
-    minHeight: 150,
+    backgroundColor: "#292929", 
+    padding: 20,
+    borderRadius: 18,
+    marginBottom: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15, 
+    shadowRadius: 12,
+    elevation: 6, 
   },
 
-  eventNameStyle: {
-    color: "#C9D3DB",
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 8,
-  },
-
-  eventDescriptionStyle: {
-    color: "#C9D3DB",
-    fontSize: 14,
-    lineHeight: 20,
+  eventItemStyleHover: {
+    backgroundColor: "#333", 
+    transform: [{ scale: 1.02 }], 
+    shadowOpacity: 0.2, 
   },
 
   buttonStyle: {
     backgroundColor: "#B88A4E",
-    paddingVertical: 14,
+    paddingVertical: 16,
     paddingHorizontal: 30,
-    borderRadius: 10,
-    width: "80%",
+    borderRadius: 40,
     alignItems: "center",
-    marginTop: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
+    marginTop: 15,
     elevation: 3,
+
   },
 
   buttonTextStyle: {
     color: "#1E1E1E",
-    fontSize: 18,
+    fontSize: 18, 
     fontWeight: "600",
+    letterSpacing: 1.2,
   },
 
-  eventDetailsStyle: {
-    color: "#C9D3DB",
-    fontSize: 14,
-    marginBottom: 4,
+  buttonStyleActive: {
+    backgroundColor: "#A2743D", 
   },
 
-  eventCategoryStyle: {
-    color: "#C9D3DB",
-    fontSize: 16,
-    fontWeight: "500",
-    marginBottom: 6,
+  eventItemStyleTouch: {
+    backgroundColor: "#292929",
+    padding: 20,
+    borderRadius: 18,
+    marginBottom: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
+    transform: [{ scale: 1 }],
+  },
+
+  eventItemStyleTouchActive: {
+    transform: [{ scale: 1.02 }],
+    backgroundColor: "#333", 
+    shadowOpacity: 0.18,
   },
 });
