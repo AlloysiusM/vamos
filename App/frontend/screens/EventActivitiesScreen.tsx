@@ -8,7 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthStackParamList } from "../navigation/AuthNavigator";
 import { API_URL } from '@env';
-
+import { useEvents } from '../states/contexts/EventContext';
 
 // Drawer and stack nav for sidebar
 const Drawer = createDrawerNavigator();
@@ -36,13 +36,16 @@ const EventActivities = ({ route }: { route: any }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const windowWidth = Dimensions.get("window").width;
-  const navigation = useNavigation<StackNavigationProp<AuthStackParamList>>();
-  const [signedUpEvents, setSignedUpEvents] = useState<Set<string>>(new Set());
+  const { signedUpEvents, addSignedUpEvent, removeSignedUpEvent } = useEvents();
   
   const EventSignup = async (eventId: string) => {
-    try
-    {
+    try {
       const token = await AsyncStorage.getItem("token");
+      const eventToUpdate = events.find(event => event._id === eventId);
+
+      if (!eventToUpdate) {
+        throw new Error("Event not found");
+      }
 
       const response = await fetch(`${API_URL}/api/events/${eventId}`, {
         method: "PATCH",
@@ -57,20 +60,32 @@ const EventActivities = ({ route }: { route: any }) => {
       if (!response.ok) {
         throw new Error("Failed to join event");
       }
-      
 
-      setSignedUpEvents((prev) => {
-      const updated = new Set(prev);
-      if (updated.has(eventId)) {
-        updated.delete(eventId);
+      // Update context (pass data to context)
+      if (signedUpEvents.some(e => e._id === eventId)) {
+        removeSignedUpEvent(eventId);
       } else {
-        updated.add(eventId);
+        addSignedUpEvent({
+          _id: eventToUpdate._id,
+          title: eventToUpdate.title,
+          startTime: eventToUpdate.startTime,
+          endTime: eventToUpdate.endTime,
+          location: eventToUpdate.location
+        });
       }
-      return updated;
-    });
-      
-    }catch(error){
-      console.error("error");
+
+      // Update local state (update ui)
+      setEvents(prevEvents => 
+        prevEvents.map(event => 
+          event._id === eventId 
+            ? { ...event, currentPeople: data.currentPeople } 
+            : event
+        )
+      );
+
+    } catch(error) {
+      console.error("Error signing up for event:", error);
+      Alert.alert("Error", "Failed to sign up for event");
     }
   }
 
@@ -172,7 +187,7 @@ const EventActivities = ({ route }: { route: any }) => {
         <Text style={styles.eventDetails}>Current People: {item.currentPeople || 'N/A'}</Text>
         <TouchableOpacity onPress={() => EventSignup(item._id)}>
           <Text style={{ fontSize: 15, marginVertical: 10, color: "#B88A4E" }}>
-            {signedUpEvents.has(item._id) ? "Unsign up" : "Sign Up"}
+            {signedUpEvents.some(event => event._id === item._id) ? "Unsign up" : "Sign Up"}
           </Text>
         </TouchableOpacity>
       </View>
