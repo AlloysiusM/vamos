@@ -1,6 +1,6 @@
 import React, { useState, useEffect, ReactNode } from "react";
 import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, ScrollView, ActivityIndicator, SafeAreaView, Dimensions, Platform, Alert } from "react-native";
-import { createDrawerNavigator } from "@react-navigation/drawer";
+import { createDrawerNavigator, DrawerContentComponentProps } from "@react-navigation/drawer";
 import { createStackNavigator, StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
@@ -174,8 +174,6 @@ const EventActivities = ({ route }: { route: any }) => {
           <Text style={{ fontSize: 15, marginVertical: 10, color: "#B88A4E" }}>
             {signedUpEvents.has(item._id) ? "Unsign up" : "Sign Up"}
           </Text>
-        <TouchableOpacity onPress={() => navigation.navigate("s")}>
-          <Text style={{ fontSize: 15, marginVertical: 10, color: "#cccccc"}}>More details</Text>
         </TouchableOpacity>
       </View>
     );
