@@ -28,9 +28,12 @@ const getUserEvents = async (req, res) => {
 // Post create event
 const createEvent = async (req, res) => {
 
-    const { category, title, description, maxPeople, location, startTime, endTime } = req.body;
+    const { category, title, description, maxPeople, location, startTime, endTime, } = req.body;
 
     let emptyFields = [];
+
+    const usersSignedup = [];
+    const currentPeople = 0;
 
     if (!category) emptyFields.push('category');
     if (!title) emptyFields.push('title');
@@ -58,9 +61,12 @@ const createEvent = async (req, res) => {
             location, 
             startTime, 
             endTime, 
+            currentPeople,
+            usersSignedup,
             user: userId 
         });
-
+        console.log(startTime);
+        console.log(endTime);
         res.status(201).json(event); 
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -87,9 +93,50 @@ const deleteEvent = async(req, res) => {
     }
 }
 
+const addUser = async(req, res) => {
+    const userId = req.user._id;
+    
+    const { id } = req.params;
+
+    if(!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ error: 'No such event' });
+    }
+
+    try {
+        const event = await Event.findById(id);
+
+        //stops duplicate sign ups
+        if (event.usersSignedup.includes(userId)) {
+            return res.status(400).json({ error: 'User already signed up' });
+        }
+
+        if(event.currentPeople >= event.maxPeople)
+            {
+                return res.status(400).json({ error: 'Event Full' });
+            }
+        event.currentPeople += 1; //increments currentPeople to fill up
+        event.usersSignedup.push(userId);// adds user id to the array
+        await event.save();
+        res.status(200).json(event);
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+
+const removeUser = async(req, res) => {
+
+}
+
+
+
+    
+}
+
 module.exports = {
     getEvents,
     getUserEvents,
     createEvent,
-    deleteEvent
+    deleteEvent,
+    addUser
 }
+
+

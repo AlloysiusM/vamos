@@ -4,7 +4,8 @@ const{
     getEvents,
     getUserEvents,
     createEvent,
-    deleteEvent
+    deleteEvent,
+    addUser
 } = require('../controllers/eventController');
 
 const { protect } = require('../middleware/authMiddleWare');
@@ -22,5 +23,7 @@ router.post('/', protect, createEvent);
 
 // delete users own events
 router.delete('/:id', protect, deleteEvent);
+
+router.patch('/:id', protect, addUser);
 
 module.exports = router;
