@@ -74,12 +74,31 @@ const ProfilePage = () => {
       }, [])
     );
 
+    //Function to logout user and return them to login page
+    const handleLogout = async () => {
+      try {
+        await AsyncStorage.removeItem('token'); //code to remove the token
+        navigation.navigate('Login')//code to return the user to login screen so they can relog in
+
+        const token = await AsyncStorage.getItem('token');
+        console.log("Token = ", token); //null if logout is implemented correctly
+
+      } catch (error) {
+        console.error('Logout Error!:',error);
+      }
+
+    };
+
 
       return (
         <View style={styles.container}>
           <Text style={styles.title}>Profile</Text>
           <Image source={require('../assets/profile-pic.png')} style={styles.logo} />
           <Text style={styles.username}>{fullName}</Text>
+
+          <TouchableOpacity style={styles.logout} onPress={handleLogout}>
+            <text style={styles.logoutText}>Logout</text>
+          </TouchableOpacity>
         </View>
       );
     };
@@ -124,6 +143,22 @@ const ProfilePage = () => {
         resizeMode: 'cover',
         backgroundColor: '#2E2E2E',
       },
+
+      logout: {
+        backgroundColor: 'D32F2F',
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderRadius: 8,
+        marginTop: 30,
+      },
+
+      logoutText: {
+        color: '#FFFFFF',
+        fontSize: 18,
+        fontWeight: 'bold',
+        textAlign: 'center',
+      },
+
 });
 
 export default ProfilePage;
