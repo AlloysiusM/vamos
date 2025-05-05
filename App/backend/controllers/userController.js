@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto'); // For generating a random code
 const Notification = require('../models/notificationModel');
+const mongoose = require('mongoose');
 
 // create JWT Token
 const generateToken = (id) => {
@@ -383,6 +384,76 @@ const getFriends = async (req, res) => {
     }
 };
 
+const deleteFriend = async (req, res) => {
+    const userId = req.user.id; // ID of the logged-in user initiating the removal
+    const { friendId } = req.params; // Get the ID of the friend to remove from URL parameters
+
+    // Basic validation
+    if (!friendId) {
+        return res.status(400).json({ message: 'Friend ID is required in URL parameters' });
+    }
+
+    // Prevent removing self
+    if (userId === friendId) {
+        return res.status(400).json({ message: 'You cannot remove yourself as a friend.' });
+    }
+
+    // Validate if friendId is a valid MongoDB ObjectId format (optional but good practice)
+    if (!mongoose.Types.ObjectId.isValid(friendId)) {
+        return res.status(400).json({ message: 'Invalid Friend ID format' });
+    }
+
+    try {
+        // Find both users to ensure they exist (optional, $pull works even if one doesn't exist, but good for verification)
+        const user = await User.findById(userId);
+        const friendToRemove = await User.findById(friendId);
+
+        if (!user) {
+             // Should not happen if protect middleware works, but good check
+            return res.status(404).json({ message: 'Current user not found.' });
+        }
+        if (!friendToRemove) {
+            // Friend might have deleted their account
+             // Proceed to remove from the current user's list anyway
+             console.log(`Friend with ID ${friendId} not found, removing from user ${userId}'s list.`);
+        }
+
+        // Use $pull to remove the friend's ID from the current user's friends array
+        const updateCurrentUser = await User.findByIdAndUpdate(
+            userId,
+            { $pull: { friends: friendId } },
+            { new: true } // Optional: returns the updated document
+        );
+
+        // Also remove the current user's ID from the (ex)friend's friends array
+        // This ensures the relationship is removed from both sides
+        const updateExFriend = await User.findByIdAndUpdate(
+            friendId,
+            { $pull: { friends: userId } },
+            { new: true } // Optional
+        );
+
+        // Check if the pull operation actually modified the user's document
+        // (it wouldn't if they weren't friends in the first place)
+        // You might want to check `updateCurrentUser.modifiedCount` if using raw MongoDB driver update methods
+        // With findByIdAndUpdate and $pull, it won't error if the ID wasn't there.
+
+        console.log(`User ${userId} removed friend ${friendId}.`);
+        if (friendToRemove) { // Only log if the friend existed
+             console.log(`User ${friendId} removed friend ${userId}.`);
+        }
+
+
+        res.status(200).json({ message: 'Friend removed successfully' });
+
+    } catch (error) {
+        console.error('Delete Friend Error:', error);
+        res.status(500).json({ message: 'Server error while removing friend' });
+    }
+};
+
   
 
-module.exports = { registerUser, loginUser, forgotPassword, verificationEmail, resetPassword, getUserName, getPeopleName, sendingReq, getFriendReq, acceptFriendRequest,getFriends  };
+module.exports = { registerUser, loginUser, forgotPassword, verificationEmail, resetPassword, getUserName, getPeopleName, sendingReq, getFriendReq, acceptFriendRequest,getFriends,
+    deleteFriend
+  };

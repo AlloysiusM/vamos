@@ -1,7 +1,7 @@
 import { useFocusEffect, useNavigation } from "@react-navigation/native"; // Import useFocusEffect
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useState, useCallback } from "react"; // Import useCallback
-import { TouchableOpacity, View, Text, StyleSheet, FlatList, ActivityIndicator, Alert, TextInput, Platform, Dimensions } from "react-native"; // Import FlatList, ActivityIndicator, Alert
+import React, { useState, useCallback, useEffect } from "react"; // Import useCallback
+import { TouchableOpacity, View, Text, StyleSheet, FlatList, ActivityIndicator, Alert, TextInput, Platform, Dimensions, Keyboard } from "react-native"; // Import FlatList, ActivityIndicator, Alert
 import { AuthStackParamList } from "../navigation/AuthNavigator";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
@@ -19,29 +19,15 @@ const FriendsList: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList,'FriendsList'>>();
 
   // State for friends list, loading, and errors
-  const [friends, setFriends] = useState<Friend[]>([]); // Use the Friend interface
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAccepting, setIsAccepting] = useState<string | null>(null);
-
+  const [friends, setFriends] = useState<Friend[]>([]); // Full list from API
+  const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]); // List to display (filtered or full)
+  const [isLoading, setIsLoading] = useState(true); // Loading state for initial fetch
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
+  const [processingFriendId, setProcessingFriendId] = useState<string | null>(null); // Track removal process
 
-  //Searching friends
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    if (query === "") {
-      setFilteredFriends(friends);
-    } else {
-      setFilteredFriends(
-        friends.filter((friends) =>
-          friends.fullName?.toLowerCase().includes(query.toLowerCase()) // Filter events based on title
-        )
-      );
-    }
-  };
-  
+  // --- API Calls ---
 
-  // Function to fetch friends
+  // Fetch friends list
   const fetchFriends = useCallback(async () => {
       console.log('Fetching friends list...');
       setIsLoading(true);
@@ -49,15 +35,12 @@ const FriendsList: React.FC = () => {
           const token = await AsyncStorage.getItem('token');
           if (!token) {
               Alert.alert('Error', 'Not authenticated. Please log in.');
-              navigation.navigate('Login'); // Redirect if no token
-              setIsLoading(false);
+              navigation.navigate('Login');
+               setIsLoading(false); // Ensure loading stops if we exit early
               return;
           }
 
-          // *** IMPORTANT: Replace with your actual backend endpoint for getting friends ***
           const response = await fetch(`${API_URL}/api/user/friends`, {
-            
-            
               method: 'GET',
               headers: {
                   'Content-Type': 'application/json',
@@ -69,264 +52,460 @@ const FriendsList: React.FC = () => {
 
           if (response.ok) {
               if (Array.isArray(data)) {
-                  console.log('Friends data received:', data);
-                  setFriends(data);
+                  console.log('Friends data received:', data.length);
+                  setFriends(data); // *** Set the main friends list ***
+                  // Let the useEffect handle setting filteredFriends based on this new 'friends' state and current 'searchQuery'
               } else {
                   console.error('Received non-array data for friends:', data);
                   Alert.alert('Error', 'Invalid data format received from server.');
-                  setFriends([]);
+                  setFriends([]); // Reset on format error
               }
           } else {
               const errorMessage = data?.message || `HTTP error! status: ${response.status}`;
               console.error('Fetch friends error:', errorMessage);
               Alert.alert('Error', `Failed to fetch friends: ${errorMessage}`);
-              setFriends([]);
+              setFriends([]); // Reset on fetch error
           }
       } catch (error: any) {
           console.error('Fetch friends exception:', error);
           Alert.alert('Error', `An error occurred while fetching friends: ${error.message}`);
-          setFriends([]);
+          setFriends([]); // Reset on exception
       } finally {
           setIsLoading(false);
       }
-  }, [navigation]); // Add navigation dependency
+      // *** Remove searchQuery from dependencies: fetch doesn't need to rerun on query change ***
+  }, [navigation]);
 
-  // Use useFocusEffect to refetch friends when the screen comes into focus
+  // Remove a friend
+  const handleRemoveFriend = async (friendId: string) => {
+    
+      if (processingFriendId) return; // Prevent concurrent removals
+      console.log('gg');
+      const showAlert = async() => {
+        if (Platform.OS === 'web') {
+          const confirmed = window.confirm("Are you sure to remove"); // confirm has OK and Cancel
+          if (confirmed) {
+            
+            console.log(`Attempting to remove friend: ${friendId}`);
+            setProcessingFriendId(friendId);
+            try {
+                const token = await AsyncStorage.getItem('token');
+                if (!token) {
+                    Alert.alert('Error', 'Authentication error.');
+                    setProcessingFriendId(null);
+                    return;
+                }
+
+                const response = await fetch(`${API_URL}/api/user/friends/${friendId}`, {
+
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (response.ok) {
+                    console.log(`Friend ${friendId} removed successfully.`);
+                    Alert.alert('Success', 'Friend removed.');
+                    // *** Update only the main 'friends' list ***
+                    setFriends(prevFriends => prevFriends.filter(f => f._id !== friendId));
+                    // The useEffect hook will automatically update 'filteredFriends'
+                } else {
+                    const errorData = await response.json().catch(() => ({}));
+                    const errorMessage = errorData?.message || `Failed to remove friend. Status: ${response.status}`;
+                    console.error('Remove friend error:', errorMessage);
+                    Alert.alert('Error', errorMessage);
+                }
+            } catch (error: any) {
+                console.error('Remove friend exception:', error);
+                Alert.alert('Error', `An error occurred: ${error.message}`);
+            } finally {
+                setProcessingFriendId(null);
+            }
+          } else {
+            console.log("Cancel Pressed");
+          }
+        } else {
+          Alert.alert(
+            "Confirm Removal",
+            "Are you sure you want to remove this friend?",
+            [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Remove", style: "destructive", onPress: async () => {
+                        console.log(`Attempting to remove friend: ${friendId}`);
+                        setProcessingFriendId(friendId);
+                        try {
+                            const token = await AsyncStorage.getItem('token');
+                            if (!token) {
+                                Alert.alert('Error', 'Authentication error.');
+                                setProcessingFriendId(null);
+                                return;
+                            }
+  
+                            const response = await fetch(`${API_URL}/api/user/friends/${friendId}`, {
+  
+                                method: 'DELETE',
+                                headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                },
+                            });
+  
+                            if (response.ok) {
+                                console.log(`Friend ${friendId} removed successfully.`);
+                                Alert.alert('Success', 'Friend removed.');
+                                // *** Update only the main 'friends' list ***
+                                setFriends(prevFriends => prevFriends.filter(f => f._id !== friendId));
+                                // The useEffect hook will automatically update 'filteredFriends'
+                            } else {
+                                const errorData = await response.json().catch(() => ({}));
+                                const errorMessage = errorData?.message || `Failed to remove friend. Status: ${response.status}`;
+                                console.error('Remove friend error:', errorMessage);
+                                Alert.alert('Error', errorMessage);
+                            }
+                        } catch (error: any) {
+                            console.error('Remove friend exception:', error);
+                            Alert.alert('Error', `An error occurred: ${error.message}`);
+                        } finally {
+                            setProcessingFriendId(null);
+                        }
+                    }
+                }
+            ]
+        );
+        }
+      };
+
+      await showAlert()
+      
+  };
+
+
+
+  // Fetch friends when the screen comes into focus
   useFocusEffect(
       useCallback(() => {
-          fetchFriends(); // Fetch friends when screen is focused
-
+          // Reset search query when screen gets focus (optional, keeps things clean)
+          // setSearchQuery('');
+          fetchFriends(); // Call the stable fetchFriends function
           return () => {
-            // Optional cleanup if needed when screen loses focus
+              // Optional cleanup when screen loses focus
           };
-      }, [fetchFriends]) // Depend on the stable fetchFriends function
+      }, [fetchFriends]) // Now depends on the stable fetchFriends reference
   );
-  
-  
+
+  // Update filtered friends list when search query or the main friends list changes
+  useEffect(() => {
+      // Don't run filter logic while the initial fetch is happening
+      if (isLoading) return;
+
+      if (searchQuery === "") {
+          setFilteredFriends(friends); // Show all friends
+      } else {
+          setFilteredFriends(
+              friends.filter((friend) =>
+                  friend.fullName?.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+          );
+      }
+      // This effect runs whenever the source list (friends) or the filter criteria (searchQuery) changes
+      // or when loading completes (to set the initial filtered list)
+  }, [searchQuery, friends, isLoading]);
+
+
+  // --- Event Handlers ---
+  const handleSearchChange = (query: string) => {
+      setSearchQuery(query);
+  };
+
+  const navigateToAddFriend = () => {
+      Keyboard.dismiss();
+      navigation.navigate("AddFriend");
+  };
+
+
 
   // Render item for the FlatList
   const renderFriendItem = ({ item }: { item: Friend }) => (
       <View style={styles.friendItem}>
-          {/* You might add an avatar/icon here later */}
           <View style={styles.friendInfo}>
               <Text style={styles.friendName}>{item.fullName}</Text>
-              {item.email && <Text style={styles.friendEmail}>{item.email}</Text>}
           </View>
-          <TouchableOpacity style={styles.messageButton}
-            onPress={() => console.log('message')}>
-          <Text style={styles.messageButtonText}>Message</Text>
+          <TouchableOpacity
+              style={styles.messageButton}
+              onPress={() => Alert.alert('Message', `Messaging ${item.fullName} (Not Implemented)`)}
+          >
+              <Text style={styles.messageButtonText}>Message</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.removeButton, isAccepting === item._id && styles.buttonDisabled]}
-            onPress={() => console.log('deleted')}
-            disabled={isAccepting === item._id}>
-          <Text style={styles.removeButtonText}>Remove</Text>
+          <TouchableOpacity
+              style={[styles.removeButton, processingFriendId === item._id && styles.buttonDisabled]}
+              onPress={() => handleRemoveFriend(item._id)}
+              disabled={!!processingFriendId} // Disable all remove buttons during any removal
+          >
+              {processingFriendId === item._id ? (
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                  <Text style={styles.removeButtonText}>Remove</Text>
+              )}
           </TouchableOpacity>
       </View>
   );
 
-  return (
-    <View style={styles.container}>
-      {/* Header Row */}
-      <View style={styles.headerRow}>
-        <Text style={styles.title}>Friends</Text> {/* Changed title slightly */}
-        
-        <View style={styles.inputContainer}>
-          <Ionicons name="search" size={18} color="#C9D3DB" style={styles.searchIcon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Search for your friends"
-            placeholderTextColor="#C9D3DB"
-            value={searchQuery}
-            onChangeText={handleSearch}
+  // Determine what content to show in the main area
+  const renderContent = () => {
+      if (isLoading) {
+          return <ActivityIndicator size="large" color="#B88A4E" style={styles.loader} />;
+      }
+
+      // No friends added *at all*
+      if (!isLoading && friends.length === 0) {
+           return (
+              <View style={styles.promptContainer}>
+                  <Text style={styles.promptText}>
+                      You haven't added any friends yet. Tap the '+' icon above to add some!
+                  </Text>
+              </View>
+          );
+      }
+
+      // Searched, but no results found
+      if (searchQuery !== "" && filteredFriends.length === 0) {
+          return <Text style={styles.noResultsText}>No friends found matching "{searchQuery}".</Text>;
+      }
+
+      // Display the list (either full or filtered)
+      // Note: If friends.length > 0 and searchQuery is "" and filteredFriends.length is 0,
+      // this indicates an issue in the useEffect logic, but it should work correctly.
+      return (
+          <FlatList
+              data={filteredFriends} // Always render based on the filtered list
+              keyExtractor={(item) => item._id}
+              renderItem={renderFriendItem}
+              showsVerticalScrollIndicator={Platform.OS !== 'web'}
+              contentContainerStyle={[
+                  styles.listContainer,
+                  // *** Use overflowY for web scroll ***
+                  Platform.OS === 'web' ? { maxHeight: Dimensions.get('window').height - 200, overflowY: 'auto' } : null,
+              ]}
+              keyboardShouldPersistTaps="handled" // Good for dismissing keyboard on tap
+              ListEmptyComponent={() => {
+                   // This should ideally not be reached if the logic above is correct,
+                   // but can be a fallback. The prompts above are more specific.
+                   if (!isLoading && searchQuery === "") { // Only show if not searching and list is empty (after initial load)
+                       return (
+                          <View style={styles.promptContainer}>
+                               <Text style={styles.promptText}>No friends to display.</Text>
+                           </View>
+                       )
+                   }
+                   return null; // Don't show empty component if loading or searching with no results (handled above)
+               }}
           />
-        </View>
+      );
+  };
 
-        {isLoading ? (
-        <ActivityIndicator size="large" color="#B88A4E" />
-      ) : (
-        <FlatList
-          data={filteredFriends}
-          keyExtractor={(item) => item._id}
-          renderItem={renderFriendItem}
-          showsVerticalScrollIndicator={Platform.OS !== 'web'}
-          contentContainerStyle={[
-            styles.flatListContentStyle,
-            Platform.OS === 'web' ? { maxHeight: Dimensions.get('window').height - 200, overflow: 'hidden' } : null,
-          ]}
-        />
-      )}
-        
-        <TouchableOpacity
-          onPress={() => navigation.navigate("AddFriend")}
-          style={styles.addButtonIcon} // Renamed style for clarity
-        >
-          <Ionicons name="person-add-outline" size={28} color="#f9df7b" /> {/* Changed Icon */}
-        </TouchableOpacity>
-      </View>
+  return (
+      <View style={styles.container}>
+          {/* Header Area */}
+          <View style={styles.headerArea}>
+              <View style={styles.titleContainer}>
+                   {navigation.canGoBack() && (
+                      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                          <Ionicons name="arrow-back" size={28} color="#f9df7b" />
+                      </TouchableOpacity>
+                  )}
+                  <Text style={styles.title}>Friends</Text>
+                  <TouchableOpacity
+                      onPress={navigateToAddFriend}
+                      style={styles.addButtonIcon}
+                  >
+                      <Ionicons name="person-add-outline" size={28} color="#f9df7b" />
+                  </TouchableOpacity>
+              </View>
 
-      {/* Content Area */}
-      <View style={styles.contentArea}>
-        {isLoading ? (
-            <ActivityIndicator size="large" color="#B88A4E" style={styles.loader} />
-        ) : friends.length === 0 ? (
-            <Text style={styles.noFriendsText}>You haven't added any friends yet. Tap the '+' icon to add friends.</Text>
-        ) : (
-            <FlatList
-                data={friends}
-                renderItem={renderFriendItem}
-                keyExtractor={(item) => item._id}
-                contentContainerStyle={styles.listContainer}
-            />
-        )}
+              <View style={styles.inputContainer}>
+                  <Ionicons name="search" size={18} color="#cccccc" style={styles.searchIcon} />
+                  <TextInput
+                      style={styles.input}
+                      placeholder="Search your friends..."
+                      placeholderTextColor="#C9D3DB"
+                      value={searchQuery}
+                      onChangeText={handleSearchChange}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      returnKeyType="search" // Indicate search action on keyboard
+                  />
+                  {searchQuery.length > 0 && (
+                       <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearButton}>
+                           <Ionicons name="close-circle" size={20} color="#cccccc" />
+                       </TouchableOpacity>
+                  )}
+              </View>
+          </View>
+
+          {/* Content Area */}
+          <View style={styles.contentArea}>
+              {renderContent()}
+          </View>
       </View>
-    </View>
   );
 };
 
-
+// --- Styles --- (Keep styles as they were)
 const styles = StyleSheet.create({
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#2C2C2C", // slightly lighter than background
-    borderRadius: 16,
-    paddingHorizontal: 12,
-    height: 42,
-    marginTop: 16,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: "#444", // subtle border
-  },
-
-  searchIcon: {
-    marginRight: 8,
-    color: "#cccccc",  
-  },
-
-  input: {
-    flex: 1,
-  fontSize: 15,
-  color: "#FFFFFF",
-  paddingVertical: 0,
-  paddingHorizontal: 0,
-  },
-
-  flatListContentStyle: {
-    paddingBottom: 120,
-  },
-
   container: {
-    flex: 1,
-    backgroundColor: "#1E1E1E",
-    // Remove paddingHorizontal/Vertical here, apply to specific sections if needed
-    // Remove justifyContent center and marginTop -160
+      flex: 1,
+      backgroundColor: "#1E1E1E",
   },
-  headerRow: {
-    paddingHorizontal: 20,
-  paddingTop: 60,
-  paddingBottom: 10,
-  backgroundColor: "#1E1E1E",
+  headerArea: {
+      paddingTop: Platform.OS === 'android' ? 40 : 60,
+      paddingBottom: 10,
+      paddingHorizontal: 20,
+      backgroundColor: "#1E1E1E",
+      borderBottomWidth: 1,
+      borderBottomColor: '#333',
+  },
+  titleContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      position: 'relative',
+      marginBottom: 15,
+      minHeight: 40,
+  },
+  backButton: {
+      position: 'absolute',
+      left: -10,
+      top: 0,
+      padding: 10,
+      zIndex: 1,
   },
   title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#B88A4E",
-    letterSpacing: 1,
-    textAlign: "center",
-    lineHeight: 34,
-    // No flex needed if centered like this
+      fontSize: 24,
+      fontWeight: "bold",
+      color: "#B88A4E",
+      textAlign: "center",
   },
-  addButtonIcon: { // Renamed from addButton
-    position: 'absolute', // Position relative to headerRow
-    right: 15, // Adjust position
-    top: 60,   // Adjust vertical position to align with title
-    padding: 10, // Add padding for easier tapping
+  addButtonIcon: {
+      position: 'absolute',
+      right: -10,
+      top: 0,
+      padding: 10,
+  },
+  inputContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: "#2C2C2C",
+      borderRadius: 16,
+      paddingHorizontal: 12,
+      height: 42,
+      borderWidth: 1,
+      borderColor: "#444",
+  },
+  searchIcon: {
+      marginRight: 8,
+  },
+  input: {
+      flex: 1,
+      fontSize: 15,
+      color: "#FFFFFF",
+      paddingVertical: Platform.OS === 'ios' ? 10 : 8,
+      paddingHorizontal: 0,
+  },
+  clearButton: {
+     paddingLeft: 8,
   },
   contentArea: {
-    flex: 1, // Take remaining space
-    paddingHorizontal: 20, // Padding for the list content
+      flex: 1,
   },
   loader: {
-      marginTop: 50,
-      flex: 1, // Make loader take space if needed
+      flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-  },
-  noFriendsText: {
       marginTop: 50,
-      color: '#888',
+  },
+  promptContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 40,
+  },
+  promptText: {
+      color: '#aaa',
       fontSize: 16,
       textAlign: 'center',
-      paddingHorizontal: 20, // Add padding for better readability
+      lineHeight: 22,
+  },
+  noResultsText: {
+      marginTop: 50,
+      color: '#aaa',
+      fontSize: 16,
+      textAlign: 'center',
+      paddingHorizontal: 20,
   },
   listContainer: {
-      paddingBottom: 20, // Space at the bottom of the list
+      paddingTop: 15,
+      paddingBottom: 30,
+      paddingHorizontal: 20, // Apply padding here for list content
+      flexGrow: 1, // Ensure container grows to allow centering of EmptyComponent
   },
   friendItem: {
       backgroundColor: '#2E2E2E',
-      padding: 15,
+      paddingVertical: 12,
+      paddingHorizontal: 15,
       borderRadius: 8,
-      marginBottom: 10,
-      flexDirection: 'row', // Layout items in a row
-      alignItems: 'center', // Align items vertically
-      justifyContent: 'space-between', // Space out info and action button
+      marginBottom: 12,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
       borderWidth: 1,
       borderColor: '#444',
   },
   friendInfo: {
-      flex: 1, // Allow info to take available space
-      marginRight: 10, // Space before action button
+      flex: 1,
+      marginRight: 10,
   },
   friendName: {
       color: '#E0E0E0',
       fontSize: 17,
       fontWeight: 'bold',
   },
-  friendEmail: {
-      color: '#aaa',
-      fontSize: 14,
-      marginTop: 2,
-  },
-
-  messageButtonText:{
-    color: "#1E1E1E",
-    fontWeight: "bold",
-      fontSize: 16,
-  },
-
-  messageButton: { 
-    backgroundColor: "#B88A4E",
-    paddingVertical: 10,
-    borderRadius: 8,
-    flex: 0.45, // Assign portion of width
-    alignItems: 'center',
-    justifyContent: 'center', // Center activity indicator
-    minHeight: 40, // Ensure minimum height for indicator
-    marginRight: 10,
-  },
-
-  removeButton: { 
-  backgroundColor: "#ca2729",
-      paddingVertical: 10,
-    //   paddingHorizontal: 20, // Use flex instead
-      borderRadius: 8,
-      flex: 0.45, // Assign portion of width
-      // marginLeft: 10, // Remove margin if using flex
-      alignItems: 'center',
+  messageButton: {
+      backgroundColor: "#B88A4E",
+      paddingVertical: 8,
+      paddingHorizontal: 15,
+      borderRadius: 6,
+      marginRight: 10,
       justifyContent: 'center',
-      minHeight: 40,
+      alignItems: 'center',
+      minHeight: 38,
+      minWidth: 80,
   },
-
-  removeButtonText: { 
-    color: "#1E1E1E",
-    fontWeight: "bold",
-    fontSize: 16,
+  messageButtonText: {
+      color: "#1E1E1E",
+      fontWeight: "bold",
+      fontSize: 14,
   },
-
-  buttonDisabled: { // Style for disabled buttons
-    opacity: 0.6,
-},
+  removeButton: {
+      backgroundColor: "#cc3333",
+      paddingVertical: 8,
+      paddingHorizontal: 15,
+      borderRadius: 6,
+      justifyContent: 'center',
+      alignItems: 'center',
+      minHeight: 38,
+      minWidth: 80,
+  },
+  removeButtonText: {
+      color: "#FFFFFF",
+      fontWeight: "bold",
+      fontSize: 14,
+  },
+  buttonDisabled: {
+      opacity: 0.6,
+      backgroundColor: '#666',
+  },
 });
 
 export default FriendsList;
