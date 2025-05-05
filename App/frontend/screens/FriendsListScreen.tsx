@@ -1,7 +1,7 @@
 import { useFocusEffect, useNavigation } from "@react-navigation/native"; // Import useFocusEffect
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState, useCallback } from "react"; // Import useCallback
-import { TouchableOpacity, View, Text, StyleSheet, FlatList, ActivityIndicator, Alert } from "react-native"; // Import FlatList, ActivityIndicator, Alert
+import { TouchableOpacity, View, Text, StyleSheet, FlatList, ActivityIndicator, Alert, TextInput, Platform, Dimensions } from "react-native"; // Import FlatList, ActivityIndicator, Alert
 import { AuthStackParamList } from "../navigation/AuthNavigator";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
@@ -23,6 +23,24 @@ const FriendsList: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAccepting, setIsAccepting] = useState<string | null>(null);
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
+
+  //Searching friends
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query === "") {
+      setFilteredFriends(friends);
+    } else {
+      setFilteredFriends(
+        friends.filter((friends) =>
+          friends.fullName?.toLowerCase().includes(query.toLowerCase()) // Filter events based on title
+        )
+      );
+    }
+  };
+  
+
   // Function to fetch friends
   const fetchFriends = useCallback(async () => {
       console.log('Fetching friends list...');
@@ -38,6 +56,7 @@ const FriendsList: React.FC = () => {
 
           // *** IMPORTANT: Replace with your actual backend endpoint for getting friends ***
           const response = await fetch(`${API_URL}/api/user/friends`, {
+            
             
               method: 'GET',
               headers: {
@@ -83,6 +102,7 @@ const FriendsList: React.FC = () => {
       }, [fetchFriends]) // Depend on the stable fetchFriends function
   );
   
+  
 
   // Render item for the FlatList
   const renderFriendItem = ({ item }: { item: Friend }) => (
@@ -110,6 +130,33 @@ const FriendsList: React.FC = () => {
       {/* Header Row */}
       <View style={styles.headerRow}>
         <Text style={styles.title}>Friends</Text> {/* Changed title slightly */}
+        
+        <View style={styles.inputContainer}>
+          <Ionicons name="search" size={18} color="#C9D3DB" style={styles.searchIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Search for your friends"
+            placeholderTextColor="#C9D3DB"
+            value={searchQuery}
+            onChangeText={handleSearch}
+          />
+        </View>
+
+        {isLoading ? (
+        <ActivityIndicator size="large" color="#B88A4E" />
+      ) : (
+        <FlatList
+          data={filteredFriends}
+          keyExtractor={(item) => item._id}
+          renderItem={renderFriendItem}
+          showsVerticalScrollIndicator={Platform.OS !== 'web'}
+          contentContainerStyle={[
+            styles.flatListContentStyle,
+            Platform.OS === 'web' ? { maxHeight: Dimensions.get('window').height - 200, overflow: 'hidden' } : null,
+          ]}
+        />
+      )}
+        
         <TouchableOpacity
           onPress={() => navigation.navigate("AddFriend")}
           style={styles.addButtonIcon} // Renamed style for clarity
@@ -139,6 +186,36 @@ const FriendsList: React.FC = () => {
 
 
 const styles = StyleSheet.create({
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#2C2C2C", // slightly lighter than background
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    height: 42,
+    marginTop: 16,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: "#444", // subtle border
+  },
+
+  searchIcon: {
+    marginRight: 8,
+    color: "#cccccc",  
+  },
+
+  input: {
+    flex: 1,
+  fontSize: 15,
+  color: "#FFFFFF",
+  paddingVertical: 0,
+  paddingHorizontal: 0,
+  },
+
+  flatListContentStyle: {
+    paddingBottom: 120,
+  },
+
   container: {
     flex: 1,
     backgroundColor: "#1E1E1E",
@@ -146,16 +223,10 @@ const styles = StyleSheet.create({
     // Remove justifyContent center and marginTop -160
   },
   headerRow: {
-    flexDirection: 'row', // Arrange items horizontally
-    alignItems: 'center', // Align items vertically
-    justifyContent: 'center', // Center title horizontally
-    paddingHorizontal: 20, // Add padding back here
-    paddingTop: 60, // Adjust for status bar/notch
-    paddingBottom: 20, // Space below header
-    position: 'relative', // Needed for absolute positioning of the button
-    width: '100%',
-    backgroundColor: "#1E1E1E", // Ensure header background matches
-    // Remove marginTop -520
+    paddingHorizontal: 20,
+  paddingTop: 60,
+  paddingBottom: 10,
+  backgroundColor: "#1E1E1E",
   },
   title: {
     fontSize: 28,

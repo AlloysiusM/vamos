@@ -44,6 +44,7 @@ const ProfilePage = () => {
               
               
             });
+            
     
             const data = await response.json();
   

@@ -44,6 +44,7 @@ const AddFriendsScreen: React.FC = () => {
                 },
                 
               });
+
       
               const data = await response.json();
     
@@ -96,6 +97,7 @@ const AddFriendsScreen: React.FC = () => {
     
           // Post data to db
             const response = await fetch(`${API_URL}/api/user/sending-req`, {
+              
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -103,6 +105,7 @@ const AddFriendsScreen: React.FC = () => {
               },
               body: JSON.stringify({ friendId }), // send the friend ID you want to notify
             });
+
             
             const data = await response.json();
     

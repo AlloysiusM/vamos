@@ -48,6 +48,7 @@ const EventActivities = () => {
         }
 
         const response = await fetch(`${API_URL}/api/events`, 
+          
           {
           method: "GET",
           headers: {
