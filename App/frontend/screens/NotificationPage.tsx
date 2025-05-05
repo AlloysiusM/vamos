@@ -43,6 +43,7 @@ const NotificationsPage = () => {
             }
 
             const response = await fetch(`${API_URL}/api/user/getFriendReq`, {
+
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -99,6 +100,7 @@ const NotificationsPage = () => {
             }
 
             const response = await fetch(`${API_URL}/api/user/acceptFriendRequest`, {
+                
                 method: 'POST', 
                 headers: {
                     'Content-Type': 'application/json',

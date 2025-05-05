@@ -36,6 +36,7 @@ const AddFriendsScreen: React.FC = () => {
     
               const response = await fetch(`${API_URL}/api/user/add-friends`, {
                 
+                
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',

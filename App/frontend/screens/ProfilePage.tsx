@@ -42,6 +42,7 @@ const ProfilePage = () => {
                 'Authorization': `Bearer ${token}`,
               },
               
+              
             });
     
             const data = await response.json();

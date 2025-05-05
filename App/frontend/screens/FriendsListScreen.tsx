@@ -38,6 +38,7 @@ const FriendsList: React.FC = () => {
 
           // *** IMPORTANT: Replace with your actual backend endpoint for getting friends ***
           const response = await fetch(`${API_URL}/api/user/friends`, {
+            
               method: 'GET',
               headers: {
                   'Content-Type': 'application/json',

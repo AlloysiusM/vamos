@@ -76,6 +76,7 @@ const LoginScreen = () => {
       console.log('gg');
       
       const response = await fetch(`${API_URL}/api/user/login`, {
+        
 
         method: 'POST',
         headers: {
