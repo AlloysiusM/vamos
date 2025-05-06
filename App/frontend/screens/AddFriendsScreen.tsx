@@ -132,7 +132,16 @@ console.log('ReceiverId:', friendId);
   
   return (
     <ScrollView style={styles.container}>
+      
+       <View style={styles.titleContainer}>
+                         {navigation.canGoBack() && (
+                            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                                <Ionicons name="arrow-back" size={28} color="#f9df7b" />
+                            </TouchableOpacity>
+                        )}
+
         <Text style={styles.title}>People you might know</Text>
+        </View>
         {isLoading ? (
         <ActivityIndicator size="large" color="#B88A4E" style={{ marginTop: 20 }} />
       ) : (
@@ -202,6 +211,22 @@ const styles = StyleSheet.create({
     color: "#1E1E1E",
     fontWeight: "bold",
   },
+
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    marginBottom: 15,
+    minHeight: 40,
+},
+backButton: {
+    position: 'absolute',
+    left: -10,
+    top: 20,
+    padding: 10,
+    zIndex: 1,
+},
 });
 
 export default AddFriendsScreen;
