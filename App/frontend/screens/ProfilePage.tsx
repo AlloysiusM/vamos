@@ -5,7 +5,7 @@ import { AuthStackParamList } from '../navigation/AuthNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect, } from '@react-navigation/native';
-import { API_URL } from '@env';
+import { BASE_URL } from '../utils/config';
 
 const ProfilePage = () => {
     //add page routs and other functions 
@@ -33,7 +33,7 @@ const ProfilePage = () => {
               return;
             }
   
-            const response = await fetch(`${API_URL}/api/user/profile`, {
+            const response = await fetch(`${BASE_URL}/api/user/profile`, {
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json',

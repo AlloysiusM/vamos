@@ -7,7 +7,7 @@ import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthStackParamList } from "../navigation/AuthNavigator";
-import { API_URL } from '@env';
+import { BASE_URL } from '../utils/config';
 import { useEvents } from '../states/contexts/EventContext';
 
 // Drawer and stack nav for sidebar
@@ -47,7 +47,7 @@ const EventActivities = ({ route }: { route: any }) => {
         throw new Error("Event not found");
       }
 
-      const response = await fetch(`${API_URL}/api/events/${eventId}`, {
+      const response = await fetch(`${BASE_URL}/api/events/${eventId}`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -101,7 +101,7 @@ const EventActivities = ({ route }: { route: any }) => {
           return;
         }
 
-        const response = await fetch(`${API_URL}/api/events`, {
+        const response = await fetch(`${BASE_URL}/api/events`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -116,6 +116,7 @@ const EventActivities = ({ route }: { route: any }) => {
         const data = await response.json();
         setEvents(data);
         setFilteredEvents(data);
+        console.log(BASE_URL);
       } catch (error) {
         console.error("Error fetching events:", error);
         setError("Error fetching events.");

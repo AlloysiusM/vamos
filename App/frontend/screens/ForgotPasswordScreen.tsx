@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_URL } from '@env';
+import { BASE_URL } from '../utils/config'; // Adjust the import path as necessary
 import { LinearGradient } from 'expo-linear-gradient';
 
 const ForgotPasswordScreen = () => {
@@ -25,7 +25,7 @@ const ForgotPasswordScreen = () => {
     console.log('[DEBUG] Sending request:', requestBody);
 
     try {
-      const response = await fetch(`${API_URL}/api/user/forgotPassword`, {
+      const response = await fetch(`${BASE_URL}/api/user/forgotPassword`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
