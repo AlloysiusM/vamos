@@ -330,6 +330,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     width: "90%",
   },
+  
   picker: {
     height: 180,
     width: "100%",

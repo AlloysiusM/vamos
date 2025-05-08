@@ -21,6 +21,11 @@ const userSchema = new Schema ({
     },
     resetCode: { type: String, default: null }, // Added resetCode
     resetCodeExpires: { type: Date, default: null }, // Expiry field
+    
+    friends: [{ // Defines 'friends' as an array
+        type: mongoose.Schema.Types.ObjectId, // Each element in the array is a Mongoose ObjectId
+        ref: 'User' // Specifies that these ObjectIds refer to documents in the 'User' collection
+    }]
 }); 
 
 // Hash password, ensuring security

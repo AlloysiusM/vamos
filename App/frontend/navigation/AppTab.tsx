@@ -13,6 +13,7 @@ import FriendsListScreen from "../screens/FriendsListScreen"
 import ScheduleScreen from "../screens/ScheduleScreen"
 import EventActivities from "../screens/EventActivitiesScreen"
 import CreateEvent from "../screens/EventActivitiesCreationScreen";
+import AddFriendScreen from "../screens/AddFriendsScreen"
 
 // To get navbar to show on screens without adding to Tab stack
 const HomeStack = createStackNavigator()
@@ -23,6 +24,7 @@ const HomeStackScreen = () => (
     <HomeStack.Screen name="FriendsList" component={FriendsListScreen} />
     <HomeStack.Screen name="Schedule" component={ScheduleScreen} />
     <HomeStack.Screen name="CreateEvent" component={CreateEvent} />
+    <HomeStack.Screen name="AddFriend" component={AddFriendScreen} />
   </HomeStack.Navigator>
 )
 
@@ -95,6 +97,7 @@ const AppTab = () => {
         component={ProfileStackScreen}
         options={{ headerShown: false }} 
       />
+      
     </Tab.Navigator>
   )
 }

@@ -108,6 +108,7 @@ const EventActivities = ({ route }: { route: any }) => {
             "Content-Type": "application/json",
           },
         });
+        
 
         if (!response.ok) {
           throw new Error("Failed to fetch events");
@@ -307,6 +308,8 @@ const EventStack = () => {
   );
 };
 
+
+// Main Drawer Navigation
 const EventsScreenDrawer = () => {
   return (
     <Drawer.Navigator
