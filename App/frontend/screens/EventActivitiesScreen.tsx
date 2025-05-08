@@ -39,55 +39,72 @@ const EventActivities = ({ route }: { route: any }) => {
   const { signedUpEvents, addSignedUpEvent, removeSignedUpEvent } = useEvents();
   
   const EventSignup = async (eventId: string) => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      const eventToUpdate = events.find(event => event._id === eventId);
-
-      if (!eventToUpdate) {
-        throw new Error("Event not found");
-      }
-
-      const response = await fetch(`${BASE_URL}/api/events/${eventId}`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error("Failed to join event");
-      }
-
-      // Update context (pass data to context)
-      if (signedUpEvents.some(e => e._id === eventId)) {
-        removeSignedUpEvent(eventId);
-      } else {
-        addSignedUpEvent({
-          _id: eventToUpdate._id,
-          title: eventToUpdate.title,
-          startTime: eventToUpdate.startTime,
-          endTime: eventToUpdate.endTime,
-          location: eventToUpdate.location
-        });
-      }
-
-      // Update local state (update ui)
-      setEvents(prevEvents => 
-        prevEvents.map(event => 
-          event._id === eventId 
-            ? { ...event, currentPeople: data.currentPeople } 
-            : event
-        )
-      );
-
-    } catch(error) {
-      console.error("Error signing up for event:", error);
-      Alert.alert("Error", "Failed to sign up for event");
+    const eventToUpdate = events.find(event => event._id === eventId);
+    if (!eventToUpdate) {
+      Alert.alert("Error", "Event not found.");
+      return;
     }
-  }
+  
+    const token = await AsyncStorage.getItem("token");
+    const isAlreadySignedUp = signedUpEvents.some(e => e._id === eventId);
+  
+    const confirmAction = async () => {
+      try {
+        const endpoint = isAlreadySignedUp
+          ? `${BASE_URL}/api/events/${eventId}/withdraw`
+          : `${BASE_URL}/api/events/${eventId}`;
+  
+        const response = await fetch(endpoint, {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+  
+        const data = await response.json();
+  
+        if (!response.ok) {
+          throw new Error(data.error || "Request failed");
+        }
+  
+        if (isAlreadySignedUp) {
+          removeSignedUpEvent(eventId);
+          console.log(`Removed from event: ${eventToUpdate.title}`);
+        } else {
+          addSignedUpEvent({
+            _id: eventToUpdate._id,
+            title: eventToUpdate.title,
+            startTime: eventToUpdate.startTime,
+            endTime: eventToUpdate.endTime,
+            location: eventToUpdate.location,
+          });
+          console.log(`Signed up for event: ${eventToUpdate.title}`);
+        }
+  
+        setEvents(prevEvents =>
+          prevEvents.map(event =>
+            event._id === eventId
+              ? { ...event, currentPeople: data.currentPeople }
+              : event
+          )
+        );
+      } catch (error) {
+        console.error("Error updating event signup:", error);
+        Alert.alert("Error", "Failed to update event signup.");
+      }
+    };
+  
+    // Show confirmation alert
+    Alert.alert(
+      isAlreadySignedUp ? "Unsign from Event" : "Sign Up for Event",
+      `Are you sure you want to ${isAlreadySignedUp ? "unsign" : "sign up"} for "${eventToUpdate.title}"?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Yes", onPress: confirmAction }
+      ]
+    );
+  };
 
   // Fetch events from the backend API on component mount
   useEffect(() => {

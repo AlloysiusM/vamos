@@ -93,50 +93,71 @@ const deleteEvent = async(req, res) => {
     }
 }
 
-const addUser = async(req, res) => {
+const addUser = async (req, res) => {
     const userId = req.user._id;
-    
     const { id } = req.params;
 
-    if(!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({ error: 'No such event' });
     }
 
     try {
         const event = await Event.findById(id);
 
-        //stops duplicate sign ups
+        // Prevent duplicate sign-ups
         if (event.usersSignedup.includes(userId)) {
             return res.status(400).json({ error: 'User already signed up' });
         }
 
-        if(event.currentPeople >= event.maxPeople)
-            {
-                return res.status(400).json({ error: 'Event Full' });
-            }
-        event.currentPeople += 1; //increments currentPeople to fill up
-        event.usersSignedup.push(userId);// adds user id to the array
+        // Check if event is full
+        if (event.currentPeople >= event.maxPeople) {
+            return res.status(400).json({ error: 'Event Full' });
+        }
+
+        // Update event to include the user
+        event.currentPeople += 1; // Increase currentPeople count
+        event.usersSignedup.push(userId); // Add user to usersSignedUp
         await event.save();
-        res.status(200).json(event);
+
+        res.status(200).json(event); // Send back the updated event
     } catch (error) {
         res.status(500).json({ error: 'Server error' });
     }
+};
 
-const removeUser = async(req, res) => {
+const removeUser = async (req, res) => {
+    const userId = req.user._id;
+    const { id } = req.params;
 
-}
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ error: 'No such event' });
+    }
 
+    try {
+        const event = await Event.findById(id);
 
+        // Check if the user is signed up
+        if (!event.usersSignedup.includes(userId)) {
+            return res.status(400).json({ error: 'User not signed up for this event' });
+        }
 
-    
-}
+        // Decrease currentPeople and remove the user from usersSignedUp
+        event.currentPeople = Math.max(event.currentPeople - 1, 0); // Ensure it doesn’t go negative
+        event.usersSignedup = event.usersSignedup.filter(user => user.toString() !== userId.toString());
+
+        await event.save();
+
+        res.status(200).json({ message: 'Successfully withdrawn from event', event });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
 
 module.exports = {
     getEvents,
     getUserEvents,
     createEvent,
     deleteEvent,
-    addUser
+    addUser,
+    removeUser
 }
-
-
