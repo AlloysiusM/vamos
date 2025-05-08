@@ -1,13 +1,14 @@
 import React, { useState, useEffect, ReactNode } from "react";
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, ScrollView, ActivityIndicator, SafeAreaView, Dimensions, Platform } from "react-native";
-import { createDrawerNavigator } from "@react-navigation/drawer";
+import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, ScrollView, ActivityIndicator, SafeAreaView, Dimensions, Platform, Alert } from "react-native";
+import { createDrawerNavigator, DrawerContentComponentProps } from "@react-navigation/drawer";
 import { createStackNavigator, StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthStackParamList } from "../navigation/AuthNavigator";
-import { API_URL } from '@env';
+import { BASE_URL } from '../utils/config';
+import { useEvents } from '../states/contexts/EventContext';
 
 // Drawer and stack nav for sidebar
 const Drawer = createDrawerNavigator();
@@ -22,18 +23,71 @@ interface Event {
   maxPeople: number;
   startTime: number;
   endTime: number;
+  currentPeople: number;
   user: string;
 }
 
 // main event activities page
-const EventActivities = () => {
+const EventActivities = ({ route }: { route: any }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const windowWidth = Dimensions.get("window").width;
-  const navigation = useNavigation<StackNavigationProp<AuthStackParamList>>();
+  const { signedUpEvents, addSignedUpEvent, removeSignedUpEvent } = useEvents();
+  
+  const EventSignup = async (eventId: string) => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const eventToUpdate = events.find(event => event._id === eventId);
+
+      if (!eventToUpdate) {
+        throw new Error("Event not found");
+      }
+
+      const response = await fetch(`${BASE_URL}/api/events/${eventId}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error("Failed to join event");
+      }
+
+      // Update context (pass data to context)
+      if (signedUpEvents.some(e => e._id === eventId)) {
+        removeSignedUpEvent(eventId);
+      } else {
+        addSignedUpEvent({
+          _id: eventToUpdate._id,
+          title: eventToUpdate.title,
+          startTime: eventToUpdate.startTime,
+          endTime: eventToUpdate.endTime,
+          location: eventToUpdate.location
+        });
+      }
+
+      // Update local state (update ui)
+      setEvents(prevEvents => 
+        prevEvents.map(event => 
+          event._id === eventId 
+            ? { ...event, currentPeople: data.currentPeople } 
+            : event
+        )
+      );
+
+    } catch(error) {
+      console.error("Error signing up for event:", error);
+      Alert.alert("Error", "Failed to sign up for event");
+    }
+  }
 
   // Fetch events from the backend API on component mount
   useEffect(() => {
@@ -47,9 +101,7 @@ const EventActivities = () => {
           return;
         }
 
-        const response = await fetch(`${API_URL}/api/events`, 
-          
-          {
+        const response = await fetch(`${BASE_URL}/api/events`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -65,6 +117,7 @@ const EventActivities = () => {
         const data = await response.json();
         setEvents(data);
         setFilteredEvents(data);
+        console.log(BASE_URL);
       } catch (error) {
         console.error("Error fetching events:", error);
         setError("Error fetching events.");
@@ -76,15 +129,45 @@ const EventActivities = () => {
     fetchEvents();
   }, []);
 
+  // Handle category selection from drawer
+  useEffect(() => {
+    if (route.params?.selectedCategory) {
+      setSelectedCategory(route.params.selectedCategory);
+      filterEventsByCategory(route.params.selectedCategory);
+    } else {
+      setSelectedCategory(null);
+      setFilteredEvents(events);
+    }
+  }, [route.params?.selectedCategory, events]);
+
+  // Filter events by category
+  const filterEventsByCategory = (category: string) => {
+    if (category === "All") {
+      setFilteredEvents(events);
+      setSelectedCategory(null);
+    } else {
+      setFilteredEvents(
+        events.filter((event) => 
+          event.category?.toLowerCase() === category.toLowerCase()
+        )
+      );
+    }
+  };
+
   // Handle search input and filter events based on the query
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     if (query === "") {
-      setFilteredEvents(events);
+      if (selectedCategory) {
+        filterEventsByCategory(selectedCategory);
+      } else {
+        setFilteredEvents(events);
+      }
     } else {
       setFilteredEvents(
         events.filter((event) =>
-          event.title?.toLowerCase().includes(query.toLowerCase()) // Filter events based on title
+          event.title?.toLowerCase().includes(query.toLowerCase()) && 
+          (selectedCategory ? event.category?.toLowerCase() === selectedCategory.toLowerCase() : true)
         )
       );
     }
@@ -92,8 +175,6 @@ const EventActivities = () => {
 
   // Render each event item in the list
   const renderEvent = ({ item }: { item: Event }) => {
-
-    // Date formatting for start and end times
     const startDate = item.startTime ? new Date(item.startTime).toLocaleString() : 'N/A';
     const endDate = item.endTime ? new Date(item.endTime).toLocaleString() : 'N/A';
 
@@ -105,8 +186,11 @@ const EventActivities = () => {
         <Text style={styles.eventDetails}>Start Time: {startDate}</Text>
         <Text style={styles.eventDetails}>End Time: {endDate}</Text>
         <Text style={styles.eventDetails}>Max People: {item.maxPeople || 'N/A'}</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("s")}>
-          <Text style={{ fontSize: 15, marginVertical: 10, color: "#cccccc"}}>More details</Text>
+        <Text style={styles.eventDetails}>Current People: {item.currentPeople || 'N/A'}</Text>
+        <TouchableOpacity onPress={() => EventSignup(item._id)}>
+          <Text style={{ fontSize: 15, marginVertical: 10, color: "#B88A4E" }}>
+            {signedUpEvents.some(event => event._id === item._id) ? "Unsign up" : "Sign Up"}
+          </Text>
         </TouchableOpacity>
       </View>
     );
@@ -115,7 +199,6 @@ const EventActivities = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
-
         {error && <Text style={styles.errorText}>{error}</Text>}
 
         <View style={styles.inputContainer}>
@@ -129,39 +212,72 @@ const EventActivities = () => {
           />
         </View>
 
+        {selectedCategory && (
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+            <Text style={{ color: '#f9df7b', marginRight: 10 }}>Filtering by:</Text>
+            <Text style={{ color: '#B88A4E', fontWeight: 'bold' }}>{selectedCategory}</Text>
+            <TouchableOpacity 
+              onPress={() => {
+                setSelectedCategory(null);
+                setFilteredEvents(events);
+              }}
+              style={{ marginLeft: 10 }}
+            >
+              <Ionicons name="close" size={20} color="#FF6B6B" />
+            </TouchableOpacity>
+          </View>
+        )}
+
         {isLoading ? (
-        <ActivityIndicator size="large" color="#B88A4E" />
-      ) : (
-        <FlatList
-          data={filteredEvents}
-          keyExtractor={(item) => item._id}
-          renderItem={renderEvent}
-          showsVerticalScrollIndicator={Platform.OS !== 'web'}
-          contentContainerStyle={[
-            styles.flatListContentStyle,
-            Platform.OS === 'web' ? { maxHeight: Dimensions.get('window').height - 200, overflow: 'hidden' } : null,
-          ]}
-        />
-      )}
+          <ActivityIndicator size="large" color="#B88A4E" />
+        ) : (
+          <FlatList
+            data={filteredEvents}
+            keyExtractor={(item) => item._id}
+            renderItem={renderEvent}
+            showsVerticalScrollIndicator={Platform.OS !== 'web'}
+            contentContainerStyle={[
+              styles.flatListContentStyle,
+              Platform.OS === 'web' ? { maxHeight: Dimensions.get('window').height - 200, overflow: 'hidden' } : null,
+            ]}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
 };
 
 // Side nav
-const DrawerContent = () => {
+const DrawerContent = (props: DrawerContentComponentProps) => {
+  const categories = ["Football", "Basketball", "Yoga", "Running", "Gym session", "Tennis", "All"];
+
+  const handleCategorySelect = (category: string) => {
+    props.navigation.navigate("EventStack", { 
+      screen: "EventActivitiesScreen",
+      params: { selectedCategory: category }
+    });
+    props.navigation.closeDrawer();
+  };
+
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#2E2E2E" }}>
-      <Text style={{ fontSize: 24, marginBottom: 20, color: "#B88A4E" }}>Categories</Text>
-      <TouchableOpacity>
-        <Text style={{ fontSize: 18, marginVertical: 10, color: "#B88A4E" }}>Football</Text>
-      </TouchableOpacity>
-      <TouchableOpacity>
-        <Text style={{ fontSize: 18, marginVertical: 10, color: "#B88A4E" }}>Basketball</Text>
-      </TouchableOpacity>
+    <View style={{ flex: 1, justifyContent: "flex-start", alignItems: "center", backgroundColor: "#2E2E2E", paddingTop: 50 }}>
+      <Text style={{ fontSize: 24, marginTop: 100, marginBottom: 20, color: "#B88A4E" }}>Categories</Text>
+      
+      <View style={{ width: '80%', height: 1, backgroundColor: '#ffffff', marginBottom: 20 }} />
+
+      {categories.map((category) => (
+        <TouchableOpacity
+          key={category}
+          onPress={() => handleCategorySelect(category)}
+          style={{ width: '100%', padding: 15, alignItems: 'center' }}
+        >
+          <Text style={{ fontSize: 18, marginVertical: 5, color: "#B88A4E" }}>{category}</Text>
+        </TouchableOpacity>
+      ))}
     </View>
   );
 };
+
 
 // Stack Screen with Drawer Button (3 lines nav btn)
 const EventStack = () => {
@@ -170,7 +286,7 @@ const EventStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="EventActivities"
+        name="EventActivitiesScreen" 
         component={EventActivities}
         options={{
           title: "My Events",
@@ -197,17 +313,22 @@ const EventStack = () => {
 const EventsScreenDrawer = () => {
   return (
     <Drawer.Navigator
-      drawerContent={() => <DrawerContent />}
-      initialRouteName="My Events"
+      drawerContent={(props) => <DrawerContent {...props} />}
+      initialRouteName="EventStack"
       screenOptions={{
         headerShown: false,
       }}
     >
-      <Drawer.Screen name="My Events" component={EventStack} />
+      <Drawer.Screen 
+        name="EventStack" 
+        component={EventStack}
+        options={{
+          title: "My Events",
+        }}
+      />
     </Drawer.Navigator>
   );
 };
-
 export default EventsScreenDrawer;
 
 const styles = StyleSheet.create({
