@@ -5,7 +5,7 @@ import { AuthStackParamList } from '../navigation/AuthNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect, } from '@react-navigation/native';
-import { API_URL } from '@env';
+import { BASE_URL } from '../utils/config';
 
 const ProfilePage = () => {
     //add page routs and other functions 
@@ -17,6 +17,7 @@ const ProfilePage = () => {
     useFocusEffect(
       useCallback(() => {
         console.log('fafaf');
+        
         
         const fetchUserName = async () => {
           setIsLoading(true); // Start loading
@@ -33,14 +34,16 @@ const ProfilePage = () => {
               return;
             }
   
-            const response = await fetch(`${API_URL}/api/user/profile`, {
+            const response = await fetch(`${BASE_URL}/api/user/profile`, {
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
               },
               
+              
             });
+            
     
             const data = await response.json();
   
@@ -98,8 +101,8 @@ const ProfilePage = () => {
       title: {
         fontSize: 28,
         fontWeight: 'bold',
-        marginTop: -300,
-        marginBottom: 30,
+        marginTop: -400,
+        marginBottom: 60,
         color: '#B88A4E',
         letterSpacing: 1,
       },

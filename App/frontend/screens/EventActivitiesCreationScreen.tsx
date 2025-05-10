@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform, Modal, Keyboard } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform, Modal, Keyboard, ScrollView } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_URL } from '@env';
+import { BASE_URL } from '../utils/config';
 
 // ts declaration
 interface CreateEventScreenProps {
@@ -54,7 +54,7 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
       return;
     }
   
-    const response = await fetch(`${API_URL}/api/events`, { 
+    const response = await fetch(`${BASE_URL}/api/events`, { 
       method: 'POST',
       body: JSON.stringify(event),
       headers: {
@@ -87,11 +87,16 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
   };
 
   return (
-    <View style={styles.container}>
-      
+    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       {/* Title */}
       <Text style={styles.label}>Title</Text>
-      <TextInput   placeholderTextColor="#d3d3d3" style={styles.input} value={title} onChangeText={setTitle} placeholder="Enter title" />
+      <TextInput 
+        placeholderTextColor="#d3d3d3" 
+        style={styles.input} 
+        value={title} 
+        onChangeText={setTitle} 
+        placeholder="Enter title" 
+      />
       
       {/* Category Picker */}
       <Text style={styles.label}>Category</Text>
@@ -137,11 +142,25 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
 
       {/* Description */}
       <Text style={styles.label}>Description</Text>
-      <TextInput placeholderTextColor="#d3d3d3" style={styles.input} value={description} onChangeText={setDescription} placeholder="Enter description" multiline blurOnSubmit={true} onSubmitEditing={() => Keyboard.dismiss()} />
+      <TextInput 
+        placeholderTextColor="#d3d3d3" 
+        style={styles.input} 
+        value={description} 
+        onChangeText={setDescription} 
+        placeholder="Enter description" 
+        multiline 
+        blurOnSubmit={true} 
+        onSubmitEditing={() => Keyboard.dismiss()} 
+      />
 
       {/* Location */}
       <Text style={styles.label}>Location</Text>
-      <TextInput style={styles.input} value={location} onChangeText={setLocation} placeholder="Enter location" />
+      <TextInput 
+        style={styles.input} 
+        value={location} 
+        onChangeText={setLocation} 
+        placeholder="Enter location" 
+      />
 
       {/* Max People */}
       <Text style={styles.label}>Max People: {maxPeople}</Text>
@@ -183,7 +202,6 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
         pickerStyleIOS={{ backgroundColor: "#1e1e1e" }} 
       />
 
-
       {/* End Time Picker */}
       <Text style={styles.label}>End Time</Text>
       {Platform.OS === "web" ? (
@@ -212,7 +230,6 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
         pickerStyleIOS={{ backgroundColor: "#1e1e1e" }} 
       />
 
-
       {/* Submit Button */}
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
         <Text style={styles.submitText}>Submit Event</Text>
@@ -220,62 +237,61 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
 
       {/* Error Message */}
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
-    </View>
+    </ScrollView>
   );
 };
-
 const THEME_COLOR = "#f9df7b";
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
+    padding: 20,
     backgroundColor: "#000000",
-    paddingTop: 100,
+    paddingTop: 50, 
   },
   label: {
-    fontSize: 15,
+    fontSize: 15, 
     fontWeight: "600",
     color: THEME_COLOR,
-    marginBottom: 8,
+    marginBottom: 8, 
   },
   input: {
     backgroundColor: "#1a1a1a",
-    padding: 14,
-    borderRadius: 12,
-    color: "#f0f0f0", 
-    fontSize: 15,
-    marginBottom: 20,
+    padding: 12, 
+    borderRadius: 12, 
+    color: "#f0f0f0",
+    fontSize: 16,
+    marginBottom: 18,
     borderWidth: 1,
     borderColor: "#2c2c2c",
   },
   counterContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 18, 
   },
   counterButton: {
     backgroundColor: "#2b2b2b",
-    padding: 12,
+    padding: 12, 
     borderRadius: 8,
   },
   counterText: {
-    fontSize: 20,
+    fontSize: 20, 
     color: "#fff",
   },
   counterValue: {
-    fontSize: 18,
+    fontSize: 18, 
     color: THEME_COLOR,
-    marginHorizontal: 16,
+    marginHorizontal: 14, 
   },
   dateButton: {
     backgroundColor: "#1a1a1a",
-    padding: 14,
+    padding: 12, 
     borderRadius: 12,
     borderWidth: 1,
     borderColor: "#2c2c2c",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 18,
   },
   dateText: {
     color: "#f0f0f0",
@@ -283,20 +299,20 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     backgroundColor: THEME_COLOR,
-    paddingVertical: 16,
-    borderRadius: 12,
+    paddingVertical: 14,
+    borderRadius: 12, 
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 18, 
   },
   submitText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 16, 
     fontWeight: "600",
   },
   errorText: {
     color: "#ff4d4f",
-    fontSize: 14,
-    marginTop: 12,
+    fontSize: 14, 
+    marginTop: 10, 
     fontWeight: "500",
   },
   placeholder: {
@@ -310,17 +326,18 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     backgroundColor: "#1a1a1a",
-    padding: 24,
+    padding: 20, 
     borderRadius: 16,
-    width: "85%",
+    width: "90%",
   },
+  
   picker: {
     height: 180,
     width: "100%",
     color: "#f0f0f0",
   },
   closeButton: {
-    marginTop: 24,
+    marginTop: 18, 
     padding: 12,
     backgroundColor: THEME_COLOR,
     borderRadius: 8,
@@ -329,7 +346,7 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: "#fff",
     fontWeight: "600",
-    fontSize: 15,
+    fontSize: 16,
   },
 });
 

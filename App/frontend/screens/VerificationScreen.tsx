@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } fro
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
-import { API_URL } from '@env';
+import { BASE_URL } from '../utils/config';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const VerificationScreen = () => {
@@ -21,7 +21,7 @@ const VerificationScreen = () => {
     }
 
     try {
-      const response = await fetch(`${API_URL}/api/user/verify-Email`, {
+      const response = await fetch(`${BASE_URL}/api/user/verify-Email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code }),

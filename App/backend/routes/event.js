@@ -5,7 +5,8 @@ const{
     getUserEvents,
     createEvent,
     deleteEvent,
-    addUser
+    addUser,
+    removeUser,
 } = require('../controllers/eventController');
 
 const { protect } = require('../middleware/authMiddleWare');
@@ -25,5 +26,8 @@ router.post('/', protect, createEvent);
 router.delete('/:id', protect, deleteEvent);
 
 router.patch('/:id', protect, addUser);
+
+router.patch("/:id/withdraw", protect, removeUser);
+
 
 module.exports = router;
