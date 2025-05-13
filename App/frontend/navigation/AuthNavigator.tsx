@@ -15,8 +15,7 @@ import CreateEvent from "../screens/EventActivitiesCreationScreen";
 import ProfilePage from "../screens/ProfilePage";
 import AddFriendsScreen from "../screens/AddFriendsScreen";
 import NotificationsPage from "../screens/NotificationPage";
-
-
+import FindMe from "../screens/FindNearMe";
 
 export type AuthStackParamList = {
   Login: undefined;
@@ -31,8 +30,8 @@ export type AuthStackParamList = {
   Schedule: undefined;
   CreateEvent: undefined;
   Profile: undefined;
+  FindMe: undefined;
   AddFriend: undefined;
-
   Notifications: undefined;
 };
 
@@ -52,7 +51,7 @@ const AuthNavigator = () => {
         <Stack.Screen name="FriendsList" component={FriendsListScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Schedule" component={ScheduleScreen} options={{ headerShown: false }} />
         <Stack.Screen name="CreateEvent" component={CreateEvent} options={{ headerShown: false }} />
-
+        <Stack.Screen name="FindMe" component={FindMe} options={{ headerShown: false }} />
         <Stack.Screen name="Profile" component={ProfilePage} options={{ headerShown: false }} />
         <Stack.Screen name="AddFriend" component={AddFriendsScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Notifications" component={NotificationsPage} options={{ headerShown: false }} />
