@@ -213,7 +213,7 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
         />
       ) : (
         <TouchableOpacity style={styles.dateButton} onPress={() => setEndPickerVisible(true)}>
-          <Text style={styles.dateText}>{startTime.toLocaleString()}</Text>
+          <Text style={styles.dateText}>{endTime.toLocaleString()}</Text>
         </TouchableOpacity>
       )}
       
