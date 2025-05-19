@@ -20,16 +20,31 @@ import FindMe from "../screens/FindNearMe"
 const HomeStack = createStackNavigator()
 const HomeStackScreen = () => (
   <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-    <HomeStack.Screen name="HomeMain" component={LandingPage}  options={{ headerShown: false }}/>
+    <HomeStack.Screen
+      name="HomeMain"
+      component={LandingPage}
+      options={{ headerShown: false }}
+    />
     <HomeStack.Screen name="EventActivities" component={EventActivities} />
     <HomeStack.Screen name="FriendsList" component={FriendsListScreen} />
     <HomeStack.Screen name="Schedule" component={ScheduleScreen} />
-    <HomeStack.Screen name="CreateEvent" component={CreateEvent} />
+
+    {/* trigger confirmation msg created event prop */}
+    <HomeStack.Screen name="CreateEvent">
+      {props => (
+        <CreateEvent
+          {...props}
+          onAddEvent={(event) => {
+            console.log('Event added:', event);
+          }}
+        />
+      )}
+    </HomeStack.Screen>
+    
     <HomeStack.Screen name="FindMe" component={FindMe} />
     <HomeStack.Screen name="AddFriend" component={AddFriendScreen} />
   </HomeStack.Navigator>
-)
-
+);
 // For profile friend list and settings pages
 const ProfileStack = createStackNavigator()
 const ProfileStackScreen = () => (

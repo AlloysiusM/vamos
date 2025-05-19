@@ -198,7 +198,7 @@ const AddFriendsScreen: React.FC = () => {
             Platform.OS === "web"
               ? {
                   maxHeight: Dimensions.get("window").height - 200,
-                  overflowY: "auto",
+                  overflow: "hidden",
                 }
               : null,
           ]}
@@ -211,35 +211,44 @@ const AddFriendsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1E1E1E",
+    backgroundColor: "#000000",
     paddingHorizontal: 20,
     paddingTop: 40,
   },
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center", 
     marginBottom: 16,
   },
   backButton: {
     marginRight: 12,
+    padding: 8,
+    position: "absolute",
+    left: 0, 
   },
   title: {
-    fontSize: 28,
+    marginTop: 20,
+    fontSize: 20, 
     fontWeight: "bold",
-    color: "#B88A4E",
+    color: "#f9df7b",
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#2C2C2C",
+    backgroundColor: "#1A1A1A",
     borderRadius: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "#333",
   },
   input: {
     flex: 1,
     height: 40,
-    color: "#fff",
+    color: "#f9df7b",
+    fontSize: 15,
+    paddingVertical: Platform.OS === "ios" ? 10 : 8,
   },
   searchIcon: {
     marginRight: 8,
@@ -248,41 +257,49 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   userCard: {
-    backgroundColor: "#2C2C2C",
+    backgroundColor: "#1A1A1A",
     borderRadius: 10,
     padding: 16,
-    marginBottom: 10,
+    marginBottom: 12,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#333",
   },
   userInfo: {
     flex: 1,
+    marginRight: 10,
   },
   name: {
-    color: "#fff",
+    color: "#ffffff",
     fontSize: 16,
     fontWeight: "bold",
   },
   email: {
-    color: "#ccc",
+    color: "#BDB298",
     fontSize: 14,
   },
   addButton: {
-    backgroundColor: "#B88A4E",
+    backgroundColor: "#f9df7b",
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 8,
+    minHeight: 38,
+    justifyContent: "center",
+    alignItems: "center",
   },
   addButtonText: {
-    color: "#fff",
+    color: "#1E1E1E",
     fontWeight: "bold",
+    fontSize: 14,
   },
   buttonDisabled: {
     opacity: 0.6,
+    backgroundColor: "#666",
   },
   noResultsText: {
-    color: "#999",
+    color: "#aaa",
     fontSize: 16,
     textAlign: "center",
     marginTop: 30,
@@ -291,5 +308,6 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
 });
+
 
 export default AddFriendsScreen;

@@ -56,7 +56,14 @@ const eventSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
-    }
+    },
+    // Users who favourited this event
+    favourtiedBy: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+        }
+    ],
 });
 
 module.exports = mongoose.model('Events', eventSchema);

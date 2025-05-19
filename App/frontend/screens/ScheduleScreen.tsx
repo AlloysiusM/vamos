@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, FlatList, SafeAreaView } from "react-native";
+import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { useEvents } from "../states/contexts/EventContext";
+import { useNavigation } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 interface CalendarEvent {
   id: string;
@@ -16,6 +18,7 @@ const Schedule = () => {
   // Call EventContext data
   const { signedUpEvents } = useEvents();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const navigation = useNavigation();
 
   // Format events
   const formattedEvents: CalendarEvent[] = signedUpEvents.map((event: { _id: any; title: any; startTime: string | number | Date; endTime: string | number | Date; location: any; }) => ({
@@ -60,7 +63,16 @@ const Schedule = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
+
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="#f9df7b" />
+        </TouchableOpacity>
+
         <Text style={styles.title}>Schedule</Text>
+
+        <View style={{ width: 34 }} /> 
+      </View>
 
         <Calendar
           onDayPress={(day: { dateString: React.SetStateAction<string | null>; }) => setSelectedDate(day.dateString)}
@@ -121,59 +133,78 @@ const Schedule = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#1E1E1E",
+    backgroundColor: "#000000",
   },
   container: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 10,
+    paddingTop: 20,
   },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: "bold",
-    marginBottom: 15,
-    color: "#B88A4E",
-    letterSpacing: 1,
+    color: "#f9df7b",
     textAlign: "center",
+    marginBottom: 20,
+    letterSpacing: 1,
   },
   calendar: {
-    borderRadius: 10,
-    backgroundColor: "#1e1e1e",
+    borderRadius: 12,
+    backgroundColor: "#1A1A1A",
     height: 360,
-    marginBottom: 10,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "#333",
   },
   eventsBox: {
     flex: 1,
     marginTop: 10,
   },
   eventsTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "600",
-    color: "#FFF",
-    marginBottom: 10,
+    color: "#f9df7b",
+    marginBottom: 12,
   },
   eventCard: {
-    backgroundColor: "#2C2C2C",
-    padding: 15,
+    backgroundColor: "#1A1A1A",
+    padding: 16,
     borderRadius: 10,
-    marginBottom: 10,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#333",
   },
   eventTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#B88A4E",
-    marginBottom: 5,
+    color: "#f9df7b",
+    marginBottom: 6,
   },
   eventDetail: {
     fontSize: 14,
-    color: "#E0E0E0",
-    marginBottom: 3,
+    color: "#ccc",
+    marginBottom: 2,
   },
   noEvents: {
-    color: "#888",
+    color: "#aaa",
     fontStyle: "italic",
-    marginTop: 10,
+    marginTop: 20,
     textAlign: "center",
+    fontSize: 15,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    paddingVertical: 15,
+    backgroundColor: '#000000',
+  },
+
+  backButton: {
+    width: 34,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
   },
 });
 

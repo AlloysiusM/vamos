@@ -50,7 +50,18 @@ const AuthNavigator = () => {
         <Stack.Screen name="EventActivities" component={EventActivities} options={{ headerShown: false }} />
         <Stack.Screen name="FriendsList" component={FriendsListScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Schedule" component={ScheduleScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="CreateEvent" component={CreateEvent} options={{ headerShown: false }} />
+        {/* trigger confirmation msg created event props */}
+        <Stack.Screen name="CreateEvent">
+          {props => (
+            <CreateEvent
+              {...props}
+              onAddEvent={(event) => {
+                console.log('Event added:', event);
+              }}
+            />
+          )}
+        </Stack.Screen>
+
         <Stack.Screen name="FindMe" component={FindMe} options={{ headerShown: false }} />
         <Stack.Screen name="Profile" component={ProfilePage} options={{ headerShown: false }} />
         <Stack.Screen name="AddFriend" component={AddFriendsScreen} options={{ headerShown: false }} />

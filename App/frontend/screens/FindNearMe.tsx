@@ -13,6 +13,8 @@ import {
 import * as Location from 'expo-location';
 import { WebView } from 'react-native-webview';
 import { GOOGLE_MAPS_API_KEY } from '@env';
+import { useNavigation } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const NearMeScreen = () => {
   const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
@@ -21,6 +23,7 @@ const NearMeScreen = () => {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('Gym');
   const [modalVisible, setModalVisible] = useState(false);
+  const navigation = useNavigation();
 
   const webViewRef = useRef<any>(null);
 
@@ -156,6 +159,15 @@ const NearMeScreen = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="#f9df7b" />
+        </TouchableOpacity>
+        
+        <Text style={styles.headerTitle}>Find Near Me</Text>
+        
+        <View style={{ width: 34 + 10 }} />
+      </View>
       <View style={styles.mapContainer}>
         <WebView
           ref={webViewRef}
@@ -304,6 +316,25 @@ const styles = StyleSheet.create({
   modalOptionText: {
     color: '#f9df7b',
     fontSize: 16,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 15,
+    backgroundColor: '#000000',
+  },
+  backButton: {
+    width: 34, 
+    justifyContent: 'center',
+    paddingRight: 10,
+  },
+  headerTitle: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#f9df7b',
+    textAlign: 'center',
   },
 });
 
