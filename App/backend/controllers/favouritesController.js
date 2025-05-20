@@ -1,8 +1,13 @@
-const Favourite = require('../models/favourite');
+const Favourite = require('../models/favouriteModel');
+const mongoose = require('mongoose');
 
 // Add a favourite event for a user
 const addFavourite = async (req, res) => {
   const { userId, eventId } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(eventId)) {
+    return res.status(400).json({ message: 'Invalid userId or eventId format' });
+  }
 
   try {
     // Check if already favourited

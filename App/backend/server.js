@@ -4,7 +4,7 @@ require('dotenv').config();
 const cors = require('cors');
 const userRoutes = require('./routes/user');
 const eventRoutes = require('./routes/event');
-const favouriteRoutes = require('./routes/favouriteRoutes');
+const favouriteRoutes = require('./routes/favourite');
 
 const app = express();
 
@@ -17,7 +17,7 @@ app.use(express.json());
 // Mount routes
 app.use('/api/user', userRoutes);
 app.use('/api/events', eventRoutes);
-app.use('/api/favourites', favouriteRoutes);
+app.use('/api/favourite', favouriteRoutes);
 
 console.log("DB_URI:", process.env.DB_URI);
 

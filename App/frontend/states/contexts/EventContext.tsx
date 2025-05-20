@@ -3,6 +3,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';  
 
 // EventContext Structure
 interface Event {
+  details: string;
+  date: string;
   _id: string;
   title: string;
   startTime: number;
@@ -15,17 +17,27 @@ interface EventContextType {
   signedUpEvents: Event[]; 
   addSignedUpEvent: (event: Event) => void;
   removeSignedUpEvent: (eventId: string) => void;
+  addFavoriteEvent: (event: Event) => void;
+  removeFavoriteEvent: (eventId: string) => void;
+  isFavorite: (eventId: string) => boolean;
+  favoriteEvents: Event[];
 }
 
 // setting values for the context
 const EventContext = createContext<EventContextType>({
-  signedUpEvents: [], 
-  addSignedUpEvent: () => {}, 
-  removeSignedUpEvent: () => {},  
+  signedUpEvents: [],
+  addSignedUpEvent: () => { },
+  removeSignedUpEvent: () => { },
+
+  favoriteEvents: [],
+  addFavoriteEvent: () => { },
+  removeFavoriteEvent: () => { },
+  isFavorite: () => false,
 });
 
 export const EventProvider = ({ children }: { children: React.ReactNode }) => {
   const [signedUpEvents, setSignedUpEvents] = useState<Event[]>([]); 
+  const [favoriteEvents, setFavoriteEvents] = useState<Event[]>([]);
 
   // Load signed-up events from AsyncStorage when the component mounts
   useEffect(() => {
@@ -56,9 +68,32 @@ export const EventProvider = ({ children }: { children: React.ReactNode }) => {
     persistEvents(updated); 
   };
 
+  // Function to add an event to the favorites list
+  const addFavoriteEvent = (event: Event) => {
+    setFavoriteEvents((prev) => [...prev, event]);
+  };
+
+  // Function to remove an event from the favorites list
+  const removeFavoriteEvent = (eventId: string) => {
+    setFavoriteEvents((prev) => prev.filter(e => e._id !== eventId));
+  };
+  
+  // Function to check if an event is in the favorites list
+  const isFavorite = (eventId: string) => {
+    return favoriteEvents.some(e => e._id === eventId);
+  };
+
 
   return (
-    <EventContext.Provider value={{ signedUpEvents, addSignedUpEvent, removeSignedUpEvent }}>
+    <EventContext.Provider value={{ 
+      signedUpEvents, 
+      addSignedUpEvent, 
+      removeSignedUpEvent, 
+
+      favoriteEvents,
+      addFavoriteEvent, 
+      removeFavoriteEvent, 
+      isFavorite, }}>
       {children} 
     </EventContext.Provider>
   );
