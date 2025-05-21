@@ -4,6 +4,8 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '../utils/config';
+import { useNavigation } from '@react-navigation/native';
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 // ts declaration
 interface CreateEventScreenProps {
@@ -86,8 +88,15 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
     setCategoryModalVisible(false);  // Close modal after selection
   };
 
+  const navigation = useNavigation();
+
   return (
     <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+      {/* Back Button */}
+    <TouchableOpacity onPress={() => navigation.goBack()}>
+    <Ionicons name="arrow-back" size={28} color="#f9df7b" />
+    </TouchableOpacity>
+      
       {/* Title */}
       <Text style={styles.label}>Title</Text>
       <TextInput 
@@ -347,6 +356,14 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "600",
     fontSize: 16,
+  },
+
+  backButton: {
+      position: 'absolute',
+      left: -10,
+      top: 0,
+      padding: 10,
+      zIndex: 1,
   },
 });
 
