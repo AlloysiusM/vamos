@@ -98,9 +98,9 @@ const ProfilePage = () => {
           <Text style={styles.title}>Profile</Text>
           <Image source={require('../assets/profile-pic.png')} style={styles.logo} />
           <Text style={styles.username}>{fullName}</Text>
-
+          {/* Logout Button for Profile Page, deletes the Token and returns user to Login page so they can sign in again*/}
           <TouchableOpacity style={styles.logout} onPress={handleLogout}>
-            <text style={styles.logoutText}>Logout</text>
+            <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
         </View>
       );
@@ -148,7 +148,7 @@ const ProfilePage = () => {
       },
 
       logout: {
-        backgroundColor: 'D32F2F',
+        backgroundColor: '#D32F2F',
         paddingVertical: 12,
         paddingHorizontal: 24,
         borderRadius: 8,
