@@ -95,9 +95,12 @@ const ProfilePage = () => {
 
       return (
         <View style={styles.container}>
+          
           <Text style={styles.title}>Profile</Text>
           <Image source={require('../assets/profile-pic.png')} style={styles.logo} />
           <Text style={styles.username}>{fullName}</Text>
+          
+          
           {/* Logout Button for Profile Page, deletes the Token and returns user to Login page so they can sign in again*/}
           <TouchableOpacity style={styles.logout} onPress={handleLogout}>
             <Text style={styles.logoutText}>Logout</Text>
@@ -111,7 +114,7 @@ const ProfilePage = () => {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#1E1E1E', 
+        backgroundColor: '#000000', 
         paddingHorizontal: 20,
         paddingVertical: 30,
       },
@@ -131,17 +134,17 @@ const ProfilePage = () => {
         fontWeight: 'bold',
         marginTop: 0,
         marginBottom: 0,
-        color: '#B88A4E',
+        color: '#f9df7b',
         letterSpacing: 1,
       },
     
 
       logo: {
-        width: 150,
-        height: 150,
+        width: 120,
+        height: 120,
         borderRadius: 100,
-        borderWidth: 3,
-        borderColor: '#B88A4E',
+        borderWidth: 4,
+        borderColor: '#f9df7b',
         marginBottom: 20,
         resizeMode: 'cover',
         backgroundColor: '#2E2E2E',
@@ -152,7 +155,7 @@ const ProfilePage = () => {
         paddingVertical: 12,
         paddingHorizontal: 24,
         borderRadius: 8,
-        marginTop: 30,
+        marginTop: 300,
       },
 
       logoutText: {
@@ -161,6 +164,11 @@ const ProfilePage = () => {
         fontWeight: 'bold',
         textAlign: 'center',
       },
+
+      profileContent: {
+      alignItems: 'center',
+      marginTop: 100,
+    },
 
 });
 
