@@ -65,7 +65,7 @@ const LoginScreen = () => {
   }
 
   const handleSubmit = async () => {
-    
+    console.log('Attempting to use BASE_URL:', BASE_URL);
     if (!email || !password) {
       setError('Please fill in all fields');
       return;

@@ -6,6 +6,7 @@ import React, { useCallback, useState } from 'react'; // Import React
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL } from '@env'; // Make sure @env is set up correctly
 import { ScrollView } from 'react-native-gesture-handler';
+import { BASE_URL } from '../utils/config';
 
 interface NotificationItem {
     _id: string;
@@ -42,7 +43,7 @@ const NotificationsPage = () => {
                 return;
             }
 
-            const response = await fetch(`${API_URL}/api/user/getFriendReq`, {
+            const response = await fetch(`${BASE_URL}/api/user/getFriendReq`, {
 
                 method: 'GET',
                 headers: {

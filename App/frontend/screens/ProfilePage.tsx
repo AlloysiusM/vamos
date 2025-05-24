@@ -83,6 +83,14 @@ const ProfilePage = () => {
           <Text style={styles.title}>Profile</Text>
           <Image source={require('../assets/profile-pic.png')} style={styles.logo} />
           <Text style={styles.username}>{fullName}</Text>
+           {/* Change Password */}
+                  <TouchableOpacity 
+                    style={styles.forgotPasswordContainer} 
+                    onPress={() => navigation.replace('ForgotPassword')}
+                  >
+                    <Text style={styles.forgotPasswordText}>Change Password</Text>
+                  </TouchableOpacity>
+          
         </View>
       );
     };
@@ -127,6 +135,15 @@ const ProfilePage = () => {
         resizeMode: 'cover',
         backgroundColor: '#2E2E2E',
       },
+
+      forgotPasswordContainer: {
+    
+    marginTop: 10,
+  },
+  forgotPasswordText: {
+    color: '#f9df7b', 
+    fontSize: 14,
+  },
 });
 
 export default ProfilePage;

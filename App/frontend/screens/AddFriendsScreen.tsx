@@ -7,6 +7,7 @@ import { AuthStackParamList } from "../navigation/AuthNavigator";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL } from "@env";
+import { BASE_URL } from "../utils/config";
 
 const AddFriendsScreen: React.FC = () => {
 
@@ -95,7 +96,7 @@ const AddFriendsScreen: React.FC = () => {
         return;
       }
 
-      const response = await fetch(`${API_URL}/api/user/sending-req`, {
+      const response = await fetch(`${BASE_URL}/api/user/sending-req`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

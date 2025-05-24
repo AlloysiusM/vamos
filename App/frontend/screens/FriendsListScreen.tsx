@@ -6,6 +6,7 @@ import { AuthStackParamList } from "../navigation/AuthNavigator";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 import { API_URL } from '@env'; // Import API_URL
+import { BASE_URL } from "../utils/config";
 
 // Define an interface for your Friend object based on your API response
 interface Friend {
@@ -96,7 +97,7 @@ const FriendsList: React.FC = () => {
                     return;
                 }
 
-                const response = await fetch(`${API_URL}/api/user/friends/${friendId}`, {
+                const response = await fetch(`${BASE_URL}/api/user/friends/${friendId}`, {
 
                     method: 'DELETE',
                     headers: {

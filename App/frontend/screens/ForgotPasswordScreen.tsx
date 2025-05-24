@@ -53,7 +53,7 @@ const ForgotPasswordScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Forgot Password?</Text>
+      <Text style={styles.title}>Reset Password?</Text>
 
       <View style={styles.inputContainer}>
         <Text style={styles.inputLabel}>Please enter your email</Text>
