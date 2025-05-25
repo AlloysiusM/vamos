@@ -37,7 +37,7 @@ const EventActivities = ({ route }: { route: any }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const windowWidth = Dimensions.get("window").width;
-  const { signedUpEvents, addSignedUpEvent, removeSignedUpEvent } = useEvents();
+  const { signedUpEvents, addSignedUpEvent, removeSignedUpEvent, addFavoriteEvent, removeFavoriteEvent, isFavorite} = useEvents();
   
   const EventSignup = async (eventId: string) => {
     const eventToUpdate = events.find(event => event._id === eventId);
@@ -79,6 +79,8 @@ const EventActivities = ({ route }: { route: any }) => {
             startTime: eventToUpdate.startTime,
             endTime: eventToUpdate.endTime,
             location: eventToUpdate.location,
+            details: "",
+            date: ""
           });
           console.log(`Signed up for event: ${eventToUpdate.title}`);
         }
@@ -198,18 +200,45 @@ const EventActivities = ({ route }: { route: any }) => {
 
     return (
       <View style={{ width: windowWidth - 40, marginBottom: 20, padding: 10, borderWidth: 1, borderColor: '#ccc', borderRadius: 5 }}>
-        <Text style={styles.eventTitleStyle}>{item.title || 'Unnamed Event'}</Text>
-        <Text style={styles.eventDetails}>Category: {item.category || 'N/A'}</Text>
+        
+        {/* Title and heart icon in one row */}
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text style={[styles.eventTitleStyle, { flex: 1 }]} numberOfLines={1} ellipsizeMode="tail">
+            {item.title || 'Unnamed Event'}
+          </Text>
+          <TouchableOpacity onPress={() => {
+            const alreadyFav = isFavorite(item._id);
+            if (alreadyFav) {
+              removeFavoriteEvent(item._id);
+            } else {
+              addFavoriteEvent({
+                ...item,
+                details: item.description || '',
+                date: item.startTime ? new Date(item.startTime).toISOString() : '',
+              });
+            }
+          }}>
+            <Ionicons 
+              name={isFavorite(item._id) ? "star" : "star-outline"} 
+              size={24} 
+              color={isFavorite(item._id) ? "#FF6347" : "#ccc"} 
+            />
+          </TouchableOpacity>
+        </View>
+
+        <Text style={styles.eventCategory}>Category: {item.category || 'N/A'}</Text>
         <Text style={styles.eventDetails}>Location: {item.location || 'N/A'}</Text>
         <Text style={styles.eventDetails}>Start Time: {startDate}</Text>
         <Text style={styles.eventDetails}>End Time: {endDate}</Text>
         <Text style={styles.eventDetails}>Max People: {item.maxPeople || 'N/A'}</Text>
         <Text style={styles.eventDetails}>Current People: {item.currentPeople || 'N/A'}</Text>
+
         <TouchableOpacity onPress={() => EventSignup(item._id)}>
           <Text style={styles.eventCategory}>
             {signedUpEvents.some(event => event._id === item._id) ? "Unsign up" : "Sign Up"}
           </Text>
         </TouchableOpacity>
+
       </View>
     );
   };
@@ -291,6 +320,7 @@ const DrawerContent = (props: DrawerContentComponentProps) => {
         >
           <Text style={{ fontSize: 18, marginVertical: 5, color: "#f9df7b" }}>{category}</Text>
         </TouchableOpacity>
+        
       ))}
     </View>
   );

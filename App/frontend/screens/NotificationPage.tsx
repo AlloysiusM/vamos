@@ -199,89 +199,101 @@ const NotificationsPage = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#1E1E1E',
-        paddingHorizontal: 20,
-        paddingTop: 60, // Adjust as needed for status bar/header
-    },
-    title: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        marginBottom: 30,
-        color: '#B88A4E',
-        letterSpacing: 1,
-        textAlign: 'center',
-    },
-    loader: {
-        marginTop: 50,
-    },
-    notificationItem: {
-        backgroundColor: '#2E2E2E',
-        padding: 20,
-        borderRadius: 8,
-        marginBottom: 15, // Increased spacing
-        borderWidth: 1,
-        borderColor: '#444',
-    },
-    notificationText: {
-        color: '#FFF',
-        fontSize: 16,
-        lineHeight: 22,
-        textAlign: 'center', // Center the text
-        marginBottom: 15, // Add space below text
-    },
-    senderName: {
-       fontWeight: 'bold',
-       color: '#E0E0E0',
-    },
-    noNotificationsText: {
-        marginTop: 50,
-        color: '#888',
-        fontSize: 16,
-        textAlign: 'center',
-    },
-    listContent: {
-        paddingBottom: 20,
-    },
-    buttonRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-around', // Changed to space-around
-      marginTop: 10, // Reduced top margin
-    },
-    acceptButton: { // Renamed from addButton
-      backgroundColor: "#B88A4E",
-      paddingVertical: 10,
-      borderRadius: 8,
-      flex: 0.45, // Assign portion of width
-      alignItems: 'center',
-      justifyContent: 'center', // Center activity indicator
-      minHeight: 40, // Ensure minimum height for indicator
-    },
-    acceptButtonText: { // Renamed from addButtonText
-      color: "#1E1E1E",
-      fontWeight: "bold",
-      fontSize: 16,
-    },
-    rejectButton: {
-      backgroundColor: "#555",
-      paddingVertical: 10,
-    //   paddingHorizontal: 20, // Use flex instead
-      borderRadius: 8,
-      flex: 0.45, // Assign portion of width
-      // marginLeft: 10, // Remove margin if using flex
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: 40,
-    },
-    rejectButtonText: {
-      color: "#FFF",
-      fontWeight: "bold",
-      fontSize: 16,
-    },
-     buttonDisabled: { // Style for disabled buttons
-        opacity: 0.6,
-    },
+  container: {
+    flex: 1,
+    backgroundColor: '#000000', // Updated to match your base styling
+    paddingHorizontal: 20,
+    paddingTop: 70,
+  },
+
+  title: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#f9df7b',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+
+  loader: {
+    marginTop: 50,
+  },
+
+  noNotificationsText: {
+    marginTop: 40,
+    color: '#BDB298',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+
+  listContent: {
+    paddingBottom: 20,
+  },
+
+  notificationItem: {
+    backgroundColor: '#1A1A1A',
+    borderRadius: 10,
+    padding: 16,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#333',
+  },
+
+  notificationText: {
+    color: '#BDB298',
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+
+  senderName: {
+    fontWeight: 'bold',
+    color: '#f9df7b',
+  },
+
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+
+  acceptButton: {
+    backgroundColor: '#f9df7b',
+    paddingVertical: 10,
+    borderRadius: 8,
+    flex: 0.48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 40,
+  },
+
+  rejectButton: {
+    backgroundColor: '#333',
+    paddingVertical: 10,
+    borderRadius: 8,
+    flex: 0.48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 40,
+    borderWidth: 1,
+    borderColor: '#555',
+  },
+
+  acceptButtonText: {
+    color: '#1A1A1A',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+
+  rejectButtonText: {
+    color: '#BDB298',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+
+  buttonDisabled: {
+    opacity: 0.6,
+  },
 });
 
 export default NotificationsPage;

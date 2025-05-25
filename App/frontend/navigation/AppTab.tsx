@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import Ionicons from "react-native-vector-icons/Ionicons"
-import { View, StyleSheet } from "react-native"
+import { View, StyleSheet, StatusBar } from "react-native" 
 import { createStackNavigator } from "@react-navigation/stack"
 
 // Page imports
@@ -20,16 +20,31 @@ import FindMe from "../screens/FindNearMe"
 const HomeStack = createStackNavigator()
 const HomeStackScreen = () => (
   <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-    <HomeStack.Screen name="HomeMain" component={LandingPage}  options={{ headerShown: false }}/>
+    <HomeStack.Screen
+      name="HomeMain"
+      component={LandingPage}
+      options={{ headerShown: false }}
+    />
     <HomeStack.Screen name="EventActivities" component={EventActivities} />
     <HomeStack.Screen name="FriendsList" component={FriendsListScreen} />
     <HomeStack.Screen name="Schedule" component={ScheduleScreen} />
-    <HomeStack.Screen name="CreateEvent" component={CreateEvent} />
+
+    {/* trigger confirmation msg created event prop */}
+    <HomeStack.Screen name="CreateEvent">
+      {props => (
+        <CreateEvent
+          {...props}
+          onAddEvent={(event) => {
+            console.log('Event added:', event);
+          }}
+        />
+      )}
+    </HomeStack.Screen>
+    
     <HomeStack.Screen name="FindMe" component={FindMe} />
     <HomeStack.Screen name="AddFriend" component={AddFriendScreen} />
   </HomeStack.Navigator>
-)
-
+);
 // For profile friend list and settings pages
 const ProfileStack = createStackNavigator()
 const ProfileStackScreen = () => (
@@ -44,63 +59,67 @@ const Tab = createBottomTabNavigator()
 
 const AppTab = () => {
   return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ color, size }) => {
-          let iconName = ""
-
-          if (route.name === "Home") {
-            iconName = "home-outline"
-          } else if (route.name === "Search") {
-            iconName = "search-outline"
-          } else if (route.name === "Favourites") {
-            iconName = "star-outline"
-          } else if (route.name === "Notification") {
-            iconName = "notifications-outline"
-          } else if (route.name === "Profile") {
-            iconName = "person-outline"
-          }
-
-          return (
-            <View style={styles.iconContainer}>
-              <Ionicons name={iconName} size={size} color={color} />
-            </View>
-          )
-        },
-        tabBarActiveTintColor: "#f9df7b",
-        tabBarInactiveTintColor: "gray",
-        tabBarShowLabel: false,
-        tabBarStyle: styles.tabBarStyle,
-      })}
-    >
-      {/* Navbar tab stack */}
-      <Tab.Screen
-        name="Home"
-        component={HomeStackScreen}
-        options={{ headerShown: false }}
-      />
-      <Tab.Screen
-        name="Search"
-        component={SearchPage}
-        options={{ headerShown: false }} 
-      />
-      <Tab.Screen
-        name="Favourites"
-        component={FavouritesPage}
-        options={{ headerShown: false }} 
-      />
-      <Tab.Screen
-        name="Notification"
-        component={NotificationsPage}
-        options={{ headerShown: false }} 
-      />
-      <Tab.Screen
-        name="Profile"
-        component={ProfileStackScreen}
-        options={{ headerShown: false }} 
-      />
+    <>
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
       
-    </Tab.Navigator>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ color, size }) => {
+            let iconName = ""
+
+            if (route.name === "Home") {
+              iconName = "home-outline"
+            } else if (route.name === "Search") {
+              iconName = "search-outline"
+            } else if (route.name === "Favourites") {
+              iconName = "star-outline"
+            } else if (route.name === "Notification") {
+              iconName = "notifications-outline"
+            } else if (route.name === "Profile") {
+              iconName = "person-outline"
+            }
+
+            return (
+              <View style={styles.iconContainer}>
+                <Ionicons name={iconName} size={size} color={color} />
+              </View>
+            )
+          },
+          tabBarActiveTintColor: "#f9df7b",
+          tabBarInactiveTintColor: "gray",
+          tabBarShowLabel: false,
+          tabBarStyle: styles.tabBarStyle,
+        })}
+      >
+        {/* Navbar tab stack */}
+        <Tab.Screen
+          name="Home"
+          component={HomeStackScreen}
+          options={{ headerShown: false }}
+        />
+        <Tab.Screen
+          name="Search"
+          component={SearchPage}
+          options={{ headerShown: false }} 
+        />
+        <Tab.Screen
+          name="Favourites"
+          component={FavouritesPage}
+          options={{ headerShown: false }} 
+        />
+        <Tab.Screen
+          name="Notification"
+          component={NotificationsPage}
+          options={{ headerShown: false }} 
+        />
+        <Tab.Screen
+          name="Profile"
+          component={ProfileStackScreen}
+          options={{ headerShown: false }} 
+        />
+        
+      </Tab.Navigator>
+    </>
   )
 }
 
@@ -129,4 +148,3 @@ const styles = StyleSheet.create({
 })
 
 export default AppTab
-
