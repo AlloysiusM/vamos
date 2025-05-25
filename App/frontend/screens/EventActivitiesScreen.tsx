@@ -10,6 +10,7 @@ import { AuthStackParamList } from "../navigation/AuthNavigator";
 import { BASE_URL } from '../utils/config';
 import { useEvents } from '../states/contexts/EventContext';
 
+
 // Drawer and stack nav for sidebar
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -233,7 +234,7 @@ const EventActivities = ({ route }: { route: any }) => {
         <Text style={styles.eventDetails}>Current People: {item.currentPeople || 'N/A'}</Text>
 
         <TouchableOpacity onPress={() => EventSignup(item._id)}>
-          <Text style={{ fontSize: 15, marginVertical: 10, color: "#B88A4E" }}>
+          <Text style={styles.eventCategory}>
             {signedUpEvents.some(event => event._id === item._id) ? "Unsign up" : "Sign Up"}
           </Text>
         </TouchableOpacity>
@@ -246,7 +247,7 @@ const EventActivities = ({ route }: { route: any }) => {
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
         {error && <Text style={styles.errorText}>{error}</Text>}
-
+          
         <View style={styles.inputContainer}>
           <Ionicons name="search" size={24} color="#C9D3DB" style={styles.searchIcon} />
           <TextInput
@@ -306,8 +307,8 @@ const DrawerContent = (props: DrawerContentComponentProps) => {
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: "flex-start", alignItems: "center", backgroundColor: "#2E2E2E", paddingTop: 50 }}>
-      <Text style={{ fontSize: 24, marginTop: 100, marginBottom: 20, color: "#B88A4E" }}>Categories</Text>
+    <View style={{ flex: 1, justifyContent: "flex-start", alignItems: "center", backgroundColor: "#000000", paddingTop: 50 }}>
+      <Text style={{ fontSize: 24, marginTop: 100, marginBottom: 20, color: "#f9df7b" }}>Categories</Text>
       
       <View style={{ width: '80%', height: 1, backgroundColor: '#ffffff', marginBottom: 20 }} />
 
@@ -317,7 +318,7 @@ const DrawerContent = (props: DrawerContentComponentProps) => {
           onPress={() => handleCategorySelect(category)}
           style={{ width: '100%', padding: 15, alignItems: 'center' }}
         >
-          <Text style={{ fontSize: 18, marginVertical: 5, color: "#B88A4E" }}>{category}</Text>
+          <Text style={{ fontSize: 18, marginVertical: 5, color: "#f9df7b" }}>{category}</Text>
         </TouchableOpacity>
         
       ))}
@@ -516,5 +517,13 @@ const styles = StyleSheet.create({
     transform: [{ scale: 1.02 }],
     backgroundColor: "#333", 
     shadowOpacity: 0.18,
+  },
+
+  backButton: {
+      position: 'absolute',
+      left: -10,
+      top: 0,
+      padding: 10,
+      zIndex: 1,
   },
 });
