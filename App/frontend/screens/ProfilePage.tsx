@@ -1,15 +1,13 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {  useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
-import { useFocusEffect, } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import { BASE_URL } from '../utils/config';
 
 const ProfilePage = () => {
-    //add page routs and other functions 
-
     const navigation = useNavigation<StackNavigationProp<AuthStackParamList, 'Profile'>>();
     const [fullName, setFullName] = useState('');
     const [isLoading, setIsLoading] = useState(true); 
@@ -79,17 +77,33 @@ const ProfilePage = () => {
 
     //Function to logout user and return them to login page
     const handleLogout = async () => {
-      try {
-        await AsyncStorage.removeItem('token'); //code to remove the token
-        navigation.navigate('Login')//code to return the user to login screen so they can relog in
+      Alert.alert(
+        'Confirm Logout',
+        'Are you sure you want to log out?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Logout',
+            style: 'destructive',
+            onPress: async () => {
+              try {
+                await AsyncStorage.removeItem('token'); //code to remove the token
+                navigation.navigate('Login')//code to return the user to login screen so they can relog in
 
-        const token = await AsyncStorage.getItem('token');
-        console.log("Token = ", token); //null if logout is implemented correctly
+                const token = await AsyncStorage.getItem('token');
+                console.log("Token = ", token); //null if logout is implemented correctly
 
-      } catch (error) {
-        console.error('Logout Error!:',error);
-      }
-
+              } catch (error) {
+                console.error('Logout Error!:',error);
+              }
+            },
+          },
+        ],
+        { cancelable: false }
+      );
     };
 
 
@@ -112,21 +126,20 @@ const ProfilePage = () => {
     const styles = StyleSheet.create({
       container: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
         backgroundColor: '#000000', 
         paddingHorizontal: 20,
-        paddingVertical: 30,
+        paddingTop: 60,
+        paddingBottom: 30,
       },
-
     
       title: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        marginTop: -400,
-        marginBottom: 60,
-        color: '#B88A4E',
-        letterSpacing: 1,
+        fontSize: 24,
+        fontWeight: '600',
+        color: '#f9df7b',
+        textAlign: 'center',
+        marginBottom: 20,
       },
 
       username: {
@@ -155,7 +168,7 @@ const ProfilePage = () => {
         paddingVertical: 12,
         paddingHorizontal: 24,
         borderRadius: 8,
-        marginTop: 300,
+        marginTop: 40,
       },
 
       logoutText: {
