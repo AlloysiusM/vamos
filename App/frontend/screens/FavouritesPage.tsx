@@ -4,8 +4,10 @@ import {
   Text,
   FlatList,
   StyleSheet,
+  TouchableOpacity,
 } from 'react-native';
-import { useEvents } from '../states/contexts/EventContext'; 
+import { useNavigation } from '@react-navigation/native';
+import { useEvents } from '../states/contexts/EventContext';
 
 type EventItem = {
   _id: string;
@@ -14,21 +16,38 @@ type EventItem = {
   date: string;
 };
 
+const formatDateTime = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+};
+
+
 const FavouritesPage = () => {
   const { favoriteEvents } = useEvents();
+  const navigation = useNavigation();
 
   const renderItem = ({ item }: { item: EventItem }) => (
     <View style={styles.eventCard}>
       <Text style={styles.eventTitle}>{item.title}</Text>
       <Text style={styles.eventDetail}>{item.details}</Text>
-      <Text style={styles.eventDate}>📅 {item.date}</Text>
+      <Text style={styles.eventDate}>{formatDateTime(item.date)}</Text>
     </View>
   );
 
   return (
     <View style={styles.container}>
+
+      {/* Title */}
       <Text style={styles.title}>Favourites</Text>
 
+      {/* Events List or Empty Text */}
       {favoriteEvents.length === 0 ? (
         <Text style={styles.empty}>You haven't added any favourites yet.</Text>
       ) : (
@@ -53,56 +72,60 @@ export default FavouritesPage;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1E1E1E',
+    backgroundColor: '#000000',
     paddingHorizontal: 20,
-    paddingTop: 30,
+    paddingTop: 70, 
+  },
+
+  backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    zIndex: 10,
   },
 
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#B88A4E',
-    letterSpacing: 1,
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#f9df7b',
     textAlign: 'center',
     marginBottom: 20,
   },
 
   listContainer: {
-    paddingBottom: 20,
+    paddingBottom: 100,
   },
 
   eventCard: {
-    backgroundColor: '#2A2A2A',
+    backgroundColor: '#1A1A1A',
     borderRadius: 10,
     padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#333',
   },
 
   eventTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFD700',
-    marginBottom: 4,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#f9df7b',
+    marginBottom: 6,
   },
 
   eventDetail: {
     fontSize: 14,
-    color: '#CCCCCC',
+    color: '#BDB298',
     marginBottom: 6,
   },
 
   eventDate: {
     fontSize: 12,
-    color: '#999999',
+    color: '#888888',
   },
 
   empty: {
-    color: '#888',
-    fontSize: 16,
+    color: '#BDB298',
+    fontSize: 14,
     textAlign: 'center',
     marginTop: 40,
   },

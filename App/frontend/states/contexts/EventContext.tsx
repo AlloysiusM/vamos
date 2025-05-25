@@ -14,7 +14,7 @@ interface Event {
 
 // defining the context type for the EventContext
 interface EventContextType {
-  signedUpEvents: Event[]; 
+  signedUpEvents: Event[];
   addSignedUpEvent: (event: Event) => void;
   removeSignedUpEvent: (eventId: string) => void;
   addFavoriteEvent: (event: Event) => void;
@@ -26,75 +26,94 @@ interface EventContextType {
 // setting values for the context
 const EventContext = createContext<EventContextType>({
   signedUpEvents: [],
-  addSignedUpEvent: () => { },
-  removeSignedUpEvent: () => { },
+  addSignedUpEvent: () => {},
+  removeSignedUpEvent: () => {},
 
   favoriteEvents: [],
-  addFavoriteEvent: () => { },
-  removeFavoriteEvent: () => { },
+  addFavoriteEvent: () => {},
+  removeFavoriteEvent: () => {},
   isFavorite: () => false,
 });
 
 export const EventProvider = ({ children }: { children: React.ReactNode }) => {
-  const [signedUpEvents, setSignedUpEvents] = useState<Event[]>([]); 
+  const [signedUpEvents, setSignedUpEvents] = useState<Event[]>([]);
   const [favoriteEvents, setFavoriteEvents] = useState<Event[]>([]);
 
-  // Load signed-up events from AsyncStorage when the component mounts
+  // Load signed-up and favorite events from AsyncStorage when the component mounts
   useEffect(() => {
     const loadEvents = async () => {
-      const stored = await AsyncStorage.getItem("signedUpEvents");  // Get stored events from AsyncStorage
-      if (stored) {
-        setSignedUpEvents(JSON.parse(stored)); 
+      try {
+        const storedSignedUp = await AsyncStorage.getItem("signedUpEvents");  // Get signed up events from AsyncStorage
+        if (storedSignedUp) {
+          setSignedUpEvents(JSON.parse(storedSignedUp));
+        }
+
+        const storedFavorites = await AsyncStorage.getItem("favoriteEvents");  // Get favorite events from AsyncStorage
+        if (storedFavorites) {
+          setFavoriteEvents(JSON.parse(storedFavorites));
+        }
+      } catch (error) {
+        console.error("Error loading events from storage:", error);
       }
     };
-    loadEvents(); 
+    loadEvents();
   }, []);
 
-  // Function to save the updated events to AsyncStorage
-  const persistEvents = async (updatedEvents: Event[]) => {
-    setSignedUpEvents(updatedEvents); 
+  // Function to save the updated signed-up events to AsyncStorage
+  const persistSignedUpEvents = async (updatedEvents: Event[]) => {
+    setSignedUpEvents(updatedEvents);
     await AsyncStorage.setItem("signedUpEvents", JSON.stringify(updatedEvents));
+  };
+
+  // Function to save the updated favorite events to AsyncStorage
+  const persistFavoriteEvents = async (updatedFavorites: Event[]) => {
+    setFavoriteEvents(updatedFavorites);
+    await AsyncStorage.setItem("favoriteEvents", JSON.stringify(updatedFavorites));
   };
 
   // Function to add an event to the signed-up list
   const addSignedUpEvent = (event: Event) => {
-    const updated = [...signedUpEvents, event];  
-    persistEvents(updated);  
+    const updated = [...signedUpEvents, event];
+    persistSignedUpEvents(updated);
   };
 
   // Function to remove an event from the signed-up list
   const removeSignedUpEvent = (eventId: string) => {
-    const updated = signedUpEvents.filter(e => e._id !== eventId); 
-    persistEvents(updated); 
+    const updated = signedUpEvents.filter(e => e._id !== eventId);
+    persistSignedUpEvents(updated);
   };
 
   // Function to add an event to the favorites list
   const addFavoriteEvent = (event: Event) => {
-    setFavoriteEvents((prev) => [...prev, event]);
+    const updated = [...favoriteEvents, event];
+    persistFavoriteEvents(updated);
   };
 
   // Function to remove an event from the favorites list
   const removeFavoriteEvent = (eventId: string) => {
-    setFavoriteEvents((prev) => prev.filter(e => e._id !== eventId));
+    const updated = favoriteEvents.filter(e => e._id !== eventId);
+    persistFavoriteEvents(updated);
   };
-  
+
   // Function to check if an event is in the favorites list
   const isFavorite = (eventId: string) => {
     return favoriteEvents.some(e => e._id === eventId);
   };
 
-
   return (
-    <EventContext.Provider value={{ 
-      signedUpEvents, 
-      addSignedUpEvent, 
-      removeSignedUpEvent, 
+    <EventContext.Provider
+      value={{
+        signedUpEvents,
+        addSignedUpEvent,
+        removeSignedUpEvent,
 
-      favoriteEvents,
-      addFavoriteEvent, 
-      removeFavoriteEvent, 
-      isFavorite, }}>
-      {children} 
+        favoriteEvents,
+        addFavoriteEvent,
+        removeFavoriteEvent,
+        isFavorite,
+      }}
+    >
+      {children}
     </EventContext.Provider>
   );
 };

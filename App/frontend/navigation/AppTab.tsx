@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import Ionicons from "react-native-vector-icons/Ionicons"
-import { View, StyleSheet } from "react-native"
+import { View, StyleSheet, StatusBar } from "react-native" 
 import { createStackNavigator } from "@react-navigation/stack"
 
 // Page imports
@@ -59,63 +59,67 @@ const Tab = createBottomTabNavigator()
 
 const AppTab = () => {
   return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ color, size }) => {
-          let iconName = ""
-
-          if (route.name === "Home") {
-            iconName = "home-outline"
-          } else if (route.name === "Search") {
-            iconName = "search-outline"
-          } else if (route.name === "Favourites") {
-            iconName = "star-outline"
-          } else if (route.name === "Notification") {
-            iconName = "notifications-outline"
-          } else if (route.name === "Profile") {
-            iconName = "person-outline"
-          }
-
-          return (
-            <View style={styles.iconContainer}>
-              <Ionicons name={iconName} size={size} color={color} />
-            </View>
-          )
-        },
-        tabBarActiveTintColor: "#f9df7b",
-        tabBarInactiveTintColor: "gray",
-        tabBarShowLabel: false,
-        tabBarStyle: styles.tabBarStyle,
-      })}
-    >
-      {/* Navbar tab stack */}
-      <Tab.Screen
-        name="Home"
-        component={HomeStackScreen}
-        options={{ headerShown: false }}
-      />
-      <Tab.Screen
-        name="Search"
-        component={SearchPage}
-        options={{ headerShown: false }} 
-      />
-      <Tab.Screen
-        name="Favourites"
-        component={FavouritesPage}
-        options={{ headerShown: false }} 
-      />
-      <Tab.Screen
-        name="Notification"
-        component={NotificationsPage}
-        options={{ headerShown: false }} 
-      />
-      <Tab.Screen
-        name="Profile"
-        component={ProfileStackScreen}
-        options={{ headerShown: false }} 
-      />
+    <>
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
       
-    </Tab.Navigator>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ color, size }) => {
+            let iconName = ""
+
+            if (route.name === "Home") {
+              iconName = "home-outline"
+            } else if (route.name === "Search") {
+              iconName = "search-outline"
+            } else if (route.name === "Favourites") {
+              iconName = "star-outline"
+            } else if (route.name === "Notification") {
+              iconName = "notifications-outline"
+            } else if (route.name === "Profile") {
+              iconName = "person-outline"
+            }
+
+            return (
+              <View style={styles.iconContainer}>
+                <Ionicons name={iconName} size={size} color={color} />
+              </View>
+            )
+          },
+          tabBarActiveTintColor: "#f9df7b",
+          tabBarInactiveTintColor: "gray",
+          tabBarShowLabel: false,
+          tabBarStyle: styles.tabBarStyle,
+        })}
+      >
+        {/* Navbar tab stack */}
+        <Tab.Screen
+          name="Home"
+          component={HomeStackScreen}
+          options={{ headerShown: false }}
+        />
+        <Tab.Screen
+          name="Search"
+          component={SearchPage}
+          options={{ headerShown: false }} 
+        />
+        <Tab.Screen
+          name="Favourites"
+          component={FavouritesPage}
+          options={{ headerShown: false }} 
+        />
+        <Tab.Screen
+          name="Notification"
+          component={NotificationsPage}
+          options={{ headerShown: false }} 
+        />
+        <Tab.Screen
+          name="Profile"
+          component={ProfileStackScreen}
+          options={{ headerShown: false }} 
+        />
+        
+      </Tab.Navigator>
+    </>
   )
 }
 
@@ -144,4 +148,3 @@ const styles = StyleSheet.create({
 })
 
 export default AppTab
-
