@@ -38,6 +38,8 @@ const EventActivities = ({ route }: { route: any }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const windowWidth = Dimensions.get("window").width;
   const { signedUpEvents, addSignedUpEvent, removeSignedUpEvent, addFavoriteEvent, removeFavoriteEvent, isFavorite} = useEvents();
+  const [userId, setUserId] = useState<string | null>(null);
+
   
   
   const EventSignup = async (eventId: string) => {
@@ -111,44 +113,51 @@ const EventActivities = ({ route }: { route: any }) => {
   };
 
   // Fetch events from the backend API on component mount
-  useEffect(() => {
-    const fetchEvents = async () => {
-      setIsLoading(true);
-      try {
-        const token = await AsyncStorage.getItem("token");
+useEffect(() => {
+  const fetchEvents = async () => {
+    setIsLoading(true);
 
-        if (!token) {
-          setError("User not logged in");
-          return;
-        }
+const storedUserId = await AsyncStorage.getItem("userId");
 
-        const response = await fetch(`${BASE_URL}/api/events`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        
+    if (storedUserId) setUserId(storedUserId);
+console.log("Fetched userId from AsyncStorage:", storedUserId);
+    try {
+      const token = await AsyncStorage.getItem("token");
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch events");
-        }
-
-        const data = await response.json();
-        setEvents(data);
-        setFilteredEvents(data);
-        console.log(BASE_URL);
-      } catch (error) {
-        console.error("Error fetching events:", error);
-        setError("Error fetching events.");
-      } finally {
-        setIsLoading(false);
+      if (!token) {
+        setError("User not logged in");
+        return;
       }
-    };
 
-    fetchEvents();
-  }, []);
+      const response = await fetch(`${BASE_URL}/api/events`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch events");
+      }
+
+      const data = await response.json();
+      setEvents(data);
+      setFilteredEvents(data);
+
+      // ✅ Optional: Log events and check `user` field
+      console.log("Fetched events:", data);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      setError("Error fetching events.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchEvents();
+}, []);
+
 
   // Handle category selection from drawer
   useEffect(() => {
