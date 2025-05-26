@@ -90,6 +90,14 @@ const ProfilePage = () => {
                   >
                     <Text style={styles.forgotPasswordText}>Change Password</Text>
                   </TouchableOpacity>
+
+             {/* Log out */}
+                  <TouchableOpacity 
+                    style={styles.LogOutContainer} 
+                    onPress={() => navigation.replace('Login')}
+                  >
+                    <Text style={styles.LogOutText}>Log out</Text>
+                  </TouchableOpacity>
           
         </View>
       );
@@ -109,7 +117,7 @@ const ProfilePage = () => {
       title: {
         fontSize: 28,
         fontWeight: 'bold',
-        marginTop: -400,
+        marginTop: -300,
         marginBottom: 60,
         color: '#B88A4E',
         letterSpacing: 1,
@@ -141,6 +149,15 @@ const ProfilePage = () => {
     marginTop: 10,
   },
   forgotPasswordText: {
+    color: '#f9df7b', 
+    fontSize: 14,
+  },
+
+  LogOutContainer: {
+   
+    marginTop: 10,
+  },
+  LogOutText: {
     color: '#f9df7b', 
     fontSize: 14,
   },

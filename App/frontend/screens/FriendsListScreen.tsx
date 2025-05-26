@@ -42,6 +42,7 @@ const FriendsList: React.FC = () => {
           }
 
           const response = await fetch(`${API_URL}/api/user/friends`, {
+            
               method: 'GET',
               headers: {
                   'Content-Type': 'application/json',
@@ -234,7 +235,8 @@ const FriendsList: React.FC = () => {
           </View>
           <TouchableOpacity
               style={styles.messageButton}
-              onPress={() => Alert.alert('Message', `Messaging ${item.fullName} (Not Implemented)`)}
+              onPress={(log) => {console.log('click');
+              }}
           >
               <Text style={styles.messageButtonText}>Message</Text>
           </TouchableOpacity>
