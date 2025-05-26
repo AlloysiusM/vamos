@@ -39,6 +39,7 @@ const EventActivities = ({ route }: { route: any }) => {
   const windowWidth = Dimensions.get("window").width;
   const { signedUpEvents, addSignedUpEvent, removeSignedUpEvent, addFavoriteEvent, removeFavoriteEvent, isFavorite} = useEvents();
   
+  
   const EventSignup = async (eventId: string) => {
     const eventToUpdate = events.find(event => event._id === eventId);
     if (!eventToUpdate) {
@@ -193,11 +194,38 @@ const EventActivities = ({ route }: { route: any }) => {
     }
   };
 
+  const handleDeleteEvent = async (eventId: string) => {
+  try {
+    const token = await AsyncStorage.getItem("token");
+
+    const response = await fetch(`${BASE_URL}/api/events/${eventId}`, {
+      method: 'DELETE',
+      headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      },
+    });
+    const json = await response.json();
+
+    if (!response.ok) {
+      throw new Error(json.error || 'Failed to delete event');
+    }
+
+    
+    console.log('Event deleted:', json);
+  } catch (err) {
+    console.error('Error deleting event:');
+  }
+};
+
+
   // Render each event item in the list
   const renderEvent = ({ item }: { item: Event }) => {
     const startDate = item.startTime ? new Date(item.startTime).toLocaleString() : 'N/A';
     const endDate = item.endTime ? new Date(item.endTime).toLocaleString() : 'N/A';
 
+    
+      
     return (
       <View style={{ width: windowWidth - 40, marginBottom: 20, padding: 10, borderWidth: 1, borderColor: '#ccc', borderRadius: 5 }}>
         
@@ -238,6 +266,15 @@ const EventActivities = ({ route }: { route: any }) => {
             {signedUpEvents.some(event => event._id === item._id) ? "Unsign up" : "Sign Up"}
           </Text>
         </TouchableOpacity>
+        
+        {item.user === userId && (
+        <TouchableOpacity
+          onPress={() => handleDeleteEvent(item._id)} style={{ marginTop: 10 }} >
+        <Text style={[styles.eventCategory, { color: "#FF6B6B" }]}>Delete</Text>
+        </TouchableOpacity>
+)}
+        
+        
 
       </View>
     );
