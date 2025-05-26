@@ -92,6 +92,17 @@ const LoginScreen = () => {
 
       // Store token in AsyncStorage
       await AsyncStorage.setItem('token', data.token);
+        console.log("Saving userId:", data.userId);
+      if(data && data._id){
+        await AsyncStorage.setItem('userId', data._id);
+        console.log("Saved userId:", data._id);
+      } else {
+        console.log("No user _id found in data to save.");
+      }
+
+
+
+console.log("Saved userId");
       navigation.replace('AppTab'); 
     } catch (error) {
       setError('Login failed');

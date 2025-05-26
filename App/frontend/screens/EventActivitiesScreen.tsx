@@ -38,6 +38,9 @@ const EventActivities = ({ route }: { route: any }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const windowWidth = Dimensions.get("window").width;
   const { signedUpEvents, addSignedUpEvent, removeSignedUpEvent, addFavoriteEvent, removeFavoriteEvent, isFavorite} = useEvents();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  
   
   const EventSignup = async (eventId: string) => {
     const eventToUpdate = events.find(event => event._id === eventId);
@@ -110,44 +113,51 @@ const EventActivities = ({ route }: { route: any }) => {
   };
 
   // Fetch events from the backend API on component mount
-  useEffect(() => {
-    const fetchEvents = async () => {
-      setIsLoading(true);
-      try {
-        const token = await AsyncStorage.getItem("token");
+useEffect(() => {
+  const fetchEvents = async () => {
+    setIsLoading(true);
 
-        if (!token) {
-          setError("User not logged in");
-          return;
-        }
+const storedUserId = await AsyncStorage.getItem("userId");
 
-        const response = await fetch(`${BASE_URL}/api/events`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        
+    if (storedUserId) setUserId(storedUserId);
+console.log("Fetched userId from AsyncStorage:", storedUserId);
+    try {
+      const token = await AsyncStorage.getItem("token");
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch events");
-        }
-
-        const data = await response.json();
-        setEvents(data);
-        setFilteredEvents(data);
-        console.log(BASE_URL);
-      } catch (error) {
-        console.error("Error fetching events:", error);
-        setError("Error fetching events.");
-      } finally {
-        setIsLoading(false);
+      if (!token) {
+        setError("User not logged in");
+        return;
       }
-    };
 
-    fetchEvents();
-  }, []);
+      const response = await fetch(`${BASE_URL}/api/events`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch events");
+      }
+
+      const data = await response.json();
+      setEvents(data);
+      setFilteredEvents(data);
+
+      // ✅ Optional: Log events and check `user` field
+      console.log("Fetched events:", data);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      setError("Error fetching events.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchEvents();
+}, []);
+
 
   // Handle category selection from drawer
   useEffect(() => {
@@ -193,11 +203,38 @@ const EventActivities = ({ route }: { route: any }) => {
     }
   };
 
+  const handleDeleteEvent = async (eventId: string) => {
+  try {
+    const token = await AsyncStorage.getItem("token");
+
+    const response = await fetch(`${BASE_URL}/api/events/${eventId}`, {
+      method: 'DELETE',
+      headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      },
+    });
+    const json = await response.json();
+
+    if (!response.ok) {
+      throw new Error(json.error || 'Failed to delete event');
+    }
+
+    
+    console.log('Event deleted:', json);
+  } catch (err) {
+    console.error('Error deleting event:');
+  }
+};
+
+
   // Render each event item in the list
   const renderEvent = ({ item }: { item: Event }) => {
     const startDate = item.startTime ? new Date(item.startTime).toLocaleString() : 'N/A';
     const endDate = item.endTime ? new Date(item.endTime).toLocaleString() : 'N/A';
 
+    
+      
     return (
       <View style={{ width: windowWidth - 40, marginBottom: 20, padding: 10, borderWidth: 1, borderColor: '#ccc', borderRadius: 5 }}>
         
@@ -238,6 +275,15 @@ const EventActivities = ({ route }: { route: any }) => {
             {signedUpEvents.some(event => event._id === item._id) ? "Unsign up" : "Sign Up"}
           </Text>
         </TouchableOpacity>
+        
+        {item.user === userId && (
+        <TouchableOpacity
+          onPress={() => handleDeleteEvent(item._id)} style={{ marginTop: 10 }} >
+        <Text style={[styles.eventCategory, { color: "#FF6B6B" }]}>Delete</Text>
+        </TouchableOpacity>
+)}
+        
+        
 
       </View>
     );
