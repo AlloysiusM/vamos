@@ -114,7 +114,10 @@ const ProfilePage = () => {
           <Image source={require('../assets/profile-pic.png')} style={styles.logo} />
           <Text style={styles.username}>{fullName}</Text>
           
-          
+          <TouchableOpacity style={styles.forgotPasswordContainer} onPress={() => navigation.replace('ForgotPassword')}>
+          <Text style={styles.forgotPasswordText}>Change Password</Text>
+          </TouchableOpacity>
+
           {/* Logout Button for Profile Page, deletes the Token and returns user to Login page so they can sign in again*/}
           <TouchableOpacity style={styles.logout} onPress={handleLogout}>
             <Text style={styles.logoutText}>Logout</Text>
@@ -181,6 +184,15 @@ const ProfilePage = () => {
       profileContent: {
       alignItems: 'center',
       marginTop: 100,
+    },
+
+    forgotPasswordContainer: {
+      marginTop: 10,
+    },
+    
+    forgotPasswordText: {
+      color: '#f9df7b', 
+      fontSize: 14,
     },
 
 });
