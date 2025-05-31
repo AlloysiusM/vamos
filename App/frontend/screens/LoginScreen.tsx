@@ -92,7 +92,8 @@ const LoginScreen = () => {
 
       // Store token in AsyncStorage
       await AsyncStorage.setItem('token', data.token);
-        console.log("Saving userId:", data.userId);
+      console.log("Saving userId:", data.userId);
+
       if(data && data._id){
         await AsyncStorage.setItem('userId', data._id);
         console.log("Saved userId:", data._id);
@@ -101,13 +102,12 @@ const LoginScreen = () => {
       }
 
 
-
-console.log("Saved userId");
-      navigation.replace('AppTab'); 
-    } catch (error) {
-      setError('Login failed');
-    }
-  };
+      console.log("Saved userId");
+            navigation.replace('AppTab'); 
+          } catch (error) {
+            setError('Login failed');
+          }
+        };
 
   return (
     <View style={styles.container}>

@@ -41,7 +41,6 @@ const EventActivities = ({ route }: { route: any }) => {
   const [userId, setUserId] = useState<string | null>(null);
 
   
-  
   const EventSignup = async (eventId: string) => {
     const eventToUpdate = events.find(event => event._id === eventId);
     if (!eventToUpdate) {
@@ -117,10 +116,10 @@ useEffect(() => {
   const fetchEvents = async () => {
     setIsLoading(true);
 
-const storedUserId = await AsyncStorage.getItem("userId");
+    const storedUserId = await AsyncStorage.getItem("userId");
 
     if (storedUserId) setUserId(storedUserId);
-console.log("Fetched userId from AsyncStorage:", storedUserId);
+    console.log("Fetched userId from AsyncStorage:", storedUserId);
     try {
       const token = await AsyncStorage.getItem("token");
 
@@ -227,14 +226,11 @@ console.log("Fetched userId from AsyncStorage:", storedUserId);
   }
 };
 
-
   // Render each event item in the list
   const renderEvent = ({ item }: { item: Event }) => {
-    const startDate = item.startTime ? new Date(item.startTime).toLocaleString() : 'N/A';
-    const endDate = item.endTime ? new Date(item.endTime).toLocaleString() : 'N/A';
+  const startDate = item.startTime ? new Date(item.startTime).toLocaleString() : 'N/A';
+  const endDate = item.endTime ? new Date(item.endTime).toLocaleString() : 'N/A';
 
-    
-      
     return (
       <View style={{ width: windowWidth - 40, marginBottom: 20, padding: 10, borderWidth: 1, borderColor: '#ccc', borderRadius: 5 }}>
         
@@ -281,10 +277,7 @@ console.log("Fetched userId from AsyncStorage:", storedUserId);
           onPress={() => handleDeleteEvent(item._id)} style={{ marginTop: 10 }} >
         <Text style={[styles.eventCategory, { color: "#FF6B6B" }]}>Delete</Text>
         </TouchableOpacity>
-)}
-        
-        
-
+        )}      
       </View>
     );
   };
