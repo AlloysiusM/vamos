@@ -29,6 +29,7 @@ const NearMeScreen = () => {
 
   const API_KEY = GOOGLE_MAPS_API_KEY;
 
+  // Request location permission and get current location
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -45,6 +46,7 @@ const NearMeScreen = () => {
     })();
   }, []);
 
+  // Inject HTML for Google Maps with Places API
   const injectedHTML = location
     ? `<!DOCTYPE html>
     <html>
@@ -119,6 +121,7 @@ const NearMeScreen = () => {
     </html>`
     : '<Text>Loading map...</Text>';
 
+  // Handle messages from WebView
   const onMessage = (event: any) => {
     try {
       const message = JSON.parse(event.nativeEvent.data);
@@ -130,6 +133,7 @@ const NearMeScreen = () => {
     }
   };
 
+  // Handle place selection
   const handlePlacePress = (placeId: string) => {
     setSelectedPlaceId(placeId);
     if (webViewRef.current) {
@@ -140,19 +144,23 @@ const NearMeScreen = () => {
     }
   };
 
+  // Open category selection modal
   const openCategoryModal = () => {
     setModalVisible(true);
   };
 
+  // Close category selection modal
   const closeCategoryModal = () => {
     setModalVisible(false);
   };
 
+  // Select a category from the modal
   const selectCategory = (category: string) => {
     setCategory(category);
     closeCategoryModal();
   };
 
+  // Filter places based on search input
   const filteredPlaces = places.filter(place =>
     place.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -160,6 +168,8 @@ const NearMeScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+
+        {/* Back button */}
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#f9df7b" />
         </TouchableOpacity>
@@ -168,6 +178,8 @@ const NearMeScreen = () => {
         
         <View style={{ width: 34 + 10 }} />
       </View>
+
+      {/* Map container with WebView */}
       <View style={styles.mapContainer}>
         <WebView
           ref={webViewRef}
@@ -180,6 +192,7 @@ const NearMeScreen = () => {
         />
       </View>
 
+      {/* Search input for filtering */}
       <TextInput
         style={styles.searchInput}
         placeholder="Search for facilities..."
@@ -187,10 +200,12 @@ const NearMeScreen = () => {
         onChangeText={setSearch}
       />
 
+      {/*Category button */}
       <TouchableOpacity onPress={openCategoryModal} style={styles.categoryButton}>
         <Text style={styles.categoryText}>Select Category: {category}</Text>
       </TouchableOpacity>
 
+      {/* List of places */}
       <FlatList
         data={filteredPlaces}
         keyExtractor={(item) => item.place_id}
@@ -204,13 +219,16 @@ const NearMeScreen = () => {
           </TouchableOpacity>
         )}
       />
-
+      
+      {/* Category selection modal */}
       <Modal
         transparent={true}
         visible={modalVisible}
         animationType="fade"
         onRequestClose={closeCategoryModal}
       >
+
+        {/* Modal overlay and content */}
         <TouchableWithoutFeedback onPress={closeCategoryModal}>
           <View style={styles.modalOverlay}>
             <TouchableWithoutFeedback>
@@ -234,6 +252,7 @@ const NearMeScreen = () => {
   );
 };
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,

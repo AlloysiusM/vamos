@@ -57,6 +57,8 @@ const ForgotPasswordScreen = () => {
 
       <View style={styles.inputContainer}>
         <Text style={styles.inputLabel}>Please enter your email</Text>
+
+        { /* Email Input */}
         <TextInput
           style={styles.input}
           placeholder="Email"
@@ -90,6 +92,7 @@ const ForgotPasswordScreen = () => {
   );
 };
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,

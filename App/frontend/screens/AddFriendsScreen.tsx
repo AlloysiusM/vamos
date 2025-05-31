@@ -10,22 +10,21 @@ import { API_URL } from "@env";
 
 const AddFriendsScreen: React.FC = () => {
 
+  // Ts declaration
   interface User {
     _id: string;
     fullName: string;
-    email?: string; // Optional email
-    // Add other relevant fields like profile picture URL, etc.
-}
+    email?: string;
+  }
 
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList, 'AddFriend'>>();
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [processingFriendId, setProcessingFriendId] = useState<string | null>(
-    null
-  );
+  const [processingFriendId, setProcessingFriendId] = useState<string | null>(null);
 
+  // Load users
   useFocusEffect(
     useCallback(() => {
       const fetchUsers = async () => {
@@ -61,10 +60,7 @@ const AddFriendsScreen: React.FC = () => {
           }
         } catch (error) {
           console.error("Fetch error:", error);
-          Alert.alert(
-            "Error",
-            "Something went wrong. Check your network connection."
-          );
+          Alert.alert("Error", "Something went wrong. Check your network connection.");
         } finally {
           setIsLoading(false);
         }
@@ -74,6 +70,7 @@ const AddFriendsScreen: React.FC = () => {
     }, [])
   );
 
+  // Filter users based on search query
   useEffect(() => {
     if (searchQuery.trim() === "") {
       setFilteredUsers(users);
@@ -85,6 +82,7 @@ const AddFriendsScreen: React.FC = () => {
     }
   }, [searchQuery, users]);
 
+  // Handle sending friend request
   const handleSendingReq = async (friendId: string) => {
     try {
       setProcessingFriendId(friendId);
@@ -112,15 +110,13 @@ const AddFriendsScreen: React.FC = () => {
         Alert.alert("Error", data.message || "Could not send request");
       }
     } catch (error) {
-      Alert.alert(
-        "Error",
-        "Something went wrong. Check your network connection."
-      );
+      Alert.alert("Error", "Something went wrong. Check your network connection.");
     } finally {
       setProcessingFriendId(null);
     }
   };
 
+  // Render each user card
   const renderFriendItem = ({ item }: { item: User }) => (
     <View style={styles.userCard}>
       <View style={styles.userInfo}>
@@ -146,6 +142,8 @@ const AddFriendsScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
+
+      {/* Header with back button */}
       <View style={styles.titleContainer}>
         {navigation.canGoBack() && (
           <TouchableOpacity
@@ -158,6 +156,7 @@ const AddFriendsScreen: React.FC = () => {
         <Text style={styles.title}>People you might know</Text>
       </View>
 
+      {/* Search bar */}
       <View style={styles.inputContainer}>
         <Ionicons
           name="search"
@@ -182,6 +181,7 @@ const AddFriendsScreen: React.FC = () => {
         )}
       </View>
 
+      {/* Conditional rendering: loader, no results, or list */}
       {isLoading ? (
         <ActivityIndicator size="large" color="#B88A4E" style={{ marginTop: 20 }} />
       ) : filteredUsers.length === 0 ? (
@@ -208,6 +208,7 @@ const AddFriendsScreen: React.FC = () => {
   );
 };
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -308,6 +309,5 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
 });
-
 
 export default AddFriendsScreen;

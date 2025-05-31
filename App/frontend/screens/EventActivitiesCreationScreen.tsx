@@ -7,7 +7,7 @@ import { BASE_URL } from '../utils/config';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-// ts declaration
+// Ts declaration
 interface CreateEventScreenProps {
   onAddEvent: (
     event: { 
@@ -85,7 +85,7 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
 
   const handleCategorySelect = (selectedCategory: string) => {
     setCategory(selectedCategory);
-    setCategoryModalVisible(false);  // Close modal after selection
+    setCategoryModalVisible(false); 
   };
 
   const navigation = useNavigation();
@@ -111,7 +111,7 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
       <Text style={styles.label}>Category</Text>
       <TouchableOpacity 
         style={styles.input} 
-        onPress={() => setCategoryModalVisible(true)} // Open modal when pressed
+        onPress={() => setCategoryModalVisible(true)}
       >
         <Text style={styles.placeholder}>{category || 'Select a category'}</Text>
       </TouchableOpacity>
@@ -249,6 +249,8 @@ const CreateEventScreen: React.FC<CreateEventScreenProps> = ({ onAddEvent }) => 
     </ScrollView>
   );
 };
+
+// Styles
 const THEME_COLOR = "#f9df7b";
 
 const styles = StyleSheet.create({

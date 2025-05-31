@@ -17,11 +17,9 @@ WebBrowser.maybeCompleteAuthSession();
 
 const LoginScreen = () => {
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList, 'Login'>>();
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-
   const redirectUri = AuthSession.makeRedirectUri({});
 
   // Google Auth Request
@@ -45,6 +43,7 @@ const LoginScreen = () => {
     }
   }, [response]);
 
+  // Fetch user info from Google API
   async function fetchUserInfo(token: string) {
     try {
       const res = await fetch('https://www.googleapis.com/userinfo/v2/me', {
@@ -64,6 +63,7 @@ const LoginScreen = () => {
     }
   }
 
+  // Check submission form
   const handleSubmit = async () => {
     
     if (!email || !password) {
@@ -101,13 +101,12 @@ const LoginScreen = () => {
         console.log("No user _id found in data to save.");
       }
 
-
       console.log("Saved userId");
             navigation.replace('AppTab'); 
           } catch (error) {
             setError('Login failed');
-          }
-        };
+        }
+      };
 
   return (
     <View style={styles.container}>
@@ -199,6 +198,7 @@ const LoginScreen = () => {
   );
 };
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,

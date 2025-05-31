@@ -418,6 +418,7 @@ const EventsScreenDrawer = () => {
 };
 export default EventsScreenDrawer;
 
+// Styles
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,

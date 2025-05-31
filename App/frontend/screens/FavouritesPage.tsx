@@ -9,6 +9,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useEvents } from '../states/contexts/EventContext';
 
+// Ts declaration
 type EventItem = {
   _id: string;
   title: string;
@@ -16,6 +17,7 @@ type EventItem = {
   date: string;
 };
 
+// Format date to a readable string
 const formatDateTime = (dateString: string) => {
   const date = new Date(dateString);
   return date.toLocaleString('en-US', {
@@ -27,7 +29,6 @@ const formatDateTime = (dateString: string) => {
     hour12: true,
   });
 };
-
 
 const FavouritesPage = () => {
   const { favoriteEvents } = useEvents();
@@ -69,6 +70,7 @@ const FavouritesPage = () => {
 
 export default FavouritesPage;
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,

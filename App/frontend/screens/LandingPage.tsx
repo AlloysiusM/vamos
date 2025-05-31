@@ -27,6 +27,7 @@ const LandingPage = () => {
             </LinearGradient>
           </TouchableOpacity>
 
+          {/* Profile Button */}
           <TouchableOpacity onPress={() => navigation.navigate("FriendsList")}>
             <LinearGradient
               colors={['#b57e10', '#f9df7b', '#d8a90d']}
@@ -36,8 +37,10 @@ const LandingPage = () => {
             </LinearGradient>
           </TouchableOpacity>
         </View>
-
+        
         <View style={styles.cardRow}>
+
+          { /* Schedule Button */}
           <TouchableOpacity onPress={() => navigation.navigate("Schedule")}>
             <LinearGradient
               colors={['#b57e10', '#f9df7b', '#d8a90d']}
@@ -46,7 +49,8 @@ const LandingPage = () => {
               <Text style={styles.cardLabel}>Schedule</Text>
             </LinearGradient>
           </TouchableOpacity>
-
+          
+          {/* Near Me Button */}
           <TouchableOpacity onPress={() => navigation.navigate("FindMe")}> 
             <LinearGradient
               colors={['#b57e10', '#f9df7b', '#d8a90d']}
@@ -61,6 +65,7 @@ const LandingPage = () => {
   );
 };
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,

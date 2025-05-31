@@ -5,12 +5,12 @@ const HostActivity: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Host Activity</Text>
-      
 
     </View>
   );
 };
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
