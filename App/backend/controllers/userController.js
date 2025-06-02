@@ -64,18 +64,42 @@ const loginUser = async (req, res) => {
     }
 };
 
-// Create a get profile
+// Google login
+const googleLogin = async (req, res) => {
+  const { email, name } = req.body;
 
+  try {
+    let user = await User.findOne({ email });
 
+    if (!user) {
+      const generatedPassword = crypto.randomBytes(16).toString('hex');
+      user = await User.create({
+        fullName: name,
+        email,
+        password: generatedPassword, 
+        isGoogleUser: true
+      });
+    }
+
+    res.status(200).json({
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      token: generateToken(user._id)
+    });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
 // Setup email transporter (Gmail SMTP example)
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS, 
-    },
-  });
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS, 
+        },
+    });
 
   //Forgot password
 const forgotPassword = async (req, res) => {
@@ -192,34 +216,25 @@ const forgotPassword = async (req, res) => {
     
     let token;
 
-    // Check for token in Authorization header
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         try {
-            // Extract token ("Bearer <token>")
             token = req.headers.authorization.split(' ')[1];
-
-            // Verify token and decode payload
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-            // Fetch user from DB using ID from token payload
-            // Select only necessary fields, explicitly exclude password
             const user = await User.findById(decoded.id).select('-password');
 
             if (user) {
-                // Send user data (without password)
                 res.status(200).json({
                     _id: user._id,
                     fullName: user.fullName,
                     email: user.email,
-                    // Add any other non-sensitive fields you want to return
                 });
             } else {
-                // This case might occur if the user was deleted after the token was issued
                 res.status(404).json({ message: 'User not found' });
             }
         } catch (error) {
             console.error('Get User Profile Error:', error);
-            // Handle specific JWT errors
+
             if (error.name === 'JsonWebTokenError') {
                 res.status(401).json({ message: 'Not authorized, token invalid' });
             } else if (error.name === 'TokenExpiredError') {
@@ -229,7 +244,7 @@ const forgotPassword = async (req, res) => {
             }
         }
     } else {
-        // Handle case where no token is provided
+
         res.status(401).json({ message: 'Not authorized, no token provided' });
     }
 };
@@ -239,14 +254,11 @@ const getPeopleName = async(req, res) => {
     
     let token;
 
-    // Check for token in Authorization header
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         try {
             console.log('kk');
-            // Extract token ("Bearer <token>")
             token = req.headers.authorization.split(' ')[1];
 
-            // Verify token and decode payload
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
             const users = await User.find({ _id: { $ne: decoded.id } }).select('fullName email');
@@ -254,7 +266,6 @@ const getPeopleName = async(req, res) => {
        
     } catch (error) {
         console.error('Get User Profile Error:', error);
-        // Handle specific JWT errors
         if (error.name === 'JsonWebTokenError') {
             res.status(401).json({ message: 'Not authorized, token invalid' });
         } else if (error.name === 'TokenExpiredError') {
@@ -264,7 +275,6 @@ const getPeopleName = async(req, res) => {
         }
     }
 } else {
-    // Handle case where no token is provided
     res.status(401).json({ message: 'Not authorized, no token provided' });
 }
 };
@@ -275,13 +285,11 @@ const sendingReq = async (req, res) => {
         const { friendId } = req.body;
         const senderId = req.user.id;
         
-
-        // Create a notification for the user
     const newNotif = new Notification({
-        user: friendId,          // who will RECEIVE this notification
+        user: friendId,
         message: `You have a new friend request!`,
-        sender: senderId,        // who sent it
-        type: 'friend_request',  // optional
+        sender: senderId, 
+        type: 'friend_request',
       });
   
       await newNotif.save();
@@ -296,8 +304,8 @@ const getFriendReq = async (req, res) => {
    try {
     const userId = req.user.id;
     const notification = await Notification.find({user: userId})
-    .populate('sender', 'fullName email') // Populate sender details (fullName, email)
-    .sort({ createdAt: -1 }); // Optional: latest first
+    .populate('sender', 'fullName email') 
+    .sort({ createdAt: -1 }); 
 
     res.status(200).json(notification);
     
@@ -307,56 +315,48 @@ const getFriendReq = async (req, res) => {
 };
 
 const acceptFriendRequest = async (req, res) => {
-    const { notificationId } = req.body; // Get notification ID from request body
-    const recipientId = req.user.id; // Logged-in user (the one accepting)
+    const { notificationId } = req.body;
+    const recipientId = req.user.id;
 
     if (!notificationId) {
         return res.status(400).json({ message: 'Notification ID is required' });
     }
 
     try {
-        // 1. Find the notification
         const notification = await Notification.findById(notificationId);
 
         if (!notification) {
             return res.status(404).json({ message: 'Friend request notification not found' });
         }
 
-        // 2. Verify the logged-in user is the recipient of this notification
         if (notification.user.toString() !== recipientId) {
             return res.status(403).json({ message: 'You are not authorized to accept this request' });
         }
 
-        // 3. Verify it's a friend request type (optional but good practice)
         if (notification.type !== 'friend_request') {
              return res.status(400).json({ message: 'This notification is not a friend request' });
         }
 
-        const senderId = notification.sender; // Get the ID of the user who sent the request
+        const senderId = notification.sender; 
 
-        // 4. Find both users
         const recipient = await User.findById(recipientId);
         const sender = await User.findById(senderId);
 
         if (!recipient || !sender) {
-            // This case might happen if a user was deleted after sending the request
-             await Notification.findByIdAndDelete(notificationId); // Clean up notification
+             await Notification.findByIdAndDelete(notificationId); 
             return res.status(404).json({ message: 'One or both users involved no longer exist' });
         }
 
-        // 5. Add each user to the other's friends list (if not already friends)
-        // Use $addToSet to prevent duplicates
         await User.findByIdAndUpdate(recipientId, { $addToSet: { friends: senderId } });
         await User.findByIdAndUpdate(senderId, { $addToSet: { friends: recipientId } });
 
-        // 6. Delete the notification now that it's handled
         await Notification.findByIdAndDelete(notificationId);
 
         res.status(200).json({ message: 'Friend request accepted successfully' });
 
     } catch (error) {
         console.error('Accept Friend Request Error:', error);
-        if (error.kind === 'ObjectId') { // Handle invalid Mongo IDs
+        if (error.kind === 'ObjectId') {
             return res.status(400).json({ message: 'Invalid Notification ID format' });
         }
         res.status(500).json({ message: 'Server error while accepting friend request' });
@@ -364,7 +364,7 @@ const acceptFriendRequest = async (req, res) => {
 };
 
 const getFriends = async (req, res) => {
-    const userId = req.user.id; // Get the logged-in user's ID
+    const userId = req.user.id; 
 
     try {
         const user = await User.findById(userId)
@@ -374,7 +374,7 @@ const getFriends = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        res.status(200).json(user.friends); // Send the array of friends
+        res.status(200).json(user.friends);
 
     } catch (error) {
         console.log(error);
@@ -385,61 +385,46 @@ const getFriends = async (req, res) => {
 };
 
 const deleteFriend = async (req, res) => {
-    const userId = req.user.id; // ID of the logged-in user initiating the removal
-    const { friendId } = req.params; // Get the ID of the friend to remove from URL parameters
+    const userId = req.user.id; 
+    const { friendId } = req.params;
 
-    // Basic validation
     if (!friendId) {
         return res.status(400).json({ message: 'Friend ID is required in URL parameters' });
     }
 
-    // Prevent removing self
     if (userId === friendId) {
         return res.status(400).json({ message: 'You cannot remove yourself as a friend.' });
     }
 
-    // Validate if friendId is a valid MongoDB ObjectId format (optional but good practice)
     if (!mongoose.Types.ObjectId.isValid(friendId)) {
         return res.status(400).json({ message: 'Invalid Friend ID format' });
     }
 
     try {
-        // Find both users to ensure they exist (optional, $pull works even if one doesn't exist, but good for verification)
         const user = await User.findById(userId);
         const friendToRemove = await User.findById(friendId);
 
         if (!user) {
-             // Should not happen if protect middleware works, but good check
             return res.status(404).json({ message: 'Current user not found.' });
         }
         if (!friendToRemove) {
-            // Friend might have deleted their account
-             // Proceed to remove from the current user's list anyway
              console.log(`Friend with ID ${friendId} not found, removing from user ${userId}'s list.`);
         }
 
-        // Use $pull to remove the friend's ID from the current user's friends array
         const updateCurrentUser = await User.findByIdAndUpdate(
             userId,
             { $pull: { friends: friendId } },
-            { new: true } // Optional: returns the updated document
+            { new: true } 
         );
 
-        // Also remove the current user's ID from the (ex)friend's friends array
-        // This ensures the relationship is removed from both sides
         const updateExFriend = await User.findByIdAndUpdate(
             friendId,
             { $pull: { friends: userId } },
-            { new: true } // Optional
+            { new: true } 
         );
 
-        // Check if the pull operation actually modified the user's document
-        // (it wouldn't if they weren't friends in the first place)
-        // You might want to check `updateCurrentUser.modifiedCount` if using raw MongoDB driver update methods
-        // With findByIdAndUpdate and $pull, it won't error if the ID wasn't there.
-
         console.log(`User ${userId} removed friend ${friendId}.`);
-        if (friendToRemove) { // Only log if the friend existed
+        if (friendToRemove) { 
              console.log(`User ${friendId} removed friend ${userId}.`);
         }
 
@@ -455,5 +440,5 @@ const deleteFriend = async (req, res) => {
   
 
 module.exports = { registerUser, loginUser, forgotPassword, verificationEmail, resetPassword, getUserName, getPeopleName, sendingReq, getFriendReq, acceptFriendRequest,getFriends,
-    deleteFriend
+    deleteFriend, googleLogin
   };

@@ -22,8 +22,6 @@ const getUserEvents = async (req, res) => {
     }
 }
 
-// get single workout
-// ???? 
 
 // Post create event
 const createEvent = async (req, res) => {

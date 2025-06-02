@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BASE_URL } from '../utils/config'; // Adjust the import path as necessary
+import { BASE_URL } from '../utils/config'; 
 import { LinearGradient } from 'expo-linear-gradient';
 
 const ForgotPasswordScreen = () => {

@@ -51,15 +51,33 @@ const LoginScreen = () => {
       });
       const user = await res.json();
 
-      // Store user email locally
-      await AsyncStorage.setItem('userEmail', user.email);
-      Alert.alert('Success', `Welcome ${user.name}`);
+      const backendResponse = await fetch(`${BASE_URL}/api/user/google-login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: user.email,
+          name: user.name
+        }),
+      });
 
-      // Redirect user to App
+      const backendData = await backendResponse.json();
+
+      if (!backendResponse.ok) {
+        throw new Error(backendData.message || 'Google login failed');
+      }
+
+      await AsyncStorage.setItem('token', backendData.token);
+      await AsyncStorage.setItem('userId', backendData._id);
+      await AsyncStorage.setItem('userEmail', user.email);
+
+      Alert.alert('Success', `Welcome ${user.name}`);
       navigation.replace('AppTab');
     } catch (error) {
       console.error('[DEBUG] Google Auth Error:', error);
-      Alert.alert('Error', 'Failed to sign in with Google');
+      const errorMessage = (error instanceof Error && error.message) ? error.message : 'Failed to sign in with Google';
+      Alert.alert('Error', errorMessage);
     }
   }
 

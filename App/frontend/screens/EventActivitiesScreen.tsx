@@ -202,35 +202,43 @@ useEffect(() => {
     }
   };
 
-  const handleDeleteEvent = async (eventId: string) => {
+const handleDeleteEvent = async (eventId: string) => {
   try {
     const token = await AsyncStorage.getItem("token");
 
     const response = await fetch(`${BASE_URL}/api/events/${eventId}`, {
       method: 'DELETE',
       headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
     });
+
     const json = await response.json();
 
     if (!response.ok) {
       throw new Error(json.error || 'Failed to delete event');
     }
 
-    
     console.log('Event deleted:', json);
+
+    setEvents(prev => prev.filter(event => event._id !== eventId));
+    setFilteredEvents(prev => prev.filter(event => event._id !== eventId));
+
   } catch (err) {
-    console.error('Error deleting event:');
+    console.error('Error deleting event:', err);
+    Alert.alert("Error", "Failed to delete event.");
   }
 };
 
   // Render each event item in the list
   const renderEvent = ({ item }: { item: Event }) => {
-  const startDate = item.startTime ? new Date(item.startTime).toLocaleString() : 'N/A';
-  const endDate = item.endTime ? new Date(item.endTime).toLocaleString() : 'N/A';
+    const startDate = item.startTime ? new Date(item.startTime).toLocaleString() : 'N/A';
+    const endDate = item.endTime ? new Date(item.endTime).toLocaleString() : 'N/A';
 
+    const isEventCreator = item.user === userId;
+
+    const isSignedUp = signedUpEvents.some(event => event._id === item._id);
     return (
       <View style={{ width: windowWidth - 40, marginBottom: 20, padding: 10, borderWidth: 1, borderColor: '#ccc', borderRadius: 5 }}>
         
@@ -258,7 +266,7 @@ useEffect(() => {
             />
           </TouchableOpacity>
         </View>
-
+        
         <Text style={styles.eventCategory}>Category: {item.category || 'N/A'}</Text>
         <Text style={styles.eventDetails}>Location: {item.location || 'N/A'}</Text>
         <Text style={styles.eventDetails}>Start Time: {startDate}</Text>
@@ -266,17 +274,21 @@ useEffect(() => {
         <Text style={styles.eventDetails}>Max People: {item.maxPeople || 'N/A'}</Text>
         <Text style={styles.eventDetails}>Current People: {item.currentPeople || 'N/A'}</Text>
 
-        <TouchableOpacity onPress={() => EventSignup(item._id)}>
-          <Text style={styles.eventCategory}>
-            {signedUpEvents.some(event => event._id === item._id) ? "Unsign up" : "Sign Up"}
-          </Text>
-        </TouchableOpacity>
+        {!isEventCreator && (
+                <TouchableOpacity onPress={() => EventSignup(item._id)}>
+                  <Text style={styles.eventCategory}>
+                    {isSignedUp ? "Unsign up" : "Sign Up"}
+                  </Text>
+                </TouchableOpacity>
+              )}
         
-        {item.user === userId && (
-        <TouchableOpacity
-          onPress={() => handleDeleteEvent(item._id)} style={{ marginTop: 10 }} >
-        <Text style={[styles.eventCategory, { color: "#FF6B6B" }]}>Delete</Text>
-        </TouchableOpacity>
+        {isEventCreator && (
+          <TouchableOpacity
+            onPress={() => handleDeleteEvent(item._id)} 
+            style={{ marginTop: 10 }}
+          >
+            <Text style={[styles.eventCategory, { color: "#FF6B6B" }]}>Delete</Text>
+          </TouchableOpacity>
         )}      
       </View>
     );
