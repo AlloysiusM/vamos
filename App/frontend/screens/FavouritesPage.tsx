@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useEvents } from '../states/contexts/EventContext';
 
+// Ts Decleration
 type EventItem = {
   _id: string;
   title: string;
@@ -19,6 +20,7 @@ type EventItem = {
   location: string;
 };
 
+// Function to format date and time
 const formatDateTime = (dateString: string) => {
   const date = new Date(dateString);
   return date.toLocaleString('en-US', {
@@ -39,10 +41,12 @@ const FavouritesPage = () => {
     isLoading
   } = useEvents();
 
+  // remove fav
   const handleRemoveFavorite = (eventId: string) => {
     removeFavoriteEvent(eventId);
   };
 
+  // show fav item
   const renderItem = ({ item }: { item: EventItem }) => (
     <View style={styles.eventCard}>
       <View style={styles.eventHeader}>
@@ -96,6 +100,8 @@ const FavouritesPage = () => {
   );
 };
 
+
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,

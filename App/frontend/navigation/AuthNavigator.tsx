@@ -37,6 +37,7 @@ export type AuthStackParamList = {
 
 const Stack = createStackNavigator(); 
 
+// Main navigator for authentication-related screens
 const AuthNavigator = () => {
   return (
       <Stack.Navigator initialRouteName="Login">

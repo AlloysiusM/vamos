@@ -18,16 +18,14 @@ const ProfilePage = () => {
         
         
         const fetchUserName = async () => {
-          setIsLoading(true); // Start loading
+          setIsLoading(true);
           try {
             const token = await AsyncStorage.getItem('token');
   
             if (!token) {
               console.log('dfd');
-              
-              // Handle case where user is not logged in (e.g., redirect to login)
+
               Alert.alert('Error', 'You are not logged in.');
-              // Example: navigation.navigate('Login'); // Or your login screen name
               setIsLoading(false);
               return;
             }
@@ -39,25 +37,20 @@ const ProfilePage = () => {
                 'Authorization': `Bearer ${token}`,
               },
               
-              
             });
             
-    
+  
             const data = await response.json();
   
             console.log(data);
-            
     
             if (response.ok) {
               
               setFullName(data.fullName);
             } else {
-             // Handle specific errors (e.g., token expired -> redirect to login)
              if (response.status === 401) {
               Alert.alert('Session Expired', 'Please log in again.');
-              // Optionally clear token and navigate to login
               await AsyncStorage.removeItem('token');
-              // navigation.navigate('Login');
          } else {
               Alert.alert('Error', data.message || 'Could not load user profile');
          }
@@ -67,7 +60,7 @@ const ProfilePage = () => {
             Alert.alert('Error', 'Something went wrong while fetching profile. Check your network connection and API server.');
           }
           finally {
-            setIsLoading(false); // Stop loading regardless of outcome
+            setIsLoading(false); 
          }
         };
     
@@ -75,7 +68,6 @@ const ProfilePage = () => {
       }, [])
     );
 
-    //Function to logout user and return them to login page
     const handleLogout = async () => {
       Alert.alert(
         'Confirm Logout',
@@ -90,11 +82,11 @@ const ProfilePage = () => {
             style: 'destructive',
             onPress: async () => {
               try {
-                await AsyncStorage.removeItem('token'); //code to remove the token
-                navigation.navigate('Login')//code to return the user to login screen so they can relog in
+                await AsyncStorage.removeItem('token');
+                navigation.navigate('Login')
 
                 const token = await AsyncStorage.getItem('token');
-                console.log("Token = ", token); //null if logout is implemented correctly
+                console.log("Token = ", token); 
 
               } catch (error) {
                 console.error('Logout Error!:',error);
@@ -118,7 +110,6 @@ const ProfilePage = () => {
           <Text style={styles.forgotPasswordText}>Change Password</Text>
           </TouchableOpacity>
 
-          {/* Logout Button for Profile Page, deletes the Token and returns user to Login page so they can sign in again*/}
           <TouchableOpacity style={styles.logout} onPress={handleLogout}>
             <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>

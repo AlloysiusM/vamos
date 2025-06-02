@@ -29,6 +29,7 @@ const LoginScreen = () => {
     redirectUri,
   });
 
+  // Check response
   useEffect(() => {
     if (response?.type === 'success') {
       const { authentication } = response;
@@ -42,6 +43,7 @@ const LoginScreen = () => {
     }
   }, [response]);
 
+  // Get user info from Google and send to backend
   async function fetchUserInfo(token: string) {
     try {
       const res = await fetch('https://www.googleapis.com/userinfo/v2/me', {
@@ -81,6 +83,7 @@ const LoginScreen = () => {
     }
   }
 
+  // Check submission form
   const handleSubmit = async () => {
     if (!email || !password) {
       setError('Please fill in all fields');
@@ -195,6 +198,7 @@ const LoginScreen = () => {
   );
 };
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,

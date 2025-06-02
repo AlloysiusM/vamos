@@ -14,6 +14,7 @@ const VerificationScreen = () => {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
 
+  // Check forgot form
   const handleForgot = async () => {
     if (!code) {
       setError('Please fill in the code');
@@ -81,6 +82,7 @@ const VerificationScreen = () => {
   );
 };
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,

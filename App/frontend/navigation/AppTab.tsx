@@ -123,6 +123,7 @@ const AppTab = () => {
   )
 }
 
+// Styles
 const styles = StyleSheet.create({
   tabBarStyle: {
     position: "absolute",
