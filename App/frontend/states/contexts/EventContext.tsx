@@ -1,7 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';  // Import AsyncStorage for local data storage
-import React, { createContext, useContext, useEffect, useState } from 'react';  // React hooks and context
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
-// EventContext Structure
 interface Event {
   details: string;
   date: string;
@@ -12,7 +11,6 @@ interface Event {
   location: string;
 }
 
-// defining the context type for the EventContext
 interface EventContextType {
   signedUpEvents: Event[];
   addSignedUpEvent: (event: Event) => void;
@@ -21,81 +19,124 @@ interface EventContextType {
   removeFavoriteEvent: (eventId: string) => void;
   isFavorite: (eventId: string) => boolean;
   favoriteEvents: Event[];
+  currentUserId: string | null;
+  setCurrentUserId: (userId: string | null) => void;
+  isLoading: boolean;
+  clearUserData: () => Promise<void>;
 }
 
-// setting values for the context
 const EventContext = createContext<EventContextType>({
   signedUpEvents: [],
   addSignedUpEvent: () => {},
   removeSignedUpEvent: () => {},
-
   favoriteEvents: [],
   addFavoriteEvent: () => {},
   removeFavoriteEvent: () => {},
   isFavorite: () => false,
+  currentUserId: null,
+  setCurrentUserId: () => {},
+  isLoading: true,
+  clearUserData: async () => {},
 });
 
 export const EventProvider = ({ children }: { children: React.ReactNode }) => {
   const [signedUpEvents, setSignedUpEvents] = useState<Event[]>([]);
   const [favoriteEvents, setFavoriteEvents] = useState<Event[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load signed-up and favorite events from AsyncStorage when the component mounts
+  // Clear all user data when logging out
+  const clearUserData = async () => {
+    setSignedUpEvents([]);
+    setFavoriteEvents([]);
+  };
+
+  // Get storage key with user ID
+  const getStorageKey = (baseKey: string) => {
+    if (!currentUserId) throw new Error("No current user ID");
+    return `${baseKey}_${currentUserId}`;
+  };
+
+  // Load events when userId changes
   useEffect(() => {
     const loadEvents = async () => {
-      try {
-        const storedSignedUp = await AsyncStorage.getItem("signedUpEvents");  // Get signed up events from AsyncStorage
-        if (storedSignedUp) {
-          setSignedUpEvents(JSON.parse(storedSignedUp));
-        }
+      setIsLoading(true);
+      
+      if (!currentUserId) {
+        await clearUserData();
+        setIsLoading(false);
+        return;
+      }
 
-        const storedFavorites = await AsyncStorage.getItem("favoriteEvents");  // Get favorite events from AsyncStorage
-        if (storedFavorites) {
-          setFavoriteEvents(JSON.parse(storedFavorites));
-        }
+      try {
+        const [signedUp, favorites] = await Promise.all([
+          AsyncStorage.getItem(getStorageKey("signedUpEvents")),
+          AsyncStorage.getItem(getStorageKey("favoriteEvents")),
+        ]);
+
+        setSignedUpEvents(signedUp ? JSON.parse(signedUp) : []);
+        setFavoriteEvents(favorites ? JSON.parse(favorites) : []);
       } catch (error) {
-        console.error("Error loading events from storage:", error);
+        console.error("Error loading events:", error);
+        await clearUserData();
+      } finally {
+        setIsLoading(false);
       }
     };
+    
     loadEvents();
-  }, []);
+  }, [currentUserId]);
 
-  // Function to save the updated signed-up events to AsyncStorage
-  const persistSignedUpEvents = async (updatedEvents: Event[]) => {
-    setSignedUpEvents(updatedEvents);
-    await AsyncStorage.setItem("signedUpEvents", JSON.stringify(updatedEvents));
+  const persistSignedUpEvents = async (events: Event[]) => {
+    try {
+      setSignedUpEvents(events);
+      if (currentUserId) {
+        await AsyncStorage.setItem(
+          getStorageKey("signedUpEvents"), 
+          JSON.stringify(events)
+        );
+      }
+    } catch (error) {
+      console.error("Failed to save signed up events:", error);
+    }
   };
 
-  // Function to save the updated favorite events to AsyncStorage
-  const persistFavoriteEvents = async (updatedFavorites: Event[]) => {
-    setFavoriteEvents(updatedFavorites);
-    await AsyncStorage.setItem("favoriteEvents", JSON.stringify(updatedFavorites));
+  const persistFavoriteEvents = async (events: Event[]) => {
+    try {
+      setFavoriteEvents(events);
+      if (currentUserId) {
+        await AsyncStorage.setItem(
+          getStorageKey("favoriteEvents"), 
+          JSON.stringify(events)
+        );
+      }
+    } catch (error) {
+      console.error("Failed to save favorite events:", error);
+    }
   };
 
-  // Function to add an event to the signed-up list
   const addSignedUpEvent = (event: Event) => {
     const updated = [...signedUpEvents, event];
     persistSignedUpEvents(updated);
   };
 
-  // Function to remove an event from the signed-up list
   const removeSignedUpEvent = (eventId: string) => {
     const updated = signedUpEvents.filter(e => e._id !== eventId);
     persistSignedUpEvents(updated);
   };
 
-  // Function to add an event to the favorites list
   const addFavoriteEvent = (event: Event) => {
-    const updated = [...favoriteEvents, event];
-    persistFavoriteEvents(updated);
+    if (!favoriteEvents.some(e => e._id === event._id)) {
+      const updated = [...favoriteEvents, event];
+      persistFavoriteEvents(updated);
+    }
   };
 
-  // Function to remove an event from the favorites list
   const removeFavoriteEvent = (eventId: string) => {
     const updated = favoriteEvents.filter(e => e._id !== eventId);
     persistFavoriteEvents(updated);
   };
 
-  // Function to check if an event is in the favorites list
   const isFavorite = (eventId: string) => {
     return favoriteEvents.some(e => e._id === eventId);
   };
@@ -106,11 +147,14 @@ export const EventProvider = ({ children }: { children: React.ReactNode }) => {
         signedUpEvents,
         addSignedUpEvent,
         removeSignedUpEvent,
-
         favoriteEvents,
         addFavoriteEvent,
         removeFavoriteEvent,
         isFavorite,
+        currentUserId,
+        setCurrentUserId,
+        isLoading,
+        clearUserData,
       }}
     >
       {children}

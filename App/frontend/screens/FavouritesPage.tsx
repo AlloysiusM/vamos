@@ -5,19 +5,20 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { useEvents } from '../states/contexts/EventContext';
 
-// Ts declaration
 type EventItem = {
   _id: string;
   title: string;
   details: string;
   date: string;
+  startTime: number;
+  endTime: number;
+  location: string;
 };
 
-// Format date to a readable string
 const formatDateTime = (dateString: string) => {
   const date = new Date(dateString);
   return date.toLocaleString('en-US', {
@@ -31,34 +32,61 @@ const formatDateTime = (dateString: string) => {
 };
 
 const FavouritesPage = () => {
-  const { favoriteEvents } = useEvents();
-  const navigation = useNavigation();
+  const { 
+    favoriteEvents, 
+    removeFavoriteEvent,
+    currentUserId,
+    isLoading
+  } = useEvents();
+
+  const handleRemoveFavorite = (eventId: string) => {
+    removeFavoriteEvent(eventId);
+  };
 
   const renderItem = ({ item }: { item: EventItem }) => (
     <View style={styles.eventCard}>
-      <Text style={styles.eventTitle}>{item.title}</Text>
+      <View style={styles.eventHeader}>
+        <Text style={styles.eventTitle}>{item.title}</Text>
+        <TouchableOpacity 
+          onPress={() => handleRemoveFavorite(item._id)}
+          style={styles.favoriteButton}
+        >
+          <Text style={styles.favoriteButtonText}>★</Text>
+        </TouchableOpacity>
+      </View>
       <Text style={styles.eventDetail}>{item.details}</Text>
       <Text style={styles.eventDate}>{formatDateTime(item.date)}</Text>
+      {item.location && (
+        <Text style={styles.eventLocation}>📍 {item.location}</Text>
+      )}
     </View>
   );
 
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#f9df7b" />
+      </View>
+    );
+  }
+
+  if (!currentUserId) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.empty}>Please sign in to view your favorites</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-
-      {/* Title */}
       <Text style={styles.title}>Favourites</Text>
 
-      {/* Events List or Empty Text */}
       {favoriteEvents.length === 0 ? (
         <Text style={styles.empty}>You haven't added any favourites yet.</Text>
       ) : (
         <FlatList
-          data={favoriteEvents.map((event) => ({
-            _id: event._id,
-            title: event.title,
-            details: event.details ?? '',
-            date: event.date ?? '',
-          }))}
+          data={favoriteEvents}
           keyExtractor={(item) => item._id}
           renderItem={renderItem}
           contentContainerStyle={styles.listContainer}
@@ -68,9 +96,6 @@ const FavouritesPage = () => {
   );
 };
 
-export default FavouritesPage;
-
-// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -78,14 +103,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 70, 
   },
-
-  backButton: {
-    position: 'absolute',
-    top: 40,
-    left: 20,
-    zIndex: 10,
-  },
-
   title: {
     fontSize: 24,
     fontWeight: '600',
@@ -93,11 +110,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
   },
-
   listContainer: {
     paddingBottom: 100,
   },
-
   eventCard: {
     backgroundColor: '#1A1A1A',
     borderRadius: 10,
@@ -106,29 +121,46 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#333',
   },
-
+  eventHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
   eventTitle: {
     fontSize: 16,
     fontWeight: '600',
     color: '#f9df7b',
-    marginBottom: 6,
+    flex: 1,
   },
-
   eventDetail: {
     fontSize: 14,
     color: '#BDB298',
     marginBottom: 6,
   },
-
   eventDate: {
     fontSize: 12,
     color: '#888888',
+    marginBottom: 4,
   },
-
+  eventLocation: {
+    fontSize: 12,
+    color: '#888888',
+    fontStyle: 'italic',
+  },
   empty: {
     color: '#BDB298',
     fontSize: 14,
     textAlign: 'center',
     marginTop: 40,
   },
+  favoriteButton: {
+    padding: 8,
+  },
+  favoriteButtonText: {
+    color: '#f9df7b',
+    fontSize: 20,
+  },
 });
+
+export default FavouritesPage;

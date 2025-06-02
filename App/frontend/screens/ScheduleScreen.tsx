@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { useEvents } from "../states/contexts/EventContext";
@@ -14,9 +14,7 @@ interface CalendarEvent {
 }
 
 const Schedule = () => {
-
-  // Call EventContext data
-  const { signedUpEvents } = useEvents();
+  const { signedUpEvents, currentUserId } = useEvents();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const navigation = useNavigation();
 
@@ -32,7 +30,6 @@ const Schedule = () => {
   const getMarkedDates = (events: CalendarEvent[], selectedDate: string | null) => {
     const marked: Record<string, any> = {};
 
-    // Mark events with a dot
     events.forEach((event) => {
       if (!marked[event.date]) {
         marked[event.date] = {
@@ -42,10 +39,9 @@ const Schedule = () => {
       }
     });
 
-    // Highlight the selected date
     if (selectedDate) {
       marked[selectedDate] = {
-        ...marked[selectedDate], // Keep existing marks if any
+        ...marked[selectedDate],
         selected: true,
         selectedColor: "#B88A4E",
         selectedTextColor: "#fff", 
@@ -55,7 +51,6 @@ const Schedule = () => {
     return marked;
   };
 
-  // Filter events for selected date
   const eventsForSelectedDate = selectedDate
     ? formattedEvents.filter((event) => event.date === selectedDate)
     : [];
@@ -63,68 +58,75 @@ const Schedule = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color="#f9df7b" />
+          </TouchableOpacity>
 
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#f9df7b" />
-        </TouchableOpacity>
+          <Text style={styles.title}>Schedule</Text>
 
-        <Text style={styles.title}>Schedule</Text>
-
-        <View style={{ width: 34 }} /> 
-      </View>
-
-        <Calendar
-          onDayPress={(day: { dateString: React.SetStateAction<string | null>; }) => setSelectedDate(day.dateString)}
-          markedDates={getMarkedDates(formattedEvents, selectedDate)}
-          style={styles.calendar}
-          theme={{
-            backgroundColor: "#1E1E1E",
-            calendarBackground: "#1E1E1E",
-            textSectionTitleColor: "#B88A4E",
-            selectedDayBackgroundColor: "#B88A4E",
-            selectedDayTextColor: "#FFFFFF",
-            todayTextColor: "#B88A4E",
-            dayTextColor: "#FFFFFF",
-            textDisabledColor: "#555",
-            arrowColor: "#B88A4E",
-            monthTextColor: "#B88A4E",
-            indicatorColor: "#B88A4E",
-            textDayFontWeight: "300",
-            textMonthFontWeight: "bold",
-            textDayHeaderFontWeight: "300",
-            textDayFontSize: 16,
-            textMonthFontSize: 16,
-            textDayHeaderFontSize: 16
-          }}
-        />
-
-        <View style={styles.eventsBox}>
-          <Text style={styles.eventsTitle}>
-            {selectedDate
-              ? `Events on ${selectedDate}`
-              : "Select a date to see events"}
-          </Text>
-
-          {eventsForSelectedDate.length > 0 ? (
-            <FlatList
-              data={eventsForSelectedDate}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <View style={styles.eventCard}>
-                  <Text style={styles.eventTitle}>{item.title}</Text>
-                  <Text style={styles.eventDetail}>⏰ {item.time}</Text>
-                  <Text style={styles.eventDetail}>📍 {item.location}</Text>
-                </View>
-              )}
-              contentContainerStyle={{ paddingBottom: 20 }}
-            />
-          ) : (
-            selectedDate && (
-              <Text style={styles.noEvents}>No events on this day.</Text>
-            )
-          )}
+          <View style={{ width: 34 }} /> 
         </View>
+
+        {!currentUserId ? (
+          <View style={styles.loginPrompt}>
+            <Text style={styles.loginText}>Please log in to view your schedule</Text>
+          </View>
+        ) : (
+          <>
+            <Calendar
+              onDayPress={(day) => setSelectedDate(day.dateString)}
+              markedDates={getMarkedDates(formattedEvents, selectedDate)}
+              style={styles.calendar}
+              theme={{
+                backgroundColor: "#1E1E1E",
+                calendarBackground: "#1E1E1E",
+                textSectionTitleColor: "#B88A4E",
+                selectedDayBackgroundColor: "#B88A4E",
+                selectedDayTextColor: "#FFFFFF",
+                todayTextColor: "#B88A4E",
+                dayTextColor: "#FFFFFF",
+                textDisabledColor: "#555",
+                arrowColor: "#B88A4E",
+                monthTextColor: "#B88A4E",
+                indicatorColor: "#B88A4E",
+                textDayFontWeight: "300",
+                textMonthFontWeight: "bold",
+                textDayHeaderFontWeight: "300",
+                textDayFontSize: 16,
+                textMonthFontSize: 16,
+                textDayHeaderFontSize: 16
+              }}
+            />
+
+            <View style={styles.eventsBox}>
+              <Text style={styles.eventsTitle}>
+                {selectedDate
+                  ? `Events on ${selectedDate}`
+                  : "Select a date to see events"}
+              </Text>
+
+              {eventsForSelectedDate.length > 0 ? (
+                <FlatList
+                  data={eventsForSelectedDate}
+                  keyExtractor={(item) => item.id}
+                  renderItem={({ item }) => (
+                    <View style={styles.eventCard}>
+                      <Text style={styles.eventTitle}>{item.title}</Text>
+                      <Text style={styles.eventDetail}>⏰ {item.time}</Text>
+                      <Text style={styles.eventDetail}>📍 {item.location}</Text>
+                    </View>
+                  )}
+                  contentContainerStyle={{ paddingBottom: 20 }}
+                />
+              ) : (
+                selectedDate && (
+                  <Text style={styles.noEvents}>No events on this day.</Text>
+                )
+              )}
+            </View>
+          </>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -200,11 +202,20 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     backgroundColor: '#000000',
   },
-
   backButton: {
     width: 34,
     justifyContent: 'center',
     alignItems: 'flex-start',
+  },
+  loginPrompt: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loginText: {
+    color: '#f9df7b',
+    fontSize: 18,
+    textAlign: 'center',
   },
 });
 

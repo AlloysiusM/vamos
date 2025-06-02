@@ -7,11 +7,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GOOGLE_REDIRECT_URI, GOOGLE_IOS_CLIENT_ID, GOOGLE_ANDROID_CLIENT_ID, GOOGLE_WEB_CLIENT_ID } from '@env';
 import { BASE_URL } from '../utils/config'; 
 import { LinearGradient } from 'expo-linear-gradient';
-
-// Google Auth Imports
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import * as AuthSession from 'expo-auth-session';
+import { useEvents } from '../states/contexts/EventContext';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -21,8 +20,8 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const redirectUri = AuthSession.makeRedirectUri({});
+  const { setCurrentUserId } = useEvents();
 
-  // Google Auth Request
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId: GOOGLE_IOS_CLIENT_ID,
     androidClientId: GOOGLE_ANDROID_CLIENT_ID,
@@ -43,7 +42,6 @@ const LoginScreen = () => {
     }
   }, [response]);
 
-  // Fetch user info from Google API
   async function fetchUserInfo(token: string) {
     try {
       const res = await fetch('https://www.googleapis.com/userinfo/v2/me', {
@@ -67,7 +65,9 @@ const LoginScreen = () => {
       if (!backendResponse.ok) {
         throw new Error(backendData.message || 'Google login failed');
       }
-
+      
+      // Set user ID in EventContext
+      setCurrentUserId(backendData._id);
       await AsyncStorage.setItem('token', backendData.token);
       await AsyncStorage.setItem('userId', backendData._id);
       await AsyncStorage.setItem('userEmail', user.email);
@@ -81,9 +81,7 @@ const LoginScreen = () => {
     }
   }
 
-  // Check submission form
   const handleSubmit = async () => {
-    
     if (!email || !password) {
       setError('Please fill in all fields');
       return;
@@ -99,7 +97,6 @@ const LoginScreen = () => {
         },
         body: requestBody,
       });
-      
 
       const data = await response.json();
 
@@ -108,28 +105,19 @@ const LoginScreen = () => {
         return;
       }
 
-      // Store token in AsyncStorage
+      setCurrentUserId(data._id);
       await AsyncStorage.setItem('token', data.token);
-      console.log("Saving userId:", data.userId);
-
-      if(data && data._id){
-        await AsyncStorage.setItem('userId', data._id);
-        console.log("Saved userId:", data._id);
-      } else {
-        console.log("No user _id found in data to save.");
-      }
-
-      console.log("Saved userId");
-            navigation.replace('AppTab'); 
-          } catch (error) {
-            setError('Login failed');
-        }
-      };
+      await AsyncStorage.setItem('userId', data._id);
+      
+      navigation.replace('AppTab');
+    } catch (error) {
+      setError('Login failed');
+    }
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.phoneFrame}>
-        {/* Bigger Vamos logo */}
         <Image source={require('../assets/Vamos2.jpg')} style={styles.logo} />
         
         <Text style={styles.welcomeText}>Sign in to Vamos</Text>
@@ -156,7 +144,6 @@ const LoginScreen = () => {
           />
         </View>
 
-        {/* Forgot Password */}
         <TouchableOpacity 
           style={styles.forgotPasswordContainer} 
           onPress={() => navigation.replace('ForgotPassword')}
@@ -164,7 +151,6 @@ const LoginScreen = () => {
           <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
         </TouchableOpacity>
 
-        {/* Login Button - Using original gradient */}
         <TouchableOpacity onPress={handleSubmit}>
           <LinearGradient
             colors={['#b57e10', '#f9df7b', '#f9df7b', '#b57e10', '#b57e10']}
@@ -174,16 +160,12 @@ const LoginScreen = () => {
           </LinearGradient>
         </TouchableOpacity>
 
-        {/* Or continue with */}
         <View style={styles.orContainer}>
           <View style={styles.divider} />
           <Text style={styles.orText}>Or continue with</Text>
           <View style={styles.divider} />
         </View>
 
-        {/* Social Login Buttons */}
-
-        {/* google login */}
         <View style={styles.socialButtonsContainer}>
           <TouchableOpacity 
             style={styles.socialButton} 
@@ -193,13 +175,11 @@ const LoginScreen = () => {
             <Text style={styles.socialButtonText}>G</Text>
           </TouchableOpacity>
           
-          {/* Apple login placeholder */}
           <TouchableOpacity style={styles.socialButton}>
             <Text style={styles.socialButtonText}></Text>
           </TouchableOpacity>
         </View>
 
-        {/* Register Link */}
         <View style={styles.registerContainer}>
           <Text style={styles.registerText}>Not a member? </Text>
           <TouchableOpacity onPress={() => navigation.replace('Register')}>
@@ -207,7 +187,6 @@ const LoginScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Error Message */}
         {error ? (
           <Text style={styles.errorText}>{error}</Text>
         ) : null}
@@ -216,7 +195,6 @@ const LoginScreen = () => {
   );
 };
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -339,4 +317,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default LoginScreen; 
