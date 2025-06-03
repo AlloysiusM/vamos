@@ -12,6 +12,7 @@ const ForgotPasswordScreen = () => {
 
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
+  const token = AsyncStorage.getItem('token');
 
   // Check submission form
   const handleForgot = async () => {
@@ -79,10 +80,15 @@ const ForgotPasswordScreen = () => {
         </LinearGradient>
       </TouchableOpacity>
 
-      {/* Back to Login Button */}
+      {token === null ? (
       <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.replace('Login')}>
         <Text style={styles.secondaryButtonText}>Back to Login</Text>
       </TouchableOpacity>
+        ) : (
+      <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.replace('Profile')}>
+        <Text style={styles.secondaryButtonText}>Back to Profile Login</Text>
+      </TouchableOpacity>
+)}
 
       {/* Error Message */}
       {error ? (
