@@ -225,6 +225,9 @@ const handleDeleteEvent = async (eventId: string) => {
     setEvents(prev => prev.filter(event => event._id !== eventId));
     setFilteredEvents(prev => prev.filter(event => event._id !== eventId));
 
+    removeFavoriteEvent(eventId);
+    removeSignedUpEvent(eventId);
+    
   } catch (err) {
     console.error('Error deleting event:', err);
     Alert.alert("Error", "Failed to delete event.");
