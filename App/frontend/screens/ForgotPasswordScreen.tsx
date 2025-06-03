@@ -52,6 +52,17 @@ const ForgotPasswordScreen = () => {
     }
   };
 
+  const handleBackToLogin = async () => {
+    try {
+      await AsyncStorage.removeItem('token');
+      navigation.navigate('Login');
+      console.log('Token cleared and navigating to Login');
+    } catch (error) {
+      console.error('Error clearing token:', error);
+      Alert.alert('Error', 'Could not log out. Please try again.');
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Forgot Password?</Text>
@@ -80,15 +91,9 @@ const ForgotPasswordScreen = () => {
         </LinearGradient>
       </TouchableOpacity>
 
-      {token === null ? (
-      <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.replace('Login')}>
+      <TouchableOpacity style={styles.secondaryButton} onPress={handleBackToLogin}>
         <Text style={styles.secondaryButtonText}>Back to Login</Text>
       </TouchableOpacity>
-        ) : (
-      <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.replace('Profile')}>
-        <Text style={styles.secondaryButtonText}>Back to Profile Login</Text>
-      </TouchableOpacity>
-)}
 
       {/* Error Message */}
       {error ? (
